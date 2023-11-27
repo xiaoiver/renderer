@@ -19,6 +19,6 @@
     "importHelpers": true,
     "types": ["@webgpu/types"],
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "example/**/*"],
   "exclude": ["node_modules", "lib", "es"]
 }

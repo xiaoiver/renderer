@@ -45,7 +45,11 @@
   },
   "homepage": "https://github.com/xiaoiver/renderer#readme",
   "dependencies": {
-    "@antv/g-device-api": "^1.3.9"
+    "@antv/g-device-api": "^1.3.9",
+    "@lastolivegames/becsy": "^0.15.8",
+    "lodash-es": "^4.17.21",
+    "gl-matrix": "^3.4.0",
+    "tslib": "^2.5.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.39.0",
@@ -57,7 +61,9 @@
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-terser": "^0.4.3",
     "@rollup/plugin-typescript": "^11.1.1",
+    "@types/node": "^16.11.7",
     "@types/jest": "^26.0.24",
+    "@types/lodash-es": "^4.17.5",
     "@types/offscreencanvas": "^2019.6.4",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
