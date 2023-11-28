@@ -3,6 +3,7 @@ import { Vec4 } from './Vec4';
 import { Vec3 } from './Vec3';
 import { EulerRot } from './EulerRot';
 import { Affine3 } from './Affine3';
+import { Mat3 } from './Mat3';
 
 /**
  * A quaternion representing an orientation.
@@ -26,6 +27,13 @@ export class Quat {
    */
   static from_xyzw(x: number, y: number, z: number, w: number) {
     return new Quat(x, y, z, w);
+  }
+
+  /**
+   * Creates a quaternion from a 3x3 rotation matrix.
+   */
+  static from_mat3(mat: Mat3) {
+    return Quat.from_rotation_axes(mat.x_axis, mat.y_axis, mat.z_axis);
   }
 
   /**

@@ -3,5 +3,5 @@
  */
 export { RendererPlugin } from './Renderer';
 export { TransformPlugin } from './Transform';
-export { CameraPlugin } from './Cameras';
-export { HierarchyPlugin } from './Hierarchys';
+export { CameraPlugin } from './Camera';
+export { HierarchyPlugin } from './Hierarchy';

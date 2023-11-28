@@ -1,24 +1,26 @@
 # renderer
 
-Just another toy renderer. Inspired by [bevy]().
+Just another toy renderer. Inspired by [bevy](https://github.com/bevyengine/).
 
 - ECS - [becsy](https://lastolivegames.github.io/becsy)
   <img src="https://lastolivegames.github.io/becsy/assets/architecture.a3cc1c9e.svg" alt="ecs">
-- HAL - [@antv/g-device-api]() Supports WebGL1/2 & WebGPU.
+- HAL - [@antv/g-device-api](https://github.com/antvis/g-device-api) Supports WebGL1/2 & WebGPU.
+- Use [naga-oil](https://github.com/bevyengine/naga_oil) to combine and manipulate WGSL shaders.
 - Framegraph
 
 ## API
 
 ```ts
-import { App, SystemType } from 'renderer';
+import { App, System } from 'renderer';
 
-const startup = (commands) => {};
-const update = (commands) => {};
+class Startup extends System {
+  initialize() {}
+}
+class Update extends System {
+  execute() {}
+}
 
-new App()
-  .addSystems(SystemType.STARTUP, startup)
-  .addSystems(SystemType.UPDATE, update)
-  .run();
+new App().addSystems(Startup).addSystems(Update).run();
 ```
 
 ## Marching cubes

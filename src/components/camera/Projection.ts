@@ -3,10 +3,7 @@ import { Mat4, Vec2, Vec3, v2Type } from '../../math';
 import { ScalingMode } from './ScalingMode';
 
 export const Projection = World.defineEnum('Projection');
-
-export
-@component(Projection)
-class Perspective {
+export class Perspective {
   /**
    * The vertical field of view (FOV) in radians.
    * Defaults to a value of π/4 radians or 45 degrees.
@@ -76,9 +73,7 @@ class Perspective {
   }
 }
 
-export
-@component(Projection)
-class Orthographic {
+export class Orthographic {
   /**
    * The distance from the camera in world units of the viewing frustum's near plane.
    * Objects closer to the camera than this value will not be visible.
@@ -111,7 +106,12 @@ class Orthographic {
    */
   @field(v2Type) declare viewport_origin: Vec2;
 
-  // scaling_mode: ScalingMode;
+  /**
+   * How the projection will scale when the viewport is resized.
+   *
+   * Defaults to `ScalingMode::WindowSize(1.0)`
+   */
+  @field.object declare scaling_mode: typeof ScalingMode;
 
   /**
    * Scales the projection in world units.

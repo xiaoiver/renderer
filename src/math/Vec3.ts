@@ -8,6 +8,7 @@ import { Vec4 } from './Vec4';
 export class Vec3 {
   static ZERO = Vec3.splat(0);
   static ONE = Vec3.splat(1);
+  static NEG_Z = new Vec3(0, 0, -1);
   static X = new Vec3(1, 0, 0);
   static Y = new Vec3(0, 1, 0);
   static Z = new Vec3(0, 0, 1);
@@ -63,6 +64,10 @@ export class Vec3 {
       Math.max(this.y, rhs.y),
       Math.max(this.z, rhs.z),
     );
+  }
+
+  neg() {
+    return this.mul(-1);
   }
 
   add(rhs: number | Vec3) {
@@ -157,6 +162,34 @@ export class Vec3 {
    */
   extend(w: number) {
     return new Vec4(this.x, this.y, this.z, w);
+  }
+
+  /**
+   * Computes `1.0 / length()`.
+   */
+  length_recip() {
+    return 1 / this._length();
+  }
+
+  normalize() {
+    const normalized = this.mul(this.length_recip());
+    return normalized;
+  }
+
+  /**
+   * Returns some vector that is orthogonal to the given one.
+   * The input vector must be finite and non-zero.
+   *
+   * The output vector is not necessarily unit length. For that use
+   * [`Self::any_orthonormal_vector()`] instead.
+   */
+  any_orthonormal_vector() {
+    // This can probably be optimized
+    if (Math.abs(this.x) > Math.abs(this.y)) {
+      return new Vec3(-this.z, 0.0, this.x); // self.cross(Self::Y)
+    } else {
+      return new Vec3(0.0, this.z, -this.y); // self.cross(Self::X)
+    }
   }
 }
 

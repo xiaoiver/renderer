@@ -5,6 +5,8 @@ export { Transform } from './transform/Transform';
 export { GlobalTransform } from './transform/GlobalTransform';
 export { Renderable } from './Renderable';
 export { Camera } from './camera/Camera';
+export { Projection, Perspective, Orthographic } from './camera/Projection';
 export { Viewport } from './camera/Viewport';
 export { Parent } from './hierarchy/Parent';
 export { Children } from './hierarchy/Children';
+export { Sensitivity, Fxaa } from './pipeline/Fxaa';

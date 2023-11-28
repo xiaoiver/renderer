@@ -9,7 +9,7 @@ import { Camera } from '../components';
  * as the [`Camera`] one, to automatically update the camera projection matrix.
  */
 export class CameraSystem extends System {
-  cameras = this.query((q) => q.using(Camera).write);
+  cameras = this.query((q) => q.using(Camera).read);
 
   execute(): void {}
 }

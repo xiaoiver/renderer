@@ -1,5 +1,5 @@
 import { field } from '@lastolivegames/becsy';
-import { Vec3, v3Type, Quat, quatType, Mat4, Affine3 } from '../../math';
+import { Vec3, v3Type, Quat, quatType, Mat4, Affine3, Mat3 } from '../../math';
 
 /**
  * Describe the position of an entity.
@@ -73,8 +73,47 @@ export class Transform {
 
   /**
    * Rotates this [`Transform`] so that [`Transform::forward`] points towards the `target` position,
+   * and [`Transform::up`] points towards `up`.
+   *
+   * In some cases it's not possible to construct a rotation. Another axis will be picked in those cases:
+   * * if `target` is the same as the transform translation, `Vec3::Z` is used instead
+   * * if `up` is zero, `Vec3::Y` is used instead
+   * * if the resulting forward direction is parallel with `up`, an orthogonal vector is used as the "right" direction
    */
-  look_at(target: Vec3, up: Vec3) {}
+  look_at(target: Vec3, up: Vec3) {
+    this.look_to(target.sub(this.translation), up);
+    return this;
+  }
+
+  /**
+   * Rotates this [`Transform`] so that [`Transform::forward`] points in the given `direction`
+   * and [`Transform::up`] points towards `up`.
+   */
+  look_to(direction: Vec3, _up: Vec3) {
+    let back: Vec3;
+    try {
+      back = direction.normalize().neg();
+    } catch (e) {
+      back = Vec3.NEG_Z;
+    }
+
+    let up: Vec3;
+    try {
+      up = _up.normalize();
+    } catch (e) {
+      up = Vec3.Y;
+    }
+
+    let right: Vec3;
+    try {
+      right = up.cross(back).normalize();
+    } catch (e) {
+      right = up.any_orthonormal_vector();
+    }
+
+    up = back.cross(right);
+    this.rotation = Quat.from_mat3(Mat3.from_cols(right, up, back));
+  }
 
   compute_affine() {
     return Affine3.from_scale_rotation_translation(

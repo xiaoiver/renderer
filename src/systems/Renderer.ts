@@ -1,6 +1,5 @@
 import { System } from '@lastolivegames/becsy';
 import {
-  WebGLDeviceContribution,
   Device,
   TransparentWhite,
   SwapChain,
@@ -8,12 +7,15 @@ import {
   TransparentBlack,
   BlendMode,
   BlendFactor,
+  WebGPUDeviceContribution,
 } from '@antv/g-device-api';
 import { AppConfig, Renderable, Transform } from '../components';
 import {
   AntialiasingMode,
   RGAttachmentSlot,
+  RGGraphBuilder,
   RenderHelper,
+  RenderInput,
   makeAttachmentClearDescriptor,
   makeBackbufferDescSimple,
   opaqueWhiteFullClearRenderPassDescriptor,
@@ -31,6 +33,15 @@ export class Renderer extends System {
   private device: Device;
   private swapChain: SwapChain;
   private renderHelper: RenderHelper;
+  private passes: Record<
+    string,
+    (
+      builder: RGGraphBuilder,
+      renderHelper: RenderHelper,
+      renderInput: RenderInput,
+      mainColorTargetID: number,
+    ) => void
+  > = {};
 
   private renderables = this.query(
     (q) => q.addedOrChanged.with(Renderable).and.with(Transform).trackWrites,
@@ -39,12 +50,13 @@ export class Renderer extends System {
   async prepare() {
     const { canvas } = this.appConfig;
 
-    const deviceContribution = new WebGLDeviceContribution({
-      targets: ['webgl2', 'webgl1'],
-      // xrCompatible: params.xrCompatible,
-      onContextCreationError: () => {},
-      onContextLost: () => {},
-      onContextRestored(e) {},
+    const deviceContribution = new WebGPUDeviceContribution({
+      shaderCompilerPath: '/glsl_wgsl_compiler_bg.wasm',
+      // targets: ['webgl2', 'webgl1'],
+      // // xrCompatible: params.xrCompatible,
+      // onContextCreationError: () => {},
+      // onContextLost: () => {},
+      // onContextRestored(e) {},
     });
 
     // Create swap chain and get device
@@ -109,6 +121,12 @@ export class Renderer extends System {
         mainDepthTargetID,
       );
       pass.exec((passRenderer) => {});
+    });
+
+    // FXAA
+    Object.keys(this.passes).forEach((name) => {
+      const func = this.passes[name];
+      func(builder, this.renderHelper, renderInput, mainColorTargetID);
     });
 
     builder.resolveRenderTargetToExternalTexture(
@@ -189,5 +207,20 @@ export class Renderer extends System {
     this.renderHelper.destroy();
     this.device.destroy();
     this.device.checkForLeaks();
+  }
+
+  /**
+   * Register pass
+   */
+  registerPass(
+    key: string,
+    func: (
+      builder: RGGraphBuilder,
+      renderHelper: RenderHelper,
+      renderInput: RenderInput,
+      mainColorTargetID: number,
+    ) => void,
+  ) {
+    this.passes[key] = func;
   }
 }
