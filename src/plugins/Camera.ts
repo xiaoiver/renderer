@@ -17,6 +17,6 @@ export class CameraPlugin implements Plugin {
     component(Projection)(Perspective);
     component(Projection)(Orthographic);
 
-    app.addSystems(CameraSystem);
+    app.addSystemsInternal(CameraSystem);
   }
 }

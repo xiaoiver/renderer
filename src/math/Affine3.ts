@@ -1,6 +1,7 @@
-import { Mat3 } from './Mat3';
+import { field } from '@lastolivegames/becsy';
+import { Mat3, m3Type } from './Mat3';
 import { Quat } from './Quat';
-import { Vec3 } from './Vec3';
+import { Vec3, v3Type } from './Vec3';
 
 /**
  * A 3D affine transform, which can represent translation, rotation, scaling and shear.
@@ -78,8 +79,15 @@ export class Affine3 {
     return new Affine3(matrix3, translation);
   }
 
-  constructor(
-    public matrix3: Mat3 = Mat3.IDENTITY,
-    public translation: Vec3 = Vec3.ZERO,
-  ) {}
+  @field(m3Type) declare matrix3: Mat3;
+  @field(v3Type) declare translation: Vec3;
+
+  constructor(matrix3: Mat3 = Mat3.IDENTITY, translation: Vec3 = Vec3.ZERO) {
+    this.matrix3 = matrix3;
+    this.translation = translation;
+  }
+
+  transform_point3(rhs: Vec3) {
+    return this.matrix3.mul_vec3(rhs).add(this.translation);
+  }
 }

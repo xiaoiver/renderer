@@ -92,6 +92,41 @@ export class Mat4 {
   }
 
   /**
+   * Returns the matrix row for the given `index`.
+   */
+  row(index: number) {
+    if (index === 0) {
+      return new Vec4(
+        this.x_axis.x,
+        this.y_axis.x,
+        this.z_axis.x,
+        this.w_axis.x,
+      );
+    } else if (index === 1) {
+      return new Vec4(
+        this.x_axis.y,
+        this.y_axis.y,
+        this.z_axis.y,
+        this.w_axis.y,
+      );
+    } else if (index === 2) {
+      return new Vec4(
+        this.x_axis.z,
+        this.y_axis.z,
+        this.z_axis.z,
+        this.w_axis.z,
+      );
+    } else {
+      return new Vec4(
+        this.x_axis.w,
+        this.y_axis.w,
+        this.z_axis.w,
+        this.w_axis.w,
+      );
+    }
+  }
+
+  /**
    * Multiplies a 4x4 matrix by a scalar.
    */
   mul_scalar(rhs: number) {

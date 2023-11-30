@@ -1,3 +1,4 @@
+import { Type } from '@lastolivegames/becsy';
 import { Mat2 } from './Mat2';
 import { Quat } from './Quat';
 import { Vec2 } from './Vec2';
@@ -228,15 +229,15 @@ export class Mat3 {
   // }
 
   constructor(
-    m00: number,
-    m01: number,
-    m02: number,
-    m10: number,
-    m11: number,
-    m12: number,
-    m20: number,
-    m21: number,
-    m22: number,
+    public m00: number,
+    public m01: number,
+    public m02: number,
+    public m10: number,
+    public m11: number,
+    public m12: number,
+    public m20: number,
+    public m21: number,
+    public m22: number,
   ) {
     this.x_axis = new Vec3(m00, m01, m02);
     this.y_axis = new Vec3(m10, m11, m12);
@@ -308,4 +309,62 @@ export class Mat3 {
       this.z_axis,
     );
   }
+
+  /**
+   * Multiplies a 3x3 matrix by a scalar.
+   */
+  mul_scalar(rhs: number) {
+    return Mat3.from_cols(
+      this.x_axis.mul(rhs),
+      this.y_axis.mul(rhs),
+      this.z_axis.mul(rhs),
+    );
+  }
+
+  mul_vec3(rhs: Vec3) {
+    let res = this.x_axis.mul(rhs.xxx());
+    res = res.add(this.y_axis.mul(rhs.yyy()));
+    res = res.add(this.z_axis.mul(rhs.zzz()));
+    return res;
+  }
+
+  /**
+   * Multiplies two 3x3 matrices.
+   */
+  mul_mat3(rhs: Mat3) {
+    return Mat3.from_cols(
+      this.mul_vec3(rhs.x_axis),
+      this.mul_vec3(rhs.y_axis),
+      this.mul_vec3(rhs.z_axis),
+    );
+  }
+
+  /**
+   * Adds two 3x3 matrices.
+   */
+  add_mat3(rhs: Mat3) {
+    return Mat3.from_cols(
+      this.x_axis.add(rhs.x_axis),
+      this.y_axis.add(rhs.y_axis),
+      this.z_axis.add(rhs.z_axis),
+    );
+  }
+
+  /**
+   * Subtracts two 3x3 matrices.
+   */
+  sub_mat3(rhs: Mat3) {
+    return Mat3.from_cols(
+      this.x_axis.sub(rhs.x_axis),
+      this.y_axis.sub(rhs.y_axis),
+      this.z_axis.sub(rhs.z_axis),
+    );
+  }
 }
+
+export const m3Type = Type.vector(
+  Type.float64,
+  ['m00', 'm01', 'm02', 'm10', 'm11', 'm12', 'm20', 'm21', 'm22'],
+  // @ts-ignore
+  Mat3,
+);

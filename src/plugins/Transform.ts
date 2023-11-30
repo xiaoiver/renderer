@@ -7,10 +7,9 @@ import { SyncSimpleTransforms, PropagateTransforms } from '../systems';
 export class TransformPlugin implements Plugin {
   async build(app: App) {
     component(Transform);
-    // @ts-ignore
     component(GlobalTransform);
     component(TransformBundle);
 
-    app.addSystems(SyncSimpleTransforms, PropagateTransforms);
+    app.addSystemsInternal(SyncSimpleTransforms, PropagateTransforms);
   }
 }

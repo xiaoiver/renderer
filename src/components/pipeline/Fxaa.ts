@@ -25,10 +25,18 @@ export class Fxaa {
   @field.uint8 declare edge_threshold_min: Sensitivity;
 
   constructor(
-    enabled = true,
-    edge_threshold = Sensitivity.High,
-    edge_threshold_min = Sensitivity.High,
+    options?: Partial<{
+      enabled: boolean;
+      edge_threshold: Sensitivity;
+      edge_threshold_min: Sensitivity;
+    }>,
   ) {
+    const {
+      enabled = true,
+      edge_threshold = Sensitivity.High,
+      edge_threshold_min = Sensitivity.High,
+    } = options || {};
+
     this.enabled = enabled;
     this.edge_threshold = edge_threshold;
     this.edge_threshold_min = edge_threshold_min;

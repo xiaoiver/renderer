@@ -10,7 +10,7 @@ import { Children, Parent } from '../components';
 /**
  * @see https://github.com/bevyengine/bevy/blob/latest/crates/bevy_hierarchy/src/events.rs
  */
-enum HierarchyEvent {
+export enum HierarchyEvent {
   /**
    * Fired whenever an [`Entity`] is added as a child to a parent.
    */

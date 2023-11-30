@@ -8,6 +8,8 @@ import { Vec4 } from './Vec4';
 export class Vec3 {
   static ZERO = Vec3.splat(0);
   static ONE = Vec3.splat(1);
+  static MAX = Vec3.splat(Number.MAX_VALUE);
+  static MIN = Vec3.splat(Number.MIN_VALUE);
   static NEG_Z = new Vec3(0, 0, -1);
   static X = new Vec3(1, 0, 0);
   static Y = new Vec3(0, 1, 0);
@@ -17,7 +19,33 @@ export class Vec3 {
     return new Vec3(v, v, v);
   }
 
+  /**
+   * Creates a new vector from an array.
+   */
+  static from_array(a: [number, number, number]) {
+    return new Vec3(a[0], a[1], a[2]);
+  }
+
   constructor(public x: number, public y: number, public z: number) {}
+
+  /**
+   * `[x, y, z]`
+   */
+  to_array() {
+    return [this.x, this.y, this.z];
+  }
+
+  xxx() {
+    return new Vec3(this.x, this.x, this.x);
+  }
+
+  yyy() {
+    return new Vec3(this.y, this.y, this.y);
+  }
+
+  zzz() {
+    return new Vec3(this.z, this.z, this.z);
+  }
 
   /**
    * Computes the length of `self`.
@@ -64,6 +92,10 @@ export class Vec3 {
       Math.max(this.y, rhs.y),
       Math.max(this.z, rhs.z),
     );
+  }
+
+  abs() {
+    return new Vec3(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z));
   }
 
   neg() {

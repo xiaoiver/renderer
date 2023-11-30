@@ -5,8 +5,9 @@ import {
   CameraPlugin,
 } from './plugins';
 
-export { component, field, Type, World, System } from '@lastolivegames/becsy';
+export { component, field, Type, World } from '@lastolivegames/becsy';
 export { App } from './App';
+export * from './System';
 export * from './components';
 
 export const DefaultPlugins = [

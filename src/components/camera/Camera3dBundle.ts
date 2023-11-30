@@ -1,17 +1,37 @@
-import { field } from '@lastolivegames/becsy';
 import { Camera } from './Camera';
 import { Transform } from '../transform/Transform';
 import { GlobalTransform } from '../transform/GlobalTransform';
 import { Projection } from './Projection';
+import { Bundle } from '../Bundle';
 
-export class Camera3dBundle {
-  @field.object declare camera: Camera;
+export class Camera3dBundle extends Bundle {
+  camera: Camera;
 
-  @field.object declare projection: typeof Projection;
+  projection: typeof Projection;
 
-  @field.object declare transform: Transform;
+  transform: Transform;
 
-  @field.object declare global_transform: GlobalTransform;
+  global_transform: GlobalTransform;
 
-  // @field.object declare tonemapping: Tonemapping;
+  constructor(
+    options?: Partial<{
+      camera: Camera;
+      projection: typeof Projection;
+      transform: Transform;
+      global_transform: GlobalTransform;
+    }>,
+  ) {
+    super();
+
+    const {
+      camera = new Camera(),
+      transform,
+      // projection = Projection
+    } = options || {};
+
+    this.camera = camera;
+    this.transform = transform;
+  }
+
+  // tonemapping: Tonemapping;
 }
