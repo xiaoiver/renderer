@@ -90,4 +90,18 @@ export class Affine3 {
   transform_point3(rhs: Vec3) {
     return this.matrix3.mul_vec3(rhs).add(this.translation);
   }
+
+  /**
+   * Creates a `[[f32; 3]; 4]` 3D array storing data in
+   * column major order.
+   * If you require data in row major order `transpose` the matrix first.
+   */
+  to_cols_array_2d() {
+    return [
+      ...this.matrix3.x_axis.to_array(),
+      ...this.matrix3.y_axis.to_array(),
+      ...this.matrix3.z_axis.to_array(),
+      ...this.translation.to_array(),
+    ];
+  }
 }

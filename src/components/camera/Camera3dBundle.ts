@@ -1,13 +1,13 @@
 import { Camera } from './Camera';
 import { Transform } from '../transform/Transform';
 import { GlobalTransform } from '../transform/GlobalTransform';
-import { Projection } from './Projection';
+import { Orthographic, Perspective } from './Projection';
 import { Bundle } from '../Bundle';
 
 export class Camera3dBundle extends Bundle {
   camera: Camera;
 
-  projection: typeof Projection;
+  projection: Perspective | Orthographic;
 
   transform: Transform;
 
@@ -16,7 +16,7 @@ export class Camera3dBundle extends Bundle {
   constructor(
     options?: Partial<{
       camera: Camera;
-      projection: typeof Projection;
+      projection: Perspective | Orthographic;
       transform: Transform;
       global_transform: GlobalTransform;
     }>,
@@ -26,11 +26,12 @@ export class Camera3dBundle extends Bundle {
     const {
       camera = new Camera(),
       transform,
-      // projection = Projection
+      projection = new Perspective(),
     } = options || {};
 
     this.camera = camera;
     this.transform = transform;
+    this.projection = projection;
   }
 
   // tonemapping: Tonemapping;

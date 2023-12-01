@@ -15,6 +15,10 @@ export class Vec2 {
 
   constructor(public x: number, public y: number) {}
 
+  to_array() {
+    return [this.x, this.y];
+  }
+
   add(rhs: number | Vec2) {
     if (typeof rhs === 'number') {
       return new Vec2(this.x + rhs, this.y + rhs);

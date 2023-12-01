@@ -49,6 +49,15 @@ export class Mat4 {
     );
   }
 
+  static from_affine3(m: Affine3) {
+    return Mat4.from_cols(
+      m.matrix3.x_axis.extend(0),
+      m.matrix3.y_axis.extend(0),
+      m.matrix3.z_axis.extend(0),
+      m.translation.extend(1),
+    );
+  }
+
   /**
    * Creates an infinite reverse right-handed perspective projection matrix
    * with `[0,1]` depth range.
@@ -89,6 +98,19 @@ export class Mat4 {
     this.y_axis = new Vec4(m10, m11, m12, m13);
     this.z_axis = new Vec4(m20, m21, m22, m23);
     this.w_axis = new Vec4(m30, m31, m32, m33);
+  }
+
+  /**
+   * Creates a `[[f32; 4]; 4]` 4D array storing data in column major order.
+   * If you require data in row major order `transpose` the matrix first.
+   */
+  to_cols_array_2d() {
+    return [
+      ...this.x_axis.to_array(),
+      ...this.y_axis.to_array(),
+      ...this.z_axis.to_array(),
+      ...this.w_axis.to_array(),
+    ];
   }
 
   /**

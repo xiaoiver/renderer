@@ -22,11 +22,11 @@ interface RenderTargetInfo {
 /**
  * Holds internally computed [`Camera`] values.
  */
-interface ComputedCameraValues {
-  projectionMatrix: Mat4;
-  targetInfo: Partial<RenderTargetInfo>;
+export interface ComputedCameraValues {
+  projection_matrix: Mat4;
+  target_info: Partial<RenderTargetInfo>;
   // position and size of the `Viewport`
-  oldViewportSize: Partial<Vec2>;
+  old_viewport_size: Partial<Vec2>;
 }
 
 export class Camera {
@@ -53,13 +53,16 @@ export class Camera {
    */
   @field.boolean declare hdr: boolean;
 
-  computed: ComputedCameraValues;
+  /**
+   * Computed values for this camera, such as the projection matrix and the render target size.
+   */
+  @field.object declare computed: ComputedCameraValues;
 
   /**
    * Converts a physical size in this `Camera` to a logical size.
    */
   toLogical(physicalSize: Vec2) {
-    const scale = this.computed.targetInfo.scaleFactor;
+    const scale = this.computed.target_info.scaleFactor;
     return new Vec2(physicalSize[0] / scale, physicalSize[1] / scale);
   }
 
@@ -113,7 +116,7 @@ export class Camera {
    * For logic that requires the size of the actually rendered area, prefer [`Camera::logical_viewport_size`].
    */
   logicalTargetSize() {
-    return this.toLogical(this.computed.targetInfo.physicalSize);
+    return this.toLogical(this.computed.target_info.physicalSize);
   }
 
   /**
@@ -121,14 +124,14 @@ export class Camera {
    * Note that if the `viewport` field is [`Some`], this will not represent the size of the rendered area.
    */
   physicalTargetSize() {
-    return this.computed.targetInfo.physicalSize;
+    return this.computed.target_info.physicalSize;
   }
 
   /**
    * The projection matrix computed using this camera's [`CameraProjection`].
    */
   projectionMatrix() {
-    return this.computed.projectionMatrix;
+    return this.computed.projection_matrix;
   }
 
   /**
@@ -172,7 +175,7 @@ export class Camera {
     world_position: Vec3,
   ): Vec3 | None {
     // Build a transformation matrix to convert from world space to NDC using camera data
-    let world_to_ndc: Mat4 = this.computed.projectionMatrix.mul(
+    let world_to_ndc: Mat4 = this.computed.projection_matrix.mul(
       camera_transform.compute_matrix().inverse(),
     ) as Mat4;
     let ndc_space_coords: Vec3 = world_to_ndc.project_point3(world_position);
@@ -191,7 +194,7 @@ export class Camera {
   ndc_to_world(camera_transform: GlobalTransform, ndc: Vec3) {
     let ndc_to_world = camera_transform
       .compute_matrix()
-      .mul(this.computed.projectionMatrix.inverse()) as Mat4;
+      .mul(this.computed.projection_matrix.inverse()) as Mat4;
     let world_space_coords = ndc_to_world.project_point3(ndc);
     return world_space_coords;
   }

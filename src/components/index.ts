@@ -13,3 +13,5 @@ export { Parent } from './hierarchy/Parent';
 export { Children } from './hierarchy/Children';
 export { Sensitivity, Fxaa } from './pipeline/Fxaa';
 export { Color, Rgba } from './render/Color';
+export { PbrBundle } from './pbr/PbrBundle';
+export { Material } from './pbr/Material';

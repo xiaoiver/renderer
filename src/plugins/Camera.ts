@@ -8,7 +8,7 @@ import {
   Viewport,
   Projection,
 } from '../components';
-import { CameraSystem } from '../systems';
+import { CameraSystem, PreUpdate } from '../systems';
 
 export class CameraPlugin implements Plugin {
   async build(app: App) {
@@ -17,6 +17,6 @@ export class CameraPlugin implements Plugin {
     component(Projection)(Perspective);
     component(Projection)(Orthographic);
 
-    app.addSystemsInternal(CameraSystem);
+    app.addSystems(PreUpdate, CameraSystem);
   }
 }

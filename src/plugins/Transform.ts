@@ -2,7 +2,11 @@ import { component } from '@lastolivegames/becsy';
 import { App } from '../App';
 import { Plugin } from '../Plugin';
 import { Transform, GlobalTransform, TransformBundle } from '../components';
-import { SyncSimpleTransforms, PropagateTransforms } from '../systems';
+import {
+  SyncSimpleTransforms,
+  PropagateTransforms,
+  PreUpdate,
+} from '../systems';
 
 export class TransformPlugin implements Plugin {
   async build(app: App) {
@@ -10,6 +14,6 @@ export class TransformPlugin implements Plugin {
     component(GlobalTransform);
     component(TransformBundle);
 
-    app.addSystemsInternal(SyncSimpleTransforms, PropagateTransforms);
+    app.addSystems(PreUpdate, SyncSimpleTransforms, PropagateTransforms);
   }
 }

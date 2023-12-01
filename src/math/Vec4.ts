@@ -51,6 +51,13 @@ export class Vec4 {
     public w: number,
   ) {}
 
+  /**
+   * `[x, y, z, w]`
+   */
+  to_array() {
+    return [this.x, this.y, this.z, this.w];
+  }
+
   add(rhs: Vec4) {
     return new Vec4(
       this.x + rhs.x,

@@ -16,7 +16,6 @@ export class Insert implements Command {
       // Add bundle.
       if (bundle instanceof Bundle) {
         Object.keys(bundle).forEach((key) => {
-          // @ts-ignore
           this.id.add(bundle[key].constructor, bundle[key]);
         });
       } else {

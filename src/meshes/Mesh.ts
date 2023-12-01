@@ -3,6 +3,8 @@ import { chunk, flatten } from 'lodash-es';
 import { Box } from './Box';
 import { Vec3 } from '../math';
 import { Aabb } from '../components/primitive/Aabb';
+import { Cube } from './Cube';
+import { field } from '@lastolivegames/becsy';
 
 /**
  *
@@ -198,7 +200,11 @@ export class Mesh {
     Format.U16_RGBA_5551,
   );
 
-  static from(sp: Box) {
+  static from(sp: Box | Cube) {
+    if (sp instanceof Cube) {
+      sp = new Box(sp.size, sp.size, sp.size);
+    }
+
     const vertices = [
       // Front
       [
@@ -378,19 +384,24 @@ export class Mesh {
       .with_indices(indices);
   }
 
-  attributes: [MeshVertexAttribute, number[][]][] = [];
+  @field.object declare attributes: [MeshVertexAttribute, number[][]][];
 
   /**
    * The vertex `indices` of the mesh.
    */
-  indices: number[];
+  @field.object declare indices: number[];
+
+  @field.object declare primitive_topology: PrimitiveTopology;
 
   /**
    * Construct a new mesh. You need to provide a [`PrimitiveTopology`] so that the
    * renderer knows how to treat the vertex data.
    * Most of the time this will be [`PrimitiveTopology.TRIANGLES`].
    */
-  constructor(public primitive_topology: PrimitiveTopology) {}
+  constructor(primitive_topology = PrimitiveTopology.TRIANGLES) {
+    this.primitive_topology = primitive_topology;
+    this.attributes = [];
+  }
 
   /**
    * Consumes the mesh and returns a mesh with data set for a vertex attribute (position, normal etc.).
@@ -606,6 +617,9 @@ function face_normal(
   return [normal.x, normal.y, normal.z];
 }
 
+/**
+ * TODO
+ */
 function generate_tangents_for_mesh(mesh: Mesh) {
   if (mesh.primitive_topology !== PrimitiveTopology.TRIANGLES) {
     throw new Error(`Unsupported topology when generating tangents`);
