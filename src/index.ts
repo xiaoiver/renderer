@@ -1,8 +1,11 @@
+import { PluginType } from './Plugin';
 import {
   TransformPlugin,
   RendererPlugin,
   HierarchyPlugin,
   CameraPlugin,
+  CorePipeline,
+  EventPlugin,
 } from './plugins';
 
 export {
@@ -13,15 +16,18 @@ export {
   System,
   system,
 } from '@lastolivegames/becsy';
+export type { Entity } from '@lastolivegames/becsy';
 export { App } from './App';
 export * from './components';
 export * from './meshes';
 export * from './systems';
 export { Commands } from './commands/Commands';
 
-export const DefaultPlugins = [
-  new TransformPlugin(),
-  new HierarchyPlugin(),
-  new CameraPlugin(),
-  new RendererPlugin(),
+export const DefaultPlugins: PluginType[] = [
+  TransformPlugin,
+  HierarchyPlugin,
+  CameraPlugin,
+  CorePipeline,
+  RendererPlugin,
+  EventPlugin,
 ];

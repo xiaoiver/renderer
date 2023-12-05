@@ -15,3 +15,7 @@ import { App } from './App';
 export interface Plugin {
   build(app: App): Promise<void> | void;
 }
+
+export interface PluginType<P extends Plugin = Plugin> {
+  new (): P;
+}

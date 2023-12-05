@@ -7,14 +7,19 @@ import {
   TransparentBlack,
   BlendMode,
   BlendFactor,
-  WebGPUDeviceContribution,
   InputLayoutDescriptor,
   Format,
   Buffer,
   BufferUsage,
   VertexStepMode,
 } from '@antv/g-device-api';
-import { AppConfig, Material, Renderable, Transform } from '../components';
+import {
+  AppConfig,
+  Fxaa,
+  Material,
+  PipelineKey,
+  Transform,
+} from '../components';
 import {
   AntialiasingMode,
   RGAttachmentSlot,
@@ -28,36 +33,34 @@ import {
   opaqueWhiteFullClearRenderPassDescriptor,
 } from '../framegraph';
 import { Mesh } from '../meshes';
-import maths from '../shaders/maths.wgsl?raw';
-import view from '../shaders/view.wgsl?raw';
-import mesh_types from '../shaders/mesh/mesh_types.wgsl?raw';
-import mesh_bindings from '../shaders/mesh/mesh_bindings.wgsl?raw';
-import mesh_view_bindings from '../shaders/mesh/mesh_view_bindings.wgsl?raw';
-import view_transforms from '../shaders/view_transformations.wgsl?raw';
-import forward_io from '../shaders/forward_io.wgsl?raw';
-import mesh_functions from '../shaders/mesh/mesh_functions.wgsl?raw';
 import { createProgram } from './utils';
 import { flatten } from 'lodash-es';
 import { getFormatByteSizePerBlock } from '../framegraph/utils/format';
 import { PrepareViewUniforms } from './PrepareViewUniforms';
+import { RenderResource } from './RenderResource';
 
-export class Renderer extends System {
-  /**
-   * Global app config.
-   */
+export class MeshPipeline extends System {
   private appConfig = this.singleton.read(AppConfig);
+
+  private rendererResource = this.attach(RenderResource);
+
+  device: Device;
+  swapChain: SwapChain;
+  renderHelper: RenderHelper;
+  passes: Record<
+    string,
+    (
+      builder: RGGraphBuilder,
+      renderHelper: RenderHelper,
+      renderInput: RenderInput,
+      mainColorTargetID: number,
+    ) => void
+  >;
 
   /**
    * Retrieve view uniforms extracted from camera.
    */
   private viewUniforms = this.attach(PrepareViewUniforms);
-
-  /**
-   * Device represents a "virtual GPU".
-   */
-  private device: Device;
-  private swapChain: SwapChain;
-  private renderHelper: RenderHelper;
 
   private renderLists = {
     /**
@@ -66,60 +69,15 @@ export class Renderer extends System {
     opaque: new RenderInstList(),
   };
 
-  /**
-   * Post-processing passes.
-   */
-  private passes: Record<
-    string,
-    (
-      builder: RGGraphBuilder,
-      renderHelper: RenderHelper,
-      renderInput: RenderInput,
-      mainColorTargetID: number,
-    ) => void
-  > = {};
-
   private renderables = this.query(
     (q) => q.addedOrChanged.with(Mesh, Material, Transform).trackWrites,
   );
 
   async prepare() {
-    const { canvas } = this.appConfig;
-
-    const deviceContribution = new WebGPUDeviceContribution({
-      shaderCompilerPath: '/glsl_wgsl_compiler_bg.wasm',
-    });
-
-    // Create swap chain and get device
-    const swapChain = await deviceContribution.createSwapChain(canvas);
-    this.swapChain = swapChain;
-
-    swapChain.configureSwapChain(canvas.width, canvas.height);
-    const device = swapChain.getDevice();
-    this.device = device;
-
-    // Handle resize.
-    canvas.addEventListener('resize', () => {
-      swapChain.configureSwapChain(canvas.width, canvas.height);
-    });
-
-    // Register shader modules
-    this.registerShaderModule(maths);
-    this.registerShaderModule(forward_io);
-    this.registerShaderModule(view);
-    this.registerShaderModule(mesh_types);
-    this.registerShaderModule(mesh_bindings);
-    this.registerShaderModule(mesh_view_bindings);
-    this.registerShaderModule(view_transforms);
-    this.registerShaderModule(mesh_functions);
-  }
-
-  initialize(): void {
-    // Build render graph
-    const renderHelper = new RenderHelper();
-    this.renderHelper = renderHelper;
-    renderHelper.setDevice(this.device);
-    renderHelper.renderInstManager.disableSimpleMode();
+    this.device = this.rendererResource.device;
+    this.swapChain = this.rendererResource.swapChain;
+    this.renderHelper = this.rendererResource.renderHelper;
+    this.passes = this.rendererResource.passes;
   }
 
   execute(): void {
@@ -156,6 +114,7 @@ export class Renderer extends System {
         'Main Depth',
       );
 
+      // MAIN_OPAQUE_PASS
       builder.pushPass((pass) => {
         pass.setDebugName('Main Render Pass');
         pass.attachRenderTargetID(RGAttachmentSlot.Color0, mainColorTargetID);
@@ -323,35 +282,5 @@ export class Renderer extends System {
 
       renderInstManager.resetRenderInsts();
     }
-  }
-
-  finalize(): void {
-    this.renderHelper.destroy();
-    this.device.destroy();
-    this.device.checkForLeaks();
-  }
-
-  /**
-   * Register pass
-   */
-  registerPass(
-    key: string,
-    func: (
-      builder: RGGraphBuilder,
-      renderHelper: RenderHelper,
-      renderInput: RenderInput,
-      mainColorTargetID: number,
-    ) => void,
-  ) {
-    this.passes[key] = func;
-  }
-
-  /**
-   * Use naga-oil to combine and manipulate shaders.
-   * The order is important.
-   */
-  registerShaderModule(shader: string): string {
-    const compiler = this.device['WGSLComposer'];
-    return compiler.wgsl_compile(shader);
   }
 }

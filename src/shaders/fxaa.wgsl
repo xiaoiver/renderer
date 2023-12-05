@@ -261,6 +261,8 @@ fn fragment(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
     // Pick the biggest of the two offsets.
     finalOffset = max(finalOffset, subPixelOffsetFinal);
 
+    
+
     // Compute the final UV coordinates.
     var finalUv = texCoord;
     if (isHorizontal) {

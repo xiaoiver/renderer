@@ -1,10 +1,11 @@
+import * as lil from 'lil-gui';
 import {
+  Entity,
   App,
   System,
   StartUp,
   Camera3dBundle,
   DefaultPlugins,
-  Renderable,
   Transform,
   GlobalTransform,
   Parent,
@@ -18,6 +19,7 @@ import {
   Material,
   Perspective,
   Commands,
+  BloomSettings,
 } from '../../src';
 import { Vec3 } from '../../src/math';
 import { Cube } from '../../src/meshes/Cube';
@@ -25,7 +27,9 @@ import { Cube } from '../../src/meshes/Cube';
 /**
  * @see https://bevyengine.org/learn/book/getting-started/ecs/
  */
-export async function render($canvas: HTMLCanvasElement) {
+export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
+  let camera: Entity;
+
   class StartUpSystem extends System {
     commands = new Commands(this);
 
@@ -36,27 +40,34 @@ export async function render($canvas: HTMLCanvasElement) {
           Material,
           Transform,
           GlobalTransform,
-          Renderable,
-          Parent,
-          Children,
+          // Parent,
+          // Children,
           Camera,
           Perspective,
           Fxaa,
+          BloomSettings,
         ).write,
     );
 
     initialize(): void {
-      this.commands.spawn(
-        new Camera3dBundle({
-          camera: new Camera(),
-          projection: new Perspective(),
-          transform: Transform.from_xyz(-2.5, 4.5, 5.0).look_at(
-            Vec3.ZERO,
-            Vec3.Y,
-          ),
-        }),
-        new Fxaa(),
-      );
+      camera = this.commands
+        .spawn(
+          new Camera3dBundle({
+            camera: new Camera(),
+            projection: new Perspective(),
+            transform: Transform.from_xyz(-2.5, 2.5, 1.0).look_at(
+              Vec3.ZERO,
+              Vec3.Y,
+            ),
+          }),
+          BloomSettings.NATURAL,
+          new Fxaa({
+            enabled: true,
+            edge_threshold: Sensitivity.Extreme,
+            edge_threshold_min: Sensitivity.Extreme,
+          }),
+        )
+        .entity.hold();
 
       this.commands.spawn(
         new PbrBundle({
@@ -75,7 +86,6 @@ export async function render($canvas: HTMLCanvasElement) {
   //   .insert(
   //     Transform.from_xyz(1, 2, 3),
   //     new GlobalTransform(),
-  //     new Renderable(),
   //   );
 
   // const parent = commands
@@ -83,7 +93,6 @@ export async function render($canvas: HTMLCanvasElement) {
   //   .insert(
   //     Transform.from_xyz(1, 2, 3),
   //     new GlobalTransform(),
-  //     new Renderable(),
   //   )
   //   .add_child(child.id());
 
@@ -93,4 +102,14 @@ export async function render($canvas: HTMLCanvasElement) {
     .addPlugins(...DefaultPlugins)
     .addSystems(StartUp, StartUpSystem)
     .run();
+
+  const fxaaFolder = gui.addFolder('fxaa');
+  const fxaaConfig = {
+    enabled: true,
+  };
+  fxaaFolder.add(fxaaConfig, 'enabled').onChange((enabled: boolean) => {
+    const fxaa = camera.write(Fxaa);
+    fxaa.enabled = enabled;
+  });
+  fxaaFolder.open();
 }

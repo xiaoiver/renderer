@@ -41,7 +41,6 @@ class StartUpSystem extends System {
           Material,
           Transform,
           GlobalTransform,
-          Renderable,
           Parent,
           Children,
           Camera,

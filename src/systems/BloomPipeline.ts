@@ -7,38 +7,22 @@ import {
   fullscreenMegaState,
   nArray,
 } from '@antv/g-device-api';
-import { Fxaa, PipelineKey, Sensitivity } from '../components';
+import { BloomSettings } from '../components';
 import {
   RGAttachmentSlot,
   RGGraphBuilder,
   RenderHelper,
   RenderInput,
   TextureMapping,
-  hashCodeNumberUpdate,
+  fillVec4,
 } from '../framegraph';
-import vert from '../shaders/fullscreen.wgsl?raw';
-import frag from '../shaders/fxaa.wgsl?raw';
 import { createProgram } from './utils';
 import { RenderResource } from './RenderResource';
+import vert from '../shaders/fullscreen.wgsl?raw';
+import frag from '../shaders/bloom.wgsl?raw';
 
-const SensitivityStr: Record<Sensitivity, string> = {
-  [Sensitivity.Low]: 'LOW',
-  [Sensitivity.Medium]: 'MEDIUM',
-  [Sensitivity.High]: 'HIGH',
-  [Sensitivity.Ultra]: 'ULTRA',
-  [Sensitivity.Extreme]: 'EXTREME',
-};
-
-export function fxaaHash(a: Fxaa): number {
-  let hash = 0;
-  hash = hashCodeNumberUpdate(hash, a.enabled ? 1 : 0);
-  hash = hashCodeNumberUpdate(hash, a.edge_threshold);
-  hash = hashCodeNumberUpdate(hash, a.edge_threshold_min);
-  return hash;
-}
-
-export class FxaaPipeline extends System {
-  fxaa = this.query((q) => q.addedOrChanged.with(Fxaa).trackWrites);
+export class BloomPipeline extends System {
+  bloom = this.query((q) => q.addedOrChanged.with(BloomSettings).trackWrites);
 
   private rendererResource = this.attach(RenderResource);
 
@@ -48,26 +32,20 @@ export class FxaaPipeline extends System {
 
   constructor() {
     super();
-    this.query((q) => q.using(PipelineKey).write);
   }
 
-  private compileDefines(fxaa: Readonly<Fxaa>) {
-    const { edge_threshold, edge_threshold_min } = fxaa;
+  private compileDefines(bloomSettings: Readonly<BloomSettings>) {
+    const { prefilter_settings_threshold } = bloomSettings;
+    const prefilter = prefilter_settings_threshold > 0.0;
     this.defines = {
-      [`EDGE_THRESH_${SensitivityStr[edge_threshold]}`]: true,
-      [`EDGE_THRESH_MIN_${SensitivityStr[edge_threshold_min]}`]: true,
+      USE_THRESHOLD: prefilter,
+      FIRST_DOWNSAMPLE: true,
     };
   }
 
   execute(): void {
-    this.fxaa.addedOrChanged.forEach((entity) => {
-      const fxaa = entity.read(Fxaa);
-      if (!fxaa.enabled) {
-        this.rendererResource.unregisterPass('fxaa');
-        return;
-      }
-
-      this.compileDefines(fxaa);
+    this.bloom.addedOrChanged.forEach((entity) => {
+      this.compileDefines(entity.read(BloomSettings));
 
       // Reset program.
       if (this.program) {
@@ -75,7 +53,10 @@ export class FxaaPipeline extends System {
       }
       this.program = null;
 
-      this.rendererResource.registerPass('FXAA', this.pushFXAAPass);
+      this.rendererResource.registerPass(
+        'Bloom Downsample First',
+        this.pushDownsamplePass,
+      );
     });
   }
 
@@ -83,7 +64,7 @@ export class FxaaPipeline extends System {
     this.program.destroy();
   }
 
-  private pushFXAAPass = (
+  private pushDownsamplePass = (
     builder: RGGraphBuilder,
     renderHelper: RenderHelper,
     renderInput: RenderInput,
@@ -101,16 +82,17 @@ export class FxaaPipeline extends System {
           },
           fragment: {
             wgsl: frag,
-            entryPoint: 'fragment',
+            entryPoint: 'downsample_first',
             defines: true,
           },
         },
         this.defines,
       );
+      device.setResourceName(this.program, 'Bloom Downsample First');
     }
 
     builder.pushPass((pass) => {
-      pass.setDebugName('FXAA');
+      pass.setDebugName('Bloom Downsample First');
       pass.attachRenderTargetID(RGAttachmentSlot.Color0, mainColorTargetID);
 
       const mainColorResolveTextureID =
@@ -121,10 +103,21 @@ export class FxaaPipeline extends System {
       renderInst.setAllowSkippingIfPipelineNotReady(false);
 
       renderInst.setMegaStateFlags(fullscreenMegaState);
-      renderInst.setBindingLayout({ numUniformBuffers: 0, numSamplers: 1 });
+      renderInst.setBindingLayout({ numUniformBuffers: 1, numSamplers: 1 });
       renderInst.drawPrimitives(3);
 
       renderInst.setProgram(this.program);
+      renderInst.setUniformBuffer(renderHelper.uniformBuffer);
+
+      // since gl_VertexID is not available in GLSL 100, we need to use a geometry
+      const offs = renderInst.allocateUniformBuffer(0, 4);
+      const d = renderInst.mapUniformBufferF32(2);
+      fillVec4(
+        d,
+        offs,
+        1.0 / renderInput.backbufferWidth,
+        1.0 / renderInput.backbufferHeight,
+      );
 
       pass.exec((passRenderer, scope) => {
         this.textureMapping[0].texture = scope.getResolveTextureForID(

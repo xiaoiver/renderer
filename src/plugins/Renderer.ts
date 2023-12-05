@@ -5,26 +5,23 @@ import { component } from '@lastolivegames/becsy';
 import { App } from '../App';
 import { Plugin } from '../Plugin';
 import {
-  FxaaPipeline,
-  TonemappingPipeline,
-  Renderer,
+  MeshPipeline,
   PrepareViewUniforms,
   Update,
   PreUpdate,
+  PreStartUp,
+  RenderResource,
 } from '../systems';
-import { Renderable, Material, Fxaa } from '../components';
+import { Material } from '../components';
 import { Mesh } from '../meshes';
 
 export class RendererPlugin implements Plugin {
   async build(app: App) {
-    component(Renderable);
     component(Mesh);
     component(Material);
-    component(Fxaa);
 
+    app.addSystems(PreStartUp, RenderResource);
     app.addSystems(PreUpdate, PrepareViewUniforms);
-    app.addSystems(Update, Renderer);
-    app.addSystems(Update, TonemappingPipeline);
-    app.addSystems(Update, FxaaPipeline);
+    app.addSystems(Update, MeshPipeline);
   }
 }

@@ -5,7 +5,7 @@ import {
   World,
   SystemGroup,
 } from '@lastolivegames/becsy';
-import { Plugin } from './Plugin';
+import { Plugin, PluginType } from './Plugin';
 import { AppConfig, IAppConfig } from './components';
 import {
   First,
@@ -31,7 +31,7 @@ export class App {
   /**
    * All the plugins registered.
    */
-  private plugins: Plugin[] = [];
+  private plugins: PluginType[] = [];
 
   /**
    * All the systems registered.
@@ -45,7 +45,7 @@ export class App {
    * new App()
    *   .addPlugin(P1)
    */
-  addPlugin(plugin: Plugin) {
+  addPlugin(plugin: PluginType) {
     this.plugins.push(plugin);
     return this;
   }
@@ -55,7 +55,7 @@ export class App {
    * new App()
    *   .addPlugins(P1, P2)
    */
-  addPlugins(...plugins: Plugin[]) {
+  addPlugins(...plugins: PluginType[]) {
     plugins.forEach((plugin) => {
       this.addPlugin(plugin);
     });
@@ -106,7 +106,7 @@ export class App {
     class LastPlaceHolder extends System {}
 
     // Build all plugins.
-    await Promise.all(this.plugins.map((plugin) => plugin.build(this)));
+    await Promise.all(this.plugins.map((plugin) => new plugin().build(this)));
 
     this.systems.forEach(([group, s]) => system(group)(s));
 
