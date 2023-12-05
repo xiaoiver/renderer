@@ -1,6 +1,7 @@
 import { Type } from '@lastolivegames/becsy';
 import { Vec2 } from './Vec2';
 import { Vec4 } from './Vec4';
+import { BVec3 } from './BVec3';
 
 /**
  * A 3-dimensional vector.
@@ -182,6 +183,27 @@ export class Vec3 {
     return this;
   }
 
+  eq(rhs: Vec3) {
+    return this.x === rhs.x && this.y === rhs.y && this.z === rhs.z;
+  }
+
+  /**
+   * Returns a vector mask containing the result of a `>=` comparison for each element of `self` and `rhs`.
+   *
+   * In other words this computes `[self.x >= rhs.x, self.y >= rhs.y, ..]` for all elements.
+   */
+  cmpge(rhs: Vec3) {
+    return new BVec3(this.x >= rhs.x, this.y >= rhs.y, this.z >= rhs.z);
+  }
+
+  /**
+   * Returns a vector mask containing the result of a `<=` comparison for each element of `self` and `rhs`.
+   * In other words this computes `[self.x <= rhs.x, self.y <= rhs.y, ..]` for all elements.
+   */
+  cmple(rhs: Vec3) {
+    return new BVec3(this.x <= rhs.x, this.y <= rhs.y, this.z <= rhs.z);
+  }
+
   /**
    * Creates a 2D vector from the `x` and `y` elements of `self`, discarding `z`.
    */
@@ -226,4 +248,4 @@ export class Vec3 {
 }
 
 // @ts-ignore
-export const v3Type = Type.vector(Type.float64, ['x', 'y', 'z'], Vec3);
+export const v3Type = Type.vector(Type.float32, ['x', 'y', 'z'], Vec3);

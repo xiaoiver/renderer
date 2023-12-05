@@ -1,3 +1,4 @@
+import { Type } from '@lastolivegames/becsy';
 import { Affine3 } from './Affine3';
 import { Quat } from './Quat';
 import { Vec3 } from './Vec3';
@@ -18,6 +19,45 @@ export class Mat4 {
    * A 4x4 identity matrix, where all diagonal elements are `1`, and all off-diagonal elements are `0`.
    */
   static IDENTITY = Mat4.from_cols(Vec4.X, Vec4.Y, Vec4.Z, Vec4.W);
+
+  static copy(m: Mat4) {
+    const {
+      m00,
+      m01,
+      m02,
+      m03,
+      m10,
+      m11,
+      m12,
+      m13,
+      m20,
+      m21,
+      m22,
+      m23,
+      m30,
+      m31,
+      m32,
+      m33,
+    } = m;
+    return new Mat4(
+      m00,
+      m01,
+      m02,
+      m03,
+      m10,
+      m11,
+      m12,
+      m13,
+      m20,
+      m21,
+      m22,
+      m23,
+      m30,
+      m31,
+      m32,
+      m33,
+    );
+  }
 
   static from(m: Affine3) {
     return Mat4.from_cols(
@@ -76,23 +116,50 @@ export class Mat4 {
     );
   }
 
+  /**
+   * Creates a right-handed orthographic projection matrix with `[0,1]` depth range.
+   */
+  static orthographic_rh(
+    left: number,
+    right: number,
+    bottom: number,
+    top: number,
+    near: number,
+    far: number,
+  ) {
+    const rcp_width = 1.0 / (right - left);
+    const rcp_height = 1.0 / (top - bottom);
+    const r = 1.0 / (near - far);
+    return Mat4.from_cols(
+      new Vec4(rcp_width + rcp_width, 0.0, 0.0, 0.0),
+      new Vec4(0.0, rcp_height + rcp_height, 0.0, 0.0),
+      new Vec4(0.0, 0.0, r, 0.0),
+      new Vec4(
+        -(left + right) * rcp_width,
+        -(top + bottom) * rcp_height,
+        r * near,
+        1.0,
+      ),
+    );
+  }
+
   constructor(
-    m00: number,
-    m01: number,
-    m02: number,
-    m03: number,
-    m10: number,
-    m11: number,
-    m12: number,
-    m13: number,
-    m20: number,
-    m21: number,
-    m22: number,
-    m23: number,
-    m30: number,
-    m31: number,
-    m32: number,
-    m33: number,
+    public m00: number,
+    public m01: number,
+    public m02: number,
+    public m03: number,
+    public m10: number,
+    public m11: number,
+    public m12: number,
+    public m13: number,
+    public m20: number,
+    public m21: number,
+    public m22: number,
+    public m23: number,
+    public m30: number,
+    public m31: number,
+    public m32: number,
+    public m33: number,
   ) {
     this.x_axis = new Vec4(m00, m01, m02, m03);
     this.y_axis = new Vec4(m10, m11, m12, m13);
@@ -101,7 +168,7 @@ export class Mat4 {
   }
 
   /**
-   * Creates a `[[f32; 4]; 4]` 4D array storing data in column major order.
+   * Creates a `[[number; 4]; 4]` 4D array storing data in column major order.
    * If you require data in row major order `transpose` the matrix first.
    */
   to_cols_array_2d() {
@@ -361,3 +428,27 @@ export class Mat4 {
     return res.xyz();
   }
 }
+
+export const m4Type = Type.vector(
+  Type.float32,
+  [
+    'm00',
+    'm01',
+    'm02',
+    'm03',
+    'm10',
+    'm11',
+    'm12',
+    'm13',
+    'm20',
+    'm21',
+    'm22',
+    'm23',
+    'm30',
+    'm31',
+    'm32',
+    'm33',
+  ],
+  // @ts-ignore
+  Mat4,
+);

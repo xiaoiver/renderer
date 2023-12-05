@@ -1,13 +1,6 @@
 import { System } from '@lastolivegames/becsy';
-import {
-  AddressMode,
-  FilterMode,
-  MipmapFilterMode,
-  Program,
-  fullscreenMegaState,
-  nArray,
-} from '@antv/g-device-api';
-import { BloomSettings } from '../components';
+import { Program, fullscreenMegaState, nArray } from '@antv/g-device-api';
+import { BloomSettings, Camera } from '../components';
 import {
   RGAttachmentSlot,
   RGGraphBuilder,
@@ -20,9 +13,13 @@ import { createProgram } from './utils';
 import { RenderResource } from './RenderResource';
 import vert from '../shaders/fullscreen.wgsl?raw';
 import frag from '../shaders/bloom.wgsl?raw';
+import { clamp } from 'lodash-es';
+import { Vec4 } from '../math';
 
 export class BloomPipeline extends System {
-  bloom = this.query((q) => q.addedOrChanged.with(BloomSettings).trackWrites);
+  bloom = this.query(
+    (q) => q.addedOrChanged.with(BloomSettings, Camera).trackWrites,
+  );
 
   private rendererResource = this.attach(RenderResource);
 
@@ -45,7 +42,42 @@ export class BloomPipeline extends System {
 
   execute(): void {
     this.bloom.addedOrChanged.forEach((entity) => {
-      this.compileDefines(entity.read(BloomSettings));
+      const bloom = entity.read(BloomSettings);
+      const {
+        prefilter_settings_threshold,
+        prefilter_settings_threshold_softness,
+      } = bloom;
+      const camera = entity.read(Camera);
+      const { is_active, hdr } = camera;
+      // const rect = camera.physical_viewport_rect();
+      // const size = camera.physical_viewport_size();
+      // const target_size = camera.physical_target_size();
+
+      // const threshold = prefilter_settings_threshold;
+      // const threshold_softness = prefilter_settings_threshold_softness;
+      // const knee = threshold * clamp(threshold_softness, 0.0, 1.0);
+      // const uniforms = [
+      //   // threshold_precomputations
+      //   threshold,
+      //   threshold - knee,
+      //   2.0 * knee,
+      //   0.25 / (knee + 0.00001),
+      //   // viewport
+      //   ...new Vec4(rect.min.x, rect.min.y, size.x, size.y)
+      //     .div(
+      //       new Vec4(
+      //         target_size.x,
+      //         target_size.y,
+      //         target_size.x,
+      //         target_size.y,
+      //       ),
+      //     )
+      //     .to_array(),
+      //   // aspect
+      //   size.x / size.y,
+      // ];
+
+      this.compileDefines(bloom);
 
       // Reset program.
       if (this.program) {
@@ -123,15 +155,15 @@ export class BloomPipeline extends System {
         this.textureMapping[0].texture = scope.getResolveTextureForID(
           mainColorResolveTextureID,
         );
-        this.textureMapping[0].sampler = device.createSampler({
-          addressModeU: AddressMode.CLAMP_TO_EDGE,
-          addressModeV: AddressMode.CLAMP_TO_EDGE,
-          minFilter: FilterMode.BILINEAR,
-          magFilter: FilterMode.BILINEAR,
-          mipmapFilter: MipmapFilterMode.LINEAR,
-          lodMinClamp: 0,
-          lodMaxClamp: 0,
-        });
+        // this.textureMapping[0].sampler = device.createSampler({
+        //   addressModeU: AddressMode.CLAMP_TO_EDGE,
+        //   addressModeV: AddressMode.CLAMP_TO_EDGE,
+        //   minFilter: FilterMode.BILINEAR,
+        //   magFilter: FilterMode.BILINEAR,
+        //   mipmapFilter: MipmapFilterMode.LINEAR,
+        //   lodMinClamp: 0,
+        //   lodMaxClamp: 0,
+        // });
         renderInst.setSamplerBindingsFromTextureMappings(this.textureMapping);
         renderInst.drawOnPass(renderHelper.renderCache, passRenderer);
       });

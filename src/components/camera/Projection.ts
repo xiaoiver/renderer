@@ -1,5 +1,5 @@
 import { World, component, field } from '@lastolivegames/becsy';
-import { Mat4, Vec2, Vec3, v2Type } from '../../math';
+import { Mat4, Rect, Vec2, Vec3, v2Type } from '../../math';
 import { ScalingMode } from './ScalingMode';
 
 export const Projection = World.defineEnum('Projection');
@@ -53,6 +53,10 @@ export class Perspective {
       this.aspect_ratio,
       this.near,
     );
+  }
+
+  update(width: number, height: number) {
+    this.aspect_ratio = width / height;
   }
 
   get_frustum_corners(z_near: number, z_far: number) {
@@ -121,5 +125,41 @@ export class Orthographic {
    */
   @field.float64 declare scale: number;
 
-  // area: Rect
+  /**
+   * The area that the projection covers relative to `viewport_origin`.
+   *
+   * [`camera_system`](crate::camera::camera_system) automatically
+   * updates this value when the viewport is resized depending on `OrthographicProjection`'s other fields.
+   * In this case, `area` should not be manually modified.
+   */
+  @field.object declare area: Rect;
+
+  get_projection_matrix() {
+    return Mat4.orthographic_rh(
+      this.area.min.x,
+      this.area.max.x,
+      this.area.min.y,
+      this.area.max.y,
+      // NOTE: near and far are swapped to invert the depth range from [0,1] to [1,0]
+      // This is for interoperability with pipelines using infinite reverse perspective projections.
+      this.far,
+      this.near,
+    );
+  }
+
+  update(width: number, height: number) {
+    // TODO: this.scaling_mode
+    const projection_width = width;
+    const projection_height = height;
+
+    let origin_x = projection_width * this.viewport_origin.x;
+    let origin_y = projection_height * this.viewport_origin.y;
+
+    this.area = new Rect(
+      this.scale * -origin_x,
+      this.scale * -origin_y,
+      this.scale * (projection_width - origin_x),
+      this.scale * (projection_height - origin_y),
+    );
+  }
 }

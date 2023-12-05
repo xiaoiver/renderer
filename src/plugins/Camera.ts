@@ -3,6 +3,7 @@ import { App } from '../App';
 import { Plugin } from '../Plugin';
 import {
   Camera,
+  ComputedCameraValues,
   Perspective,
   Orthographic,
   Viewport,
@@ -13,6 +14,7 @@ import { CameraSystem, PreUpdate } from '../systems';
 export class CameraPlugin implements Plugin {
   async build(app: App) {
     component(Camera);
+    component(ComputedCameraValues);
     component(Viewport);
     component(Projection)(Perspective);
     component(Projection)(Orthographic);

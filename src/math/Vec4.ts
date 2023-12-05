@@ -198,4 +198,4 @@ export class Vec4 {
 }
 
 // @ts-ignore
-export const v4Type = Type.vector(Type.float64, ['x', 'y', 'z', 'w'], Vec4);
+export const v4Type = Type.vector(Type.float32, ['x', 'y', 'z', 'w'], Vec4);

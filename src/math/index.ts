@@ -1,5 +1,7 @@
 export * from './Vec2';
+export * from './BVec2';
 export * from './Vec3';
+export * from './BVec3';
 export * from './Vec4';
 export * from './Quat';
 export * from './Mat2';
@@ -7,3 +9,4 @@ export * from './Mat3';
 export * from './Mat4';
 export * from './Affine3';
 export * from './EulerRot';
+export * from './Rect';

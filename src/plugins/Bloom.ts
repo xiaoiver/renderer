@@ -11,6 +11,6 @@ export class BloomPlugin implements Plugin {
   async build(app: App) {
     component(BloomSettings);
 
-    app.addSystems(PreUpdate, BloomPipeline);
+    // app.addSystems(PreUpdate, BloomPipeline);
   }
 }

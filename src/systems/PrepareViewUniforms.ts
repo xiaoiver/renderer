@@ -1,9 +1,13 @@
 import { System, system } from '@lastolivegames/becsy';
 import { Mat4, Vec3, Vec4 } from '../math';
 import { ColorGrading } from '../components/render/ColorGrading';
-import { Camera, GlobalTransform, Projection, Transform } from '../components';
-import { CameraSystem } from './Camera';
+import {
+  ComputedCameraValues,
+  GlobalTransform,
+  Transform,
+} from '../components';
 import { RenderInst } from '../framegraph';
+import { CameraSystem } from './Camera';
 
 // binding = 0
 const ViewUniformBufferBinding = 0;
@@ -25,7 +29,6 @@ interface ViewUniform {
   mip_bias: number;
 }
 
-@system((s) => s.after(CameraSystem))
 export class PrepareViewUniforms extends System {
   /**
    * Used for extracting view uniforms from camera.
@@ -33,20 +36,21 @@ export class PrepareViewUniforms extends System {
   viewExtractor: (template: RenderInst) => void;
 
   private cameras = this.query(
-    (q) => q.addedOrChanged.with(Camera).trackWrites,
+    (q) => q.addedOrChanged.with(ComputedCameraValues).trackWrites,
   );
 
   constructor() {
     super();
-    this.query((q) => q.using(Camera, Transform).read);
+    this.query((q) => q.using(Transform).read);
   }
 
   execute(): void {
     this.cameras.addedOrChanged.forEach((entity) => {
-      const camera = entity.read(Camera);
+      const computed = entity.read(ComputedCameraValues);
       const transform = entity.read(Transform);
 
-      const { projection_matrix } = camera.computed;
+      // Becsy will trim undeclared fields and functions.
+      const projection_matrix = Mat4.copy(computed.projection_matrix);
 
       // TODO: update global transform in Transform system.
       const view = new GlobalTransform();

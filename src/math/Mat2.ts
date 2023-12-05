@@ -1,3 +1,4 @@
+import { Type } from '@lastolivegames/becsy';
 import { Vec2 } from './Vec2';
 
 export class Mat2 {
@@ -57,3 +58,10 @@ export class Mat2 {
     }
   }
 }
+
+export const m2Type = Type.vector(
+  Type.float32,
+  ['m00', 'm01', 'm10', 'm11'],
+  // @ts-ignore
+  Mat2,
+);

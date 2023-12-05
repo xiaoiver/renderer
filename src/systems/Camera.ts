@@ -1,6 +1,13 @@
 import { System, system } from '@lastolivegames/becsy';
-import { Camera, Orthographic, Perspective, Projection } from '../components';
-import { ComputedCameraValues } from '../components/camera/Camera';
+import {
+  AppConfig,
+  Camera,
+  ComputedCameraValues,
+  Orthographic,
+  Perspective,
+  Projection,
+} from '../components';
+import { Mat4, Vec2 } from '../math';
 
 /**
  * System in charge of updating a [`Camera`] when its window or projection changes.
@@ -15,27 +22,42 @@ import { ComputedCameraValues } from '../components/camera/Camera';
  */
 @system((s) => s.afterWritersOf(Camera))
 export class CameraSystem extends System {
+  private appConfig = this.singleton.read(AppConfig);
+
   constructor() {
     super();
-    this.query((q) => q.using(Camera).write);
+    this.query(
+      (q) => q.using(ComputedCameraValues, Perspective, Orthographic).write,
+    );
   }
 
   private cameras = this.query(
-    (q) => q.addedOrChanged.with(Camera).and.withAny(Projection).trackWrites,
+    (q) => q.addedOrChanged.with(Camera).trackWrites,
   );
 
   execute(): void {
+    const { canvas } = this.appConfig;
+    const { width, height } = canvas;
     this.cameras.addedOrChanged.forEach((entity) => {
-      const camera = entity.write(Camera);
+      const camera = entity.read(Camera);
+      const computed = entity.write(ComputedCameraValues);
+      const viewport_size = camera.viewport?.physical_size;
+
+      computed.target_info_physical_size = new Vec2(width, height);
+      computed.target_info_scale_factor = 1;
+
+      let projection: Orthographic | Perspective;
+      const size = camera.logical_viewport_size(computed);
       if (entity.has(Orthographic)) {
+        projection = entity.write(Orthographic);
       } else if (entity.has(Perspective)) {
-        const perspective = entity.read(Perspective);
-        const proj_mat = perspective.get_projection_matrix();
-        camera.computed = {
-          projection_matrix: proj_mat,
-          target_info: {},
-          old_viewport_size: [],
-        } as ComputedCameraValues;
+        projection = entity.write(Perspective);
+      }
+      projection.update(size.x, size.y);
+      computed.projection_matrix = projection.get_projection_matrix();
+
+      if (viewport_size && !computed.old_viewport_size?.eq(viewport_size)) {
+        computed.old_viewport_size = viewport_size;
       }
     });
   }
