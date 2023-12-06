@@ -1,4 +1,4 @@
-import { System, system } from '@lastolivegames/becsy';
+import { System } from '@lastolivegames/becsy';
 import { Mat4, Vec3, Vec4 } from '../math';
 import { ColorGrading } from '../components/render/ColorGrading';
 import {
@@ -7,7 +7,6 @@ import {
   Transform,
 } from '../components';
 import { RenderInst } from '../framegraph';
-import { CameraSystem } from './Camera';
 
 // binding = 0
 const ViewUniformBufferBinding = 0;

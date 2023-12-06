@@ -1,6 +1,6 @@
-#define_import_path tonemapping
+#define_import_path core_pipeline::tonemapping
 
-#import view::ColorGrading
+#import render::view::ColorGrading
 
 // hack !! not sure what to do with this
 #ifdef TONEMAPPING_PASS
