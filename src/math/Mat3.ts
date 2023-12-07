@@ -264,9 +264,11 @@ export class Mat3 {
    * Returns the transpose of `self`.
    */
   transpose() {
-    this.x_axis = new Vec3(this.x_axis.x, this.y_axis.x, this.z_axis.x);
-    this.y_axis = new Vec3(this.x_axis.y, this.y_axis.y, this.z_axis.y);
-    this.z_axis = new Vec3(this.x_axis.z, this.y_axis.z, this.z_axis.z);
+    return Mat3.from_cols(
+      new Vec3(this.x_axis.x, this.y_axis.x, this.z_axis.x),
+      new Vec3(this.x_axis.y, this.y_axis.y, this.z_axis.y),
+      new Vec3(this.x_axis.z, this.y_axis.z, this.z_axis.z),
+    );
   }
 
   /**
@@ -278,7 +280,7 @@ export class Mat3 {
 
   /**
    * Returns the inverse of `self`.
-   *  If the matrix is not invertible the returned matrix will be invalid.
+   * If the matrix is not invertible the returned matrix will be invalid.
    */
   inverse() {
     const self = this;

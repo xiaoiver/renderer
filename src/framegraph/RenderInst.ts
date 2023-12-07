@@ -1,6 +1,7 @@
 import { isNumber } from 'lodash-es';
 import type {
   BindingsDescriptor,
+  Buffer,
   Device,
   IndexBufferDescriptor,
   InputLayout,
@@ -61,6 +62,7 @@ export class RenderInst {
     bindingLayout: null,
     samplerBindings: [],
     uniformBufferBindings: [],
+    storageBufferBindings: [],
   }));
   private dynamicUniformBufferByteOffsets: number[] = nArray(4, () => 0);
 
@@ -95,6 +97,12 @@ export class RenderInst {
     this.vertexBuffers = null;
     this.indexBuffer = null;
     this.renderPipelineDescriptor.inputLayout = null;
+    this.bindingDescriptors = nArray(1, () => ({
+      bindingLayout: null,
+      samplerBindings: [],
+      uniformBufferBindings: [],
+      storageBufferBindings: [],
+    }));
   }
 
   /**
@@ -142,6 +150,7 @@ export class RenderInst {
     this.setBindingLayout({
       numSamplers: obd.samplerBindings?.length,
       numUniformBuffers: obd.uniformBufferBindings?.length,
+      numStorageBuffers: obd.storageBufferBindings?.length,
     });
 
     for (
@@ -218,6 +227,7 @@ export class RenderInst {
   setBindingLayout(bindingLayout: {
     numUniformBuffers: number;
     numSamplers: number;
+    numStorageBuffers: number;
   }): void {
     assert(
       bindingLayout.numUniformBuffers <
@@ -242,6 +252,15 @@ export class RenderInst {
       this.bindingDescriptors[0].samplerBindings.push({
         sampler: null,
         texture: null,
+      });
+    for (
+      let i = this.bindingDescriptors[0].storageBufferBindings.length;
+      i < bindingLayout.numStorageBuffers;
+      i++
+    )
+      this.bindingDescriptors[0].storageBufferBindings.push({
+        binding: i,
+        buffer: null,
       });
   }
 
@@ -339,6 +358,20 @@ export class RenderInst {
 
   setUniformBuffer(uniformBuffer: DynamicUniformBuffer): void {
     this.uniformBuffer = uniformBuffer;
+  }
+
+  setStorageBuffers(storageBuffers: Buffer[], bindings: number[]) {
+    if (this.bindingDescriptors[0].storageBufferBindings.length) {
+      for (
+        let i = 0;
+        i < this.bindingDescriptors[0].storageBufferBindings.length;
+        i++
+      ) {
+        const dst = this.bindingDescriptors[0].storageBufferBindings[i];
+        dst.binding = bindings[i];
+        dst.buffer = storageBuffers[i];
+      }
+    }
   }
 
   /**

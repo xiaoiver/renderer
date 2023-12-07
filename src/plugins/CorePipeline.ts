@@ -5,7 +5,7 @@ import { Core3dPlugin } from './Core3d';
 import { FxaaPlugin } from './Fxaa';
 import { TonemappingPlugin } from './Tonemapping';
 import { BloomPlugin } from './Bloom';
-import { ClearColor, PipelineKey } from '../components';
+import { ClearColor, PipelineDirty } from '../components';
 
 /**
  * Provides a core render pipeline.
@@ -13,7 +13,7 @@ import { ClearColor, PipelineKey } from '../components';
 export class CorePipeline implements Plugin {
   async build(app: App) {
     component(ClearColor);
-    component(PipelineKey);
+    component(PipelineDirty);
 
     await new Core3dPlugin().build(app);
     await new TonemappingPlugin().build(app);

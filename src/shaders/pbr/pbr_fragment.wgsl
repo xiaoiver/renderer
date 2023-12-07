@@ -28,28 +28,28 @@ fn pbr_input_from_vertex_output(
     double_sided: bool,
 ) -> pbr_types::PbrInput {
     var pbr_input: pbr_types::PbrInput = pbr_types::pbr_input_new();
+    
+    pbr_input.flags = mesh[in.instance_index].flags;
+    pbr_input.is_orthographic = view.projection[3].w == 1.0;
+    pbr_input.V = pbr_functions::calculate_view(in.world_position, pbr_input.is_orthographic);
+    pbr_input.frag_coord = in.position;
+    pbr_input.world_position = in.world_position;
 
-//     pbr_input.flags = mesh[in.instance_index].flags;
-//     pbr_input.is_orthographic = view.projection[3].w == 1.0;
-//     pbr_input.V = pbr_functions::calculate_view(in.world_position, pbr_input.is_orthographic);
-//     pbr_input.frag_coord = in.position;
-//     pbr_input.world_position = in.world_position;
+#ifdef VERTEX_COLORS
+    pbr_input.material.base_color = in.color;
+#endif
 
-// #ifdef VERTEX_COLORS
-//     pbr_input.material.base_color = in.color;
-// #endif
+    pbr_input.world_normal = pbr_functions::prepare_world_normal(
+        in.world_normal,
+        double_sided,
+        is_front,
+    );
 
-//     pbr_input.world_normal = pbr_functions::prepare_world_normal(
-//         in.world_normal,
-//         double_sided,
-//         is_front,
-//     );
-
-// #ifdef LOAD_PREPASS_NORMALS
-//     pbr_input.N = prepass_utils::prepass_normal(in.position, 0u);
-// #else
-//     pbr_input.N = normalize(pbr_input.world_normal);
-// #endif
+#ifdef LOAD_PREPASS_NORMALS
+    pbr_input.N = prepass_utils::prepass_normal(in.position, 0u);
+#else
+    pbr_input.N = normalize(pbr_input.world_normal);
+#endif
 
     return pbr_input;
 }

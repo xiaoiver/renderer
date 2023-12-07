@@ -5,17 +5,11 @@ Just another toy renderer. Inspired by [bevy](https://github.com/bevyengine/).
 ## Features
 
 - ECS - [becsy](https://lastolivegames.github.io/becsy)
-  <img src="https://lastolivegames.github.io/becsy/assets/architecture.a3cc1c9e.svg" alt="ecs" width="200px">
-  - Systems can be splitted into several stages, for now we support:
-    - PreStartUp
-    - StartUp - The schedule that runs once when the app starts.
-    - PostStartUp
-    - PreUpdate
-    - Update - The schedule that contains app logic, get called on every frame.
-    - PostUpdate
 - HAL - [@antv/g-device-api](https://github.com/antvis/g-device-api) Supports WebGL1/2 & WebGPU.
 - Use [naga-oil](https://github.com/bevyengine/naga_oil)(with our compiled WASM version) to combine and manipulate WGSL shaders at runtime.
 - Framegraph
+- Batching
+- Post processing: FXAA
 
 ## Getting Started
 
@@ -82,6 +76,19 @@ new App({
   .addSystems(StartUp, StartUpSystem)
   .run();
 ```
+
+## ECS
+
+<img src="https://lastolivegames.github.io/becsy/assets/architecture.a3cc1c9e.svg" alt="ecs" width="200px">
+
+Systems can be splitted into several stages, for now we support:
+
+- PreStartUp
+- StartUp - The schedule that runs once when the app starts.
+- PostStartUp
+- PreUpdate
+- Update - The schedule that contains app logic, get called on every frame.
+- PostUpdate
 
 ## Examples
 

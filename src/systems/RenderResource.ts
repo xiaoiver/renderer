@@ -63,6 +63,7 @@ export class RenderResource extends System {
       mainColorTargetID: number,
     ) => void
   > = {};
+  passesChanged = true;
 
   async prepare() {
     const { canvas } = this.appConfig;

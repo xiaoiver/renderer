@@ -17,13 +17,7 @@ fn vertex(vertex_no_morph: Vertex) -> VertexOutput {
 #ifdef SKINNED
 //     var model = skinning::skin_model(vertex.joint_indices, vertex.joint_weights);
 #else
-    // var model = mesh_functions::get_model_matrix(vertex.instance_index);
-    var model = mat4x4<f32>(
-        vec4<f32>(1.0, 0.0, 0.0, 0.0),
-        vec4<f32>(0.0, 1.0, 0.0, 0.0),
-        vec4<f32>(0.0, 0.0, 1.0, 0.0),
-        vec4<f32>(0.0, 0.0, 0.0, 1.0),
-    );
+    var model = mesh_functions::get_model_matrix(vertex.instance_index);
 #endif
 
 #ifdef VERTEX_POSITIONS

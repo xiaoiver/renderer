@@ -1,5 +1,6 @@
 import { field } from '@lastolivegames/becsy';
 import mesh_shader from '../../shaders/mesh/mesh.wgsl?raw';
+import mesh_pbr_shader from '../../shaders/pbr/pbr.wgsl?raw';
 
 /**
  * Mesh Material
@@ -12,7 +13,7 @@ export class Material {
   constructor(
     options?: Partial<{ vertex_shader: string; fragment_shader: string }>,
   ) {
-    const { vertex_shader = mesh_shader, fragment_shader = mesh_shader } =
+    const { vertex_shader = mesh_shader, fragment_shader = mesh_pbr_shader } =
       options || {};
 
     this.vertex_shader = vertex_shader;

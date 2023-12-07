@@ -17,66 +17,66 @@ export class KhronosTextureContainer {
   /**
    * Gets the openGL type
    */
-  public glType: number;
+  glType: number;
   /**
    * Gets the openGL type size
    */
-  public glTypeSize: number;
+  glTypeSize: number;
   /**
    * Gets the openGL format
    */
-  public glFormat: number;
+  glFormat: number;
   /**
    * Gets the openGL internal format
    */
-  public glInternalFormat: number;
+  glInternalFormat: number;
   /**
    * Gets the base internal format
    */
-  public glBaseInternalFormat: number;
+  glBaseInternalFormat: number;
   /**
    * Gets image width in pixel
    */
-  public pixelWidth: number;
+  pixelWidth: number;
   /**
    * Gets image height in pixel
    */
-  public pixelHeight: number;
+  pixelHeight: number;
   /**
    * Gets image depth in pixels
    */
-  public pixelDepth: number;
+  pixelDepth: number;
   /**
    * Gets the number of array elements
    */
-  public numberOfArrayElements: number;
+  numberOfArrayElements: number;
   /**
    * Gets the number of faces
    */
-  public numberOfFaces: number;
+  numberOfFaces: number;
   /**
    * Gets the number of mipmap levels
    */
-  public numberOfMipmapLevels: number;
+  numberOfMipmapLevels: number;
   /**
    * Gets the bytes of key value data
    */
-  public bytesOfKeyValueData: number;
+  bytesOfKeyValueData: number;
   /**
    * Gets the load type
    */
-  public loadType: number;
+  loadType: number;
   /**
    * If the container has been made invalid (eg. constructor failed to correctly load array buffer)
    */
-  public isInvalid = false;
+  isInvalid = false;
 
   /**
    * Creates a new KhronosTextureContainer
    * @param data contents of the KTX container file
    * @param facesExpected should be either 1 or 6, based whether a cube texture or or
    */
-  public constructor(
+  constructor(
     /** contents of the KTX container file */
     public data: ArrayBufferView,
     facesExpected: number,
@@ -168,7 +168,7 @@ export class KhronosTextureContainer {
    * It is assumed that the texture has already been created & is currently bound
    * @internal
    */
-  public uploadLevels(texture: Texture, loadMipmaps: boolean): void {
+  uploadLevels(texture: Texture, loadMipmaps: boolean): void {
     switch (this.loadType) {
       case KhronosTextureContainer.COMPRESSED_2D:
         this._upload2DCompressedLevels(texture, loadMipmaps);
@@ -205,7 +205,8 @@ export class KhronosTextureContainer {
           imageSize,
         );
 
-        const engine = texture.getEngine();
+        texture.setImageData();
+
         engine._uploadCompressedDataToTextureDirectly(
           texture,
           texture.format,
@@ -229,7 +230,7 @@ export class KhronosTextureContainer {
    * @param data the data to check
    * @returns true if the data is a KTX file or false otherwise
    */
-  public static IsValid(data: ArrayBufferView): boolean {
+  static IsValid(data: ArrayBufferView): boolean {
     if (data.byteLength >= 12) {
       // '«', 'K', 'T', 'X', ' ', '1', '1', '»', '\r', '\n', '\x1A', '\n'
       const identifier = new Uint8Array(data.buffer, data.byteOffset, 12);

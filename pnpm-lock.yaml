@@ -2,8 +2,8 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@antv/g-device-api':
-    specifier: ^1.4.0
-    version: 1.4.0
+    specifier: ^1.4.4
+    version: 1.4.4
   '@lastolivegames/becsy':
     specifier: ^0.15.8
     version: 0.15.8
@@ -130,8 +130,8 @@ packages:
       '@jridgewell/trace-mapping': 0.3.20
     dev: true
 
-  /@antv/g-device-api@1.4.0:
-    resolution: {integrity: sha512-Y5nX9j+gC+7CalT0MTIOA5ZgvsYMtHj7t2v7ew+GbEOTkjDnxcz3e0CpU4vgw7+5kCzEl8i/6HE7wQam9K9bDw==}
+  /@antv/g-device-api@1.4.4:
+    resolution: {integrity: sha512-BiROCVlguV6E0rh4jdcDrGBu5j7ka4G7xSA1TvThJCUPPNbHfV0w+mjCjtlZzK6+swSR9n5tcbzOsszjgrNH5Q==}
     dependencies:
       '@antv/util': 3.3.5
       '@webgpu/types': 0.1.40

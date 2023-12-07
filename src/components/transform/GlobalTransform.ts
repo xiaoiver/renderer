@@ -1,4 +1,4 @@
-import { Affine3, Mat4 } from '../../math';
+import { Affine3, Mat3, Mat4, Vec3 } from '../../math';
 import { Transform } from './Transform';
 
 /**
@@ -11,11 +11,32 @@ import { Transform } from './Transform';
  * * You may use the [`TransformBundle`](crate::TransformBundle) to guarantee this.
  */
 export class GlobalTransform extends Affine3 {
+  static from_translation(translation: Vec3) {
+    return new GlobalTransform(Mat3.IDENTITY, translation);
+  }
+
   /**
    * Returns the 3d affine transformation matrix as a [`Mat4`].
    */
   compute_matrix() {
     return Mat4.from(this);
+  }
+
+  /**
+   * Returns the transformation as a [`Transform`].
+   * The transform is expected to be non-degenerate and without shearing, or the output will be invalid.
+   */
+  compute_transform() {
+    const { scale, rotation, translation } =
+      this.to_scale_rotation_translation();
+    return new Transform(translation, scale, rotation);
+  }
+
+  /**
+   * Returns the 3d affine transformation matrix as an [`Affine3A`].
+   */
+  affine() {
+    return this.matrix3;
   }
 
   from(transform: Transform) {

@@ -1,3 +1,4 @@
+export { ExtractMeshes } from './ExtractMeshes';
 export { MeshPipeline } from './MeshPipeline';
 export { SyncSimpleTransforms, PropagateTransforms } from './Transform';
 export { CameraSystem } from './Camera';

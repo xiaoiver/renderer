@@ -65,19 +65,28 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           BloomSettings.NATURAL,
           new Fxaa({
             enabled: true,
-            edge_threshold: Sensitivity.Extreme,
-            edge_threshold_min: Sensitivity.Extreme,
+            edge_threshold: Sensitivity.High,
+            edge_threshold_min: Sensitivity.High,
           }),
         )
         .entity.hold();
 
+      const mesh = Mesh.from(new Cube(1));
+      const material = new Material();
       this.commands.spawn(
         new PbrBundle({
-          mesh: Mesh.from(new Cube(1)),
-          material: new Material(),
-          transform: Transform.from_xyz(0, 0.5, 0),
+          mesh,
+          material,
+          transform: Transform.from_xyz(0, 0, 0),
         }),
       );
+      // this.commands.spawn(
+      //   new PbrBundle({
+      //     mesh,
+      //     material,
+      //     transform: Transform.from_xyz(0.5, 0.5, 0.5),
+      //   }),
+      // );
 
       this.commands.execute();
     }
@@ -108,10 +117,36 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
   const fxaaFolder = gui.addFolder('fxaa');
   const fxaaConfig = {
     enabled: true,
+    edge_threshold: Sensitivity.High,
+    edge_threshold_min: Sensitivity.High,
   };
   fxaaFolder.add(fxaaConfig, 'enabled').onChange((enabled: boolean) => {
     const fxaa = camera.write(Fxaa);
     fxaa.enabled = enabled;
   });
+  fxaaFolder
+    .add(fxaaConfig, 'edge_threshold', [
+      Sensitivity.Low,
+      Sensitivity.Medium,
+      Sensitivity.High,
+      Sensitivity.Ultra,
+      Sensitivity.Extreme,
+    ])
+    .onChange((edge_threshold: Sensitivity) => {
+      const fxaa = camera.write(Fxaa);
+      fxaa.edge_threshold = edge_threshold;
+    });
+  fxaaFolder
+    .add(fxaaConfig, 'edge_threshold_min', [
+      Sensitivity.Low,
+      Sensitivity.Medium,
+      Sensitivity.High,
+      Sensitivity.Ultra,
+      Sensitivity.Extreme,
+    ])
+    .onChange((edge_threshold_min: Sensitivity) => {
+      const fxaa = camera.write(Fxaa);
+      fxaa.edge_threshold_min = edge_threshold_min;
+    });
   fxaaFolder.open();
 }

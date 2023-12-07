@@ -7,7 +7,7 @@ import {
   fullscreenMegaState,
   nArray,
 } from '@antv/g-device-api';
-import { Fxaa, PipelineKey, Sensitivity } from '../components';
+import { Fxaa, Sensitivity } from '../components';
 import {
   RGAttachmentSlot,
   RGGraphBuilder,
@@ -46,11 +46,6 @@ export class FxaaPipeline extends System {
   private program: Program;
   private defines: Record<string, boolean | number> = {};
 
-  constructor() {
-    super();
-    this.query((q) => q.using(PipelineKey).write);
-  }
-
   private compileDefines(fxaa: Readonly<Fxaa>) {
     const { edge_threshold, edge_threshold_min } = fxaa;
     this.defines = {
@@ -62,25 +57,30 @@ export class FxaaPipeline extends System {
   execute(): void {
     this.fxaa.addedOrChanged.forEach((entity) => {
       const fxaa = entity.read(Fxaa);
-      if (!fxaa.enabled) {
-        this.rendererResource.unregisterPass('fxaa');
-        return;
-      }
+      this.rendererResource.passesChanged = true;
 
       this.compileDefines(fxaa);
 
       // Reset program.
       if (this.program) {
+        this.textureMapping.forEach((mapping) => mapping.reset());
         this.program.destroy();
+        this.program = null;
       }
-      this.program = null;
 
-      this.rendererResource.registerPass('FXAA', this.pushFXAAPass);
+      if (!fxaa.enabled) {
+        this.rendererResource.unregisterPass('Fxaa');
+      } else {
+        this.rendererResource.registerPass('Fxaa', this.pushFXAAPass);
+      }
     });
   }
 
   finalize(): void {
-    this.program.destroy();
+    if (this.program) {
+      this.program.destroy();
+      this.program = null;
+    }
   }
 
   private pushFXAAPass = (
@@ -121,7 +121,11 @@ export class FxaaPipeline extends System {
       renderInst.setAllowSkippingIfPipelineNotReady(false);
 
       renderInst.setMegaStateFlags(fullscreenMegaState);
-      renderInst.setBindingLayout({ numUniformBuffers: 0, numSamplers: 1 });
+      renderInst.setBindingLayout({
+        numUniformBuffers: 0,
+        numSamplers: 1,
+        numStorageBuffers: 0,
+      });
       renderInst.drawPrimitives(3);
 
       renderInst.setProgram(this.program);
@@ -136,8 +140,6 @@ export class FxaaPipeline extends System {
           minFilter: FilterMode.BILINEAR,
           magFilter: FilterMode.BILINEAR,
           mipmapFilter: MipmapFilterMode.LINEAR,
-          lodMinClamp: 0,
-          lodMaxClamp: 0,
         });
         renderInst.setSamplerBindingsFromTextureMappings(this.textureMapping);
         renderInst.drawOnPass(renderHelper.renderCache, passRenderer);

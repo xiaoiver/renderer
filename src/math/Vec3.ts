@@ -32,7 +32,7 @@ export class Vec3 {
   /**
    * `[x, y, z]`
    */
-  to_array() {
+  to_array(): [number, number, number] {
     return [this.x, this.y, this.z];
   }
 
@@ -183,6 +183,13 @@ export class Vec3 {
     return this;
   }
 
+  /**
+   * Returns a vector containing the reciprocal `1.0/n` of each element of `self`.
+   */
+  recip() {
+    return new Vec3(1 / this.x, 1 / this.y, 1 / this.z);
+  }
+
   eq(rhs: Vec3) {
     return this.x === rhs.x && this.y === rhs.y && this.z === rhs.z;
   }
@@ -202,6 +209,14 @@ export class Vec3 {
    */
   cmple(rhs: Vec3) {
     return new BVec3(this.x <= rhs.x, this.y <= rhs.y, this.z <= rhs.z);
+  }
+
+  /**
+   * Returns a vector mask containing the result of a `!=` comparison for each element of `self` and `rhs`.
+   * In other words this computes `[self.x != rhs.x, self.y != rhs.y, ..]` for all elements.
+   */
+  cmpne(rhs: Vec3) {
+    return new BVec3(this.x !== this.x, this.y !== rhs.y, this.z !== rhs.z);
   }
 
   /**
