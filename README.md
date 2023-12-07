@@ -92,6 +92,28 @@ Systems can be splitted into several stages, for now we support:
 - Update - The schedule that contains app logic, get called on every frame.
 - PostUpdate
 
+## Shader combining and manipulating
+
+Shader chunks can be combined at compiling time or runtime.
+[glslify](https://github.com/glslify/glslify) and its rollup plugin use the former way. But most web rendering engines choose the latter one such as:
+
+- Three.js
+- Babylon.js
+- [Orillusion](https://github.com/Orillusion/orillusion/blob/main/src/gfx/graphics/webGpu/shader/converter/GLSLPreprocessor.ts)
+
+Bevy use [naga_oil](https://github.com/bevyengine/naga_oil). I try to compile it to WASM with wasm-pack so that features like [preprocessing](https://github.com/bevyengine/naga_oil#preprocessing) and [imports](https://github.com/bevyengine/naga_oil#imports) will come in handy.
+
+```wgsl
+#import render::view::View
+#import pbr::utils::coords_to_viewport_uv
+
+@group(0) @binding(0) var skybox: texture_cube<f32>;
+@group(0) @binding(1) var skybox_sampler: sampler;
+@group(0) @binding(2) var<uniform> view: View;
+```
+
+It helps me a lot during the process of learning the structures in bevy shader system.
+
 ## Skybox
 
 ## Post processing
