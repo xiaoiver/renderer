@@ -90,6 +90,20 @@ Systems can be splitted into several stages, for now we support:
 - Update - The schedule that contains app logic, get called on every frame.
 - PostUpdate
 
+## Post processing
+
+### FXAA
+
+Anti-aliasing with [FXAA](https://en.wikipedia.org/wiki/Fast_approximate_anti-aliasing).
+
+<img width="400" alt="fxaa" src="https://github.com/antvis/g-device-api/assets/3608471/e33b419c-815e-4e28-9f36-68f155ba0836">
+
+The parameters are as follows:
+
+- enabled `boolean` Defaults to `true`
+- edge_threshold `Sensitivity` Defaults to `Sensitivity.High`
+- edge_threshold_min `Sensitivity` Defaults to `Sensitivity.High`
+
 ## Examples
 
 ### 3D Gaussian Splatting
