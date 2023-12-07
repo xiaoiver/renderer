@@ -79,7 +79,9 @@ new App({
 
 ## ECS
 
-<img src="https://lastolivegames.github.io/becsy/assets/architecture.a3cc1c9e.svg" alt="ecs" width="200px">
+There're so many ECS architectural implementations for JS/TS. I found [becsy](https://lastolivegames.github.io/becsy) is the most special one even if its multi-threading feature is not yet implemented.
+
+<img src="https://lastolivegames.github.io/becsy/assets/architecture.a3cc1c9e.svg" alt="ecs" width="400px">
 
 Systems can be splitted into several stages, for now we support:
 
@@ -89,6 +91,8 @@ Systems can be splitted into several stages, for now we support:
 - PreUpdate
 - Update - The schedule that contains app logic, get called on every frame.
 - PostUpdate
+
+## Skybox
 
 ## Post processing
 

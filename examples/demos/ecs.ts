@@ -21,15 +21,28 @@ import {
   Perspective,
   Commands,
   BloomSettings,
+  Skybox,
 } from '../../src';
 import { Vec3 } from '../../src/math';
 import { Cube } from '../../src/meshes/Cube';
+import { loadImage } from '../utils/image';
+import posx from '../public/images/posx.jpg';
+import negx from '../public/images/negx.jpg';
+import posy from '../public/images/posy.jpg';
+import negy from '../public/images/negy.jpg';
+import posz from '../public/images/posz.jpg';
+import negz from '../public/images/negz.jpg';
 
 /**
  * @see https://bevyengine.org/learn/book/getting-started/ecs/
  */
 export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
   let camera: Entity;
+
+  // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
+  const imageBitmaps = await Promise.all(
+    [posx, negx, posy, negy, posz, negz].map(async (src) => loadImage(src)),
+  );
 
   class StartUpSystem extends System {
     commands = new Commands(this);
@@ -48,10 +61,13 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           Perspective,
           Fxaa,
           BloomSettings,
+          Skybox,
         ).write,
     );
 
     initialize(): void {
+      this.commands.insert_resource(imageBitmaps);
+
       camera = this.commands
         .spawn(
           new Camera3dBundle({
@@ -68,6 +84,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
             edge_threshold: Sensitivity.High,
             edge_threshold_min: Sensitivity.High,
           }),
+          new Skybox(),
         )
         .entity.hold();
 
