@@ -62,11 +62,7 @@ export class FxaaPipeline extends System {
       this.compileDefines(fxaa);
 
       // Reset program.
-      if (this.program) {
-        this.textureMapping.forEach((mapping) => mapping.reset());
-        this.program.destroy();
-        this.program = null;
-      }
+      this.finalize();
 
       if (!fxaa.enabled) {
         this.rendererResource.unregisterPass('Fxaa');

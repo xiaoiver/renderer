@@ -130,7 +130,7 @@ The parameters are as follows:
 - edge_threshold `Sensitivity` Defaults to `Sensitivity.High`
 - edge_threshold_min `Sensitivity` Defaults to `Sensitivity.High`
 
-## Examples
+## Appendix
 
 ### 3D Gaussian Splatting
 
@@ -142,3 +142,7 @@ The parameters are as follows:
 - https://developer.chrome.com/blog/webgpu-io2023/#unlocking-new-gpu-workloads-for-rendering
 - https://github.com/Twinklebear/webgpu-marching-cubes/
 - https://github.com/gnikoloff/webgpu-compute-metaballs/
+
+### Raytracing
+
+- https://github.com/Patryk27/strolle
