@@ -116,6 +116,20 @@ It helps me a lot during the process of learning the structures in bevy shader s
 
 ## Skybox
 
+Create a cubemap and upload images in the following order:
+
+```ts
+// The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
+const imageBitmaps = await Promise.all(
+  [posx, negx, posy, negy, posz, negz].map(async (src) => loadImage(src)),
+);
+camera = this.commands.spawn(
+  new Skybox({
+    image_handle,
+  }),
+);
+```
+
 ## Post processing
 
 ### FXAA
