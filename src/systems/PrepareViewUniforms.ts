@@ -32,7 +32,7 @@ export class PrepareViewUniforms extends System {
   /**
    * Used for extracting view uniforms from camera.
    */
-  viewExtractor: (template: RenderInst) => void;
+  viewExtractor: (template: RenderInst, binding?: number) => void;
 
   private cameras = this.query(
     (q) => q.addedOrChanged.with(ComputedCameraValues).trackWrites,
@@ -51,18 +51,22 @@ export class PrepareViewUniforms extends System {
       // Becsy will trim undeclared fields and functions.
       const projection_matrix = Mat4.copy(computed.projection_matrix);
 
+      const viewport_size = computed.target_info_physical_size;
+
       // TODO: update global transform in Transform system.
       const view = new GlobalTransform();
       view.from(transform);
+      const world_position = Vec3.copy(view.translation);
 
+      // const world_position = view.translation;
       const view_matrix = view.compute_matrix();
       const inverse_view_matrix = view_matrix.inverse();
       const view_proj_matrix = projection_matrix.mul(
         inverse_view_matrix,
       ) as Mat4;
 
-      this.viewExtractor = (template) => {
-        template.setUniforms(ViewUniformBufferBinding, [
+      this.viewExtractor = (template, binding = ViewUniformBufferBinding) => {
+        template.setUniforms(binding, [
           {
             name: 'view_proj',
             value: view_proj_matrix.to_cols_array_2d(),
@@ -93,11 +97,11 @@ export class PrepareViewUniforms extends System {
           },
           {
             name: 'world_position',
-            value: Vec3.ZERO.to_array(),
+            value: world_position.to_array(),
           },
           {
             name: 'viewport',
-            value: Vec4.ZERO.to_array(),
+            value: [0, 0, viewport_size[0], viewport_size[1]],
           },
           {
             name: 'frustum',

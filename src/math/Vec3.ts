@@ -27,6 +27,10 @@ export class Vec3 {
     return new Vec3(a[0], a[1], a[2]);
   }
 
+  static copy(a: Vec3) {
+    return new Vec3(a.x, a.y, a.z);
+  }
+
   constructor(public x: number, public y: number, public z: number) {}
 
   /**

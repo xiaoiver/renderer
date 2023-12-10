@@ -1,9 +1,9 @@
 #import render::view::View
 #import pbr::utils::coords_to_viewport_uv
 
-@group(0) @binding(0) var skybox: texture_cube<f32>;
-@group(0) @binding(1) var skybox_sampler: sampler;
-@group(0) @binding(2) var<uniform> view: View;
+@group(0) @binding(0) var<uniform> view: View;
+@group(1) @binding(0) var skybox: texture_cube<f32>;
+@group(1) @binding(1) var skybox_sampler: sampler;
 
 fn coords_to_ray_direction(position: vec2<f32>, viewport: vec4<f32>) -> vec3<f32> {
     // Using world positions of the fragment and camera to calculate a ray direction

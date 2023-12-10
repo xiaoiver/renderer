@@ -135,7 +135,11 @@ export class BloomPipeline extends System {
       renderInst.setAllowSkippingIfPipelineNotReady(false);
 
       renderInst.setMegaStateFlags(fullscreenMegaState);
-      renderInst.setBindingLayout({ numUniformBuffers: 1, numSamplers: 1 });
+      renderInst.setBindingLayout({
+        numUniformBuffers: 1,
+        numSamplers: 1,
+        numStorageBuffers: 0,
+      });
       renderInst.drawPrimitives(3);
 
       renderInst.setProgram(this.program);

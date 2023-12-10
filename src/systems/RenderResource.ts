@@ -51,20 +51,6 @@ export class RenderResource extends System {
   swapChain: SwapChain;
   renderHelper: RenderHelper;
 
-  /**
-   * Post-processing passes.
-   */
-  passes: Record<
-    string,
-    (
-      builder: RGGraphBuilder,
-      renderHelper: RenderHelper,
-      renderInput: RenderInput,
-      mainColorTargetID: number,
-    ) => void
-  > = {};
-  passesChanged = true;
-
   async prepare() {
     const { canvas } = this.appConfig;
 
@@ -142,24 +128,5 @@ export class RenderResource extends System {
   registerShaderModule(shader: string): string {
     const compiler = this.device['WGSLComposer'];
     return compiler.wgsl_compile(shader);
-  }
-
-  /**
-   * Register pass
-   */
-  registerPass(
-    key: string,
-    func: (
-      builder: RGGraphBuilder,
-      renderHelper: RenderHelper,
-      renderInput: RenderInput,
-      mainColorTargetID: number,
-    ) => void,
-  ) {
-    this.passes[key] = func;
-  }
-
-  unregisterPass(key: string) {
-    delete this.passes[key];
   }
 }

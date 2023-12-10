@@ -19,7 +19,7 @@ import {
 import vert from '../shaders/fullscreen.wgsl?raw';
 import frag from '../shaders/fxaa.wgsl?raw';
 import { createProgram } from './utils';
-import { RenderResource } from './RenderResource';
+import { MeshPipeline } from './MeshPipeline';
 
 const SensitivityStr: Record<Sensitivity, string> = {
   [Sensitivity.Low]: 'LOW',
@@ -40,7 +40,7 @@ export function fxaaHash(a: Fxaa): number {
 export class FxaaPipeline extends System {
   fxaa = this.query((q) => q.addedOrChanged.with(Fxaa).trackWrites);
 
-  private rendererResource = this.attach(RenderResource);
+  private pipeline = this.attach(MeshPipeline);
 
   private textureMapping = nArray(1, () => new TextureMapping());
   private program: Program;
@@ -57,7 +57,7 @@ export class FxaaPipeline extends System {
   execute(): void {
     this.fxaa.addedOrChanged.forEach((entity) => {
       const fxaa = entity.read(Fxaa);
-      this.rendererResource.passesChanged = true;
+      this.pipeline.passesChanged = true;
 
       this.compileDefines(fxaa);
 
@@ -65,9 +65,9 @@ export class FxaaPipeline extends System {
       this.finalize();
 
       if (!fxaa.enabled) {
-        this.rendererResource.unregisterPass('Fxaa');
+        this.pipeline.unregisterPass('Fxaa');
       } else {
-        this.rendererResource.registerPass('Fxaa', this.pushFXAAPass);
+        this.pipeline.registerPass('Fxaa', this.pushFXAAPass);
       }
     });
   }
@@ -113,20 +113,19 @@ export class FxaaPipeline extends System {
         builder.resolveRenderTarget(mainColorTargetID);
       pass.attachResolveTexture(mainColorResolveTextureID);
 
-      const renderInst = renderHelper.renderInstManager.newRenderInst();
-      renderInst.setAllowSkippingIfPipelineNotReady(false);
-
-      renderInst.setMegaStateFlags(fullscreenMegaState);
-      renderInst.setBindingLayout({
-        numUniformBuffers: 0,
-        numSamplers: 1,
-        numStorageBuffers: 0,
-      });
-      renderInst.drawPrimitives(3);
-
-      renderInst.setProgram(this.program);
-
       pass.exec((passRenderer, scope) => {
+        const renderInst = renderHelper.renderInstManager.newRenderInst();
+        renderInst.setAllowSkippingIfPipelineNotReady(false);
+
+        renderInst.setMegaStateFlags(fullscreenMegaState);
+        renderInst.setBindingLayout({
+          numUniformBuffers: 0,
+          numSamplers: 1,
+          numStorageBuffers: 0,
+        });
+        renderInst.drawPrimitives(3);
+
+        renderInst.setProgram(this.program);
         this.textureMapping[0].texture = scope.getResolveTextureForID(
           mainColorResolveTextureID,
         );

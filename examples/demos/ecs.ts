@@ -66,14 +66,15 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
     );
 
     initialize(): void {
-      this.commands.insert_resource(imageBitmaps);
+      // const image_handle = this.commands.insert_resource(imageBitmaps);
+      const image_handle = imageBitmaps;
 
       camera = this.commands
         .spawn(
           new Camera3dBundle({
             camera: new Camera(),
             projection: new Perspective(),
-            transform: Transform.from_xyz(-2.5, 2.5, 1.0).look_at(
+            transform: Transform.from_xyz(-2.5, -1.5, 2.0).look_at(
               Vec3.ZERO,
               Vec3.Y,
             ),
@@ -84,7 +85,9 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
             edge_threshold: Sensitivity.High,
             edge_threshold_min: Sensitivity.High,
           }),
-          new Skybox(),
+          new Skybox({
+            image_handle,
+          }),
         )
         .entity.hold();
 
