@@ -189,6 +189,7 @@ The falloff modes are as follows:
   - end `number` Distance from the camera where fog is completely opaque, in world units.
 
 <img src="https://mdn.alipayobjects.com/huamei_vbm5bl/afts/img/A*5owGSq6Thv0AAAAAAAAAAAAADvR5AQ/original" alt="linear fog" width="200">
+<img src="https://mdn.alipayobjects.com/huamei_vbm5bl/afts/img/A*h8KiTI68_O8AAAAAAAAAAAAADvR5AQ/original" alt="exponential fog" width="250">
 
 - Exponential - An exponential fog falloff with a given `density`.
   - density `number` Multiplier applied to the world distance (within the exponential fog falloff calculation).
