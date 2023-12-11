@@ -77,7 +77,7 @@ struct Fog {
     be: vec3<f32>,
     directional_light_exponent: f32,
     bi: vec3<f32>,
-    mode: u32,
+    mode: f32, // TODO: use u32 instead
 }
 
 // Important: These must be kept in sync with `fog.rs`

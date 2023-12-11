@@ -103,6 +103,10 @@ export class DynamicUniformBuffer {
     return assertExists(this.shadowBufferF32);
   }
 
+  mapBufferU8(): Uint8Array {
+    return assertExists(this.shadowBufferU8);
+  }
+
   prepareToRender(): void {
     if (this.shadowBufferF32 === null) {
       return;

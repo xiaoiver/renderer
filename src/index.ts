@@ -21,6 +21,7 @@ export { App } from './App';
 export * from './components';
 export * from './meshes';
 export * from './systems';
+export * from './math';
 export { Commands } from './commands/Commands';
 
 export const DefaultPlugins: PluginType[] = [

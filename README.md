@@ -187,6 +187,9 @@ The falloff modes are as follows:
 - Linear - A linear fog falloff that grows in intensity between `start` and `end` distances. This falloff mode is simpler to control than other modes, however it can produce results that look “artificial”, depending on the scene.
   - start `number` Distance from the camera where fog is completely transparent, in world units.
   - end `number` Distance from the camera where fog is completely opaque, in world units.
+
+<img src="https://mdn.alipayobjects.com/huamei_vbm5bl/afts/img/A*5owGSq6Thv0AAAAAAAAAAAAADvR5AQ/original" alt="linear fog" width="200">
+
 - Exponential
 - ExponentialSquared
 - Atmospheric

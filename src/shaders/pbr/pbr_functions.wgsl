@@ -415,18 +415,18 @@ fn apply_fog(fog_params: mesh_view_types::Fog, input_color: vec4<f32>, fragment_
         }
     }
 
-    // if fog_params.mode == mesh_view_types::FOG_MODE_LINEAR {
+    let mode: u32 = u32(fog_params.mode);
+    if mode == mesh_view_types::FOG_MODE_LINEAR {
         return pbr::fog::linear_fog(fog_params, input_color, distance, scattering);
-    // } else if fog_params.mode == mesh_view_types::FOG_MODE_EXPONENTIAL {
-    //     return pbr::fog::exponential_fog(fog_params, input_color, distance, scattering);
-    // } else if fog_params.mode == mesh_view_types::FOG_MODE_EXPONENTIAL_SQUARED {
-    //     return pbr::fog::exponential_squared_fog(fog_params, input_color, distance, scattering);
-    // } else if fog_params.mode == mesh_view_types::FOG_MODE_ATMOSPHERIC {
-    //     return pbr::fog::atmospheric_fog(fog_params, input_color, distance, scattering);
-    // } else {
-    //     return fog_params.base_color;
-    //     return input_color;
-    // }
+    } else if mode == mesh_view_types::FOG_MODE_EXPONENTIAL {
+        return pbr::fog::exponential_fog(fog_params, input_color, distance, scattering);
+    } else if mode == mesh_view_types::FOG_MODE_EXPONENTIAL_SQUARED {
+        return pbr::fog::exponential_squared_fog(fog_params, input_color, distance, scattering);
+    } else if mode == mesh_view_types::FOG_MODE_ATMOSPHERIC {
+        return pbr::fog::atmospheric_fog(fog_params, input_color, distance, scattering);
+    } else {
+        return input_color;
+    }
 }
 
 #ifdef PREMULTIPLY_ALPHA

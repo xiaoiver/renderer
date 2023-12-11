@@ -472,6 +472,27 @@ export namespace Color {
     return new Rgba(r, g, b, a);
   }
 
+  // Float operations in const fn are not stable yet
+  // see https://github.com/rust-lang/rust/issues/57241
+  /// New `Color` from sRGB colorspace.
+  ///
+  /// # Arguments
+  ///
+  /// * `r` - Red channel. [0, 255]
+  /// * `g` - Green channel. [0, 255]
+  /// * `b` - Blue channel. [0, 255]
+  /// * `a` - Alpha channel. [0, 255]
+  ///
+  /// See also [`Color::rgba`], [`Color::rgb_u8`], [`Color::hex`].
+  ///
+  export function rgba_u8(r: number, g: number, b: number, a: number) {
+    return Color.rgba(r / 255, g / 255, b / 255, a / 255);
+  }
+
+  export function rgb_u8(r: number, g: number, b: number) {
+    return Color.rgba_u8(r, g, b, 255);
+  }
+
   /**
    * New `Color` from linear RGB colorspace.
    * @param r Red channel. [0.0, 1.0]
@@ -560,14 +581,58 @@ export namespace Color {
    * Color.hex('#ff0000');
    * ```
    */
-  export function hex(hex: string) {}
+  export function hex(hex: string): Color {
+    const hexStr = hex.slice(1);
+    const data: number[] = [];
+    for (let i = 0; i < hexStr.length; i++) {
+      data.push(hexStr.charCodeAt(i));
+    }
+
+    if (data.length === 3) {
+      // RGB
+      let [r, g, b] = data;
+      [r, g, b] = decode_hex([r, r, g, g, b, b]);
+      return Color.rgb_u8(r, g, b);
+    } else if (data.length === 4) {
+      // RGBA
+      let [r, g, b, a] = data;
+      [r, g, b, a] = decode_hex([r, r, g, g, b, b, a, a]);
+      return Color.rgba_u8(r, g, b, a);
+    } else if (data.length === 6) {
+      // RRGGBB
+      let [r1, r2, g1, g2, b1, b2] = data;
+      const [r, g, b] = decode_hex([r1, r2, g1, g2, b1, b2]);
+      return Color.rgb_u8(r, g, b);
+    } else if (data.length === 8) {
+      let [r1, r2, g1, g2, b1, b2, a1, a2] = data;
+      const [r, g, b, a] = decode_hex([r1, r2, g1, g2, b1, b2, a1, a2]);
+      return Color.rgba_u8(r, g, b, a);
+    }
+  }
 
   /// Converts hex bytes to an array of RGB\[A\] components
   ///
   /// # Example
   /// For RGB: *b"ffffff" -> [255, 255, 255, ..]
   /// For RGBA: *b"E2E2E2FF" -> [226, 226, 226, 255, ..]
-  export function decode_hex(bytes: number[]) {}
+  export function decode_hex(bytes: number[]) {
+    let i = 0;
+    while (i < bytes.length) {
+      // Convert single hex digit to u8
+      const val = hex_value(bytes[i]);
+      bytes[i] = val;
+      i += 1;
+    }
+    // Modify the original bytes to give an `N / 2` length result
+    i = 0;
+    while (i < bytes.length / 2) {
+      // Convert pairs of u8 to R/G/B/A
+      // e.g `ff` -> [102, 102] -> [15, 15] = 255
+      bytes[i] = bytes[i * 2] * 16 + bytes[i * 2 + 1];
+      i += 1;
+    }
+    return bytes;
+  }
 
   /// Parse a single hex digit (a-f/A-F/0-9) as a `u8`
   function hex_value(b: number) {
@@ -581,8 +646,6 @@ export namespace Color {
       return 0;
     }
   }
-
-  export function as_linear_rgba_f32() {}
 
   export const ALICE_BLUE: Color = Color.rgb(0.94, 0.97, 1.0);
   export const ANTIQUE_WHITE: Color = Color.rgb(0.98, 0.92, 0.84);

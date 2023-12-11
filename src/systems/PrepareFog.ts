@@ -42,9 +42,7 @@ export class PrepareFog extends System {
         falloff,
       } = fog;
 
-      console.log(falloff);
-
-      let mode: number;
+      let mode = GPU_FOG_MODE_OFF;
       let be: [number, number, number];
       let bi = [0, 0, 0];
       if (falloff instanceof Linear) {

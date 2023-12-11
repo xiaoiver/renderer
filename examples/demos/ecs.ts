@@ -8,25 +8,25 @@ import {
   DefaultPlugins,
   Transform,
   GlobalTransform,
-  Parent,
-  Children,
+  // Parent,
+  // Children,
   Camera,
   ComputedCameraValues,
   Fxaa,
   Sensitivity,
   PbrBundle,
   Mesh,
-  Box,
+  Cube,
   Material,
   Perspective,
   Commands,
   BloomSettings,
   Skybox,
   FogSettings,
+  Linear,
   Color,
+  Vec3,
 } from '../../src';
-import { Vec3 } from '../../src/math';
-import { Cube } from '../../src/meshes/Cube';
 import { loadImage } from '../utils/image';
 import posx from '../public/images/posx.jpg';
 import negx from '../public/images/negx.jpg';
@@ -34,7 +34,6 @@ import posy from '../public/images/posy.jpg';
 import negy from '../public/images/negy.jpg';
 import posz from '../public/images/posz.jpg';
 import negz from '../public/images/negz.jpg';
-import { Linear } from '../../src/components/pbr/FogFalloff';
 
 /**
  * @see https://bevyengine.org/learn/book/getting-started/ecs/
@@ -152,44 +151,53 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
   const fxaaFolder = gui.addFolder('fxaa');
   const fxaaConfig = {
     enabled: true,
-    edge_threshold: Sensitivity.High,
-    edge_threshold_min: Sensitivity.High,
+    edge_threshold: 'High',
+    edge_threshold_min: 'High',
   };
   fxaaFolder.add(fxaaConfig, 'enabled').onChange((enabled: boolean) => {
     const fxaa = camera.write(Fxaa);
     fxaa.enabled = enabled;
   });
+  const SensitivityLabels = ['Low', 'Medium', 'High', 'Ultra', 'Extreme'];
   fxaaFolder
-    .add(fxaaConfig, 'edge_threshold', [
-      Sensitivity.Low,
-      Sensitivity.Medium,
-      Sensitivity.High,
-      Sensitivity.Ultra,
-      Sensitivity.Extreme,
-    ])
-    .onChange((edge_threshold: Sensitivity) => {
+    .add(fxaaConfig, 'edge_threshold', SensitivityLabels)
+    .onChange((edge_threshold: string) => {
       const fxaa = camera.write(Fxaa);
-      fxaa.edge_threshold = edge_threshold;
+      fxaa.edge_threshold = SensitivityLabels.indexOf(edge_threshold);
     });
   fxaaFolder
-    .add(fxaaConfig, 'edge_threshold_min', [
-      Sensitivity.Low,
-      Sensitivity.Medium,
-      Sensitivity.High,
-      Sensitivity.Ultra,
-      Sensitivity.Extreme,
-    ])
-    .onChange((edge_threshold_min: Sensitivity) => {
+    .add(fxaaConfig, 'edge_threshold_min', SensitivityLabels)
+    .onChange((edge_threshold_min: string) => {
       const fxaa = camera.write(Fxaa);
-      fxaa.edge_threshold_min = edge_threshold_min;
+      fxaa.edge_threshold_min = SensitivityLabels.indexOf(edge_threshold_min);
     });
   fxaaFolder.open();
 
   const fogFolder = gui.addFolder('fog');
   const fogConfig = {
+    color: '#0000ff',
+    falloff: 'Linear',
     start: 0,
     end: 6,
   };
+  fogFolder.addColor(fogConfig, 'color').onChange((color) => {
+    const fog = camera.write(FogSettings);
+    fog.color = Color.hex(color);
+  });
+  fogFolder
+    .add(fogConfig, 'falloff', [
+      'Linear',
+      'Exponential',
+      'ExponentialSquared',
+      'Atmospheric',
+    ])
+    .onChange((start: number) => {
+      const fog = camera.write(FogSettings);
+      fog.falloff = new Linear({
+        start,
+        end: fogConfig.end,
+      });
+    });
   fogFolder.add(fogConfig, 'start', 0, 10).onChange((start: number) => {
     const fog = camera.write(FogSettings);
     fog.falloff = new Linear({

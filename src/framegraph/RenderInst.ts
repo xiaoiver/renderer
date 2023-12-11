@@ -302,7 +302,7 @@ export class RenderInst {
 
     // calc buffer size
     let offset = 0;
-    const uboBuffer = [];
+    const uboBuffer: number[] = [];
     uniforms.forEach((uniform) => {
       const { value } = uniform;
 
@@ -344,6 +344,7 @@ export class RenderInst {
     // upload UBO
     let offs = this.allocateUniformBuffer(bufferIndex, uboBuffer.length);
     const d = this.mapUniformBufferF32(bufferIndex);
+    // const d = this.mapBufferU8(bufferIndex);
     for (let i = 0; i < uboBuffer.length; i += 4) {
       offs += fillVec4(
         d,
@@ -411,6 +412,10 @@ export class RenderInst {
    */
   mapUniformBufferF32(bufferIndex: number): Float32Array {
     return this.uniformBuffer.mapBufferF32();
+  }
+
+  mapBufferU8(bufferIndex: number): Uint8Array {
+    return this.uniformBuffer.mapBufferU8();
   }
 
   /**
