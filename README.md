@@ -124,11 +124,14 @@ const imageBitmaps = await Promise.all(
   [posx, negx, posy, negy, posz, negz].map(async (src) => loadImage(src)),
 );
 camera = this.commands.spawn(
+  //... Omit other components
   new Skybox({
-    image_handle,
+    image_handle: imageBitmaps,
   }),
 );
 ```
+
+<img src="https://mdn.alipayobjects.com/huamei_vbm5bl/afts/img/A*9_1wSpTPeiQAAAAAAAAAAAAADvR5AQ/original" alt="skybox" width="250">
 
 ## Post processing
 
@@ -143,6 +146,17 @@ The parameters are as follows:
 - enabled `boolean` Defaults to `true`
 - edge_threshold `Sensitivity` Defaults to `Sensitivity.High`
 - edge_threshold_min `Sensitivity` Defaults to `Sensitivity.High`
+
+```ts
+camera = this.commands.spawn(
+  //... Omit other components
+  new Fxaa({
+    enabled: true,
+    edge_threshold: Sensitivity.High,
+    edge_threshold_min: Sensitivity.High,
+  }),
+);
+```
 
 ## Appendix
 
