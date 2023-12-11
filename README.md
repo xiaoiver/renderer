@@ -190,9 +190,13 @@ The falloff modes are as follows:
 
 <img src="https://mdn.alipayobjects.com/huamei_vbm5bl/afts/img/A*5owGSq6Thv0AAAAAAAAAAAAADvR5AQ/original" alt="linear fog" width="200">
 
-- Exponential
-- ExponentialSquared
-- Atmospheric
+- Exponential - An exponential fog falloff with a given `density`.
+  - density `number` Multiplier applied to the world distance (within the exponential fog falloff calculation).
+- ExponentialSquared - A squared exponential fog falloff with a given `density`.
+  - density `number` Multiplier applied to the world distance (within the exponential squared fog falloff calculation).
+- Atmospheric - A more general form of the `Exponential` mode.
+  - extinction `Vec3` Controls how much light is removed due to atmospheric “extinction”, i.e. loss of light due to photons being absorbed by atmospheric particles.
+  - inscattering `Vec3` Controls how much light is added due to light scattering from the sun through the atmosphere.
 
 ## Appendix
 

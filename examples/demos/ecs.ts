@@ -26,6 +26,9 @@ import {
   Linear,
   Color,
   Vec3,
+  Exponential,
+  ExponentialSquared,
+  Atmospheric,
 } from '../../src';
 import { loadImage } from '../utils/image';
 import posx from '../public/images/posx.jpg';
@@ -179,6 +182,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
     falloff: 'Linear',
     start: 0,
     end: 6,
+    density: 0,
   };
   fogFolder.addColor(fogConfig, 'color').onChange((color) => {
     const fog = camera.write(FogSettings);
@@ -191,12 +195,27 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
       'ExponentialSquared',
       'Atmospheric',
     ])
-    .onChange((start: number) => {
+    .onChange((falloff: string) => {
       const fog = camera.write(FogSettings);
-      fog.falloff = new Linear({
-        start,
-        end: fogConfig.end,
-      });
+      if (falloff === 'Linear') {
+        fog.falloff = new Linear({
+          start: fogConfig.start,
+          end: fogConfig.end,
+        });
+      } else if (falloff === 'Exponential') {
+        fog.falloff = new Exponential({
+          density: fogConfig.density,
+        });
+      } else if (falloff === 'ExponentialSquared') {
+        fog.falloff = new ExponentialSquared({
+          density: fogConfig.density,
+        });
+      } else if (falloff === 'Atmospheric') {
+        fog.falloff = new Atmospheric({
+          extinction: Vec3.splat(fogConfig.density),
+          inscattering: Vec3.splat(fogConfig.density),
+        });
+      }
     });
   fogFolder.add(fogConfig, 'start', 0, 10).onChange((start: number) => {
     const fog = camera.write(FogSettings);
@@ -211,6 +230,23 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
       start: fogConfig.start,
       end,
     });
+  });
+  fogFolder.add(fogConfig, 'density', 0, 1).onChange((density: number) => {
+    const fog = camera.write(FogSettings);
+    if (fogConfig.falloff === 'Exponential') {
+      fog.falloff = new Exponential({
+        density,
+      });
+    } else if (fogConfig.falloff === 'ExponentialSquared') {
+      fog.falloff = new ExponentialSquared({
+        density,
+      });
+    } else if (fogConfig.falloff === 'Atmospheric') {
+      fog.falloff = new Atmospheric({
+        extinction: Vec3.splat(density),
+        inscattering: Vec3.splat(density),
+      });
+    }
   });
   fogFolder.open();
 }
