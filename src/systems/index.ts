@@ -7,5 +7,6 @@ export { TonemappingPipeline } from './TonemappingPipeline';
 export { BloomPipeline } from './BloomPipeline';
 export { FxaaPipeline } from './FxaaPipeline';
 export { PrepareViewUniforms } from './PrepareViewUniforms';
+export { PrepareFog } from './PrepareFog';
 export { RenderResource } from './RenderResource';
 export * from './stages';

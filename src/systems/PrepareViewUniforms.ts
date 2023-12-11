@@ -32,7 +32,7 @@ export class PrepareViewUniforms extends System {
   /**
    * Used for extracting view uniforms from camera.
    */
-  viewExtractor: (template: RenderInst, binding?: number) => void;
+  prepareUniforms: (template: RenderInst, binding?: number) => void;
 
   private cameras = this.query(
     (q) => q.addedOrChanged.with(ComputedCameraValues).trackWrites,
@@ -65,7 +65,7 @@ export class PrepareViewUniforms extends System {
         inverse_view_matrix,
       ) as Mat4;
 
-      this.viewExtractor = (template, binding = ViewUniformBufferBinding) => {
+      this.prepareUniforms = (template, binding = ViewUniformBufferBinding) => {
         template.setUniforms(binding, [
           {
             name: 'view_proj',

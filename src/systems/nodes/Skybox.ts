@@ -1,5 +1,6 @@
 import {
   AddressMode,
+  CompareFunction,
   FilterMode,
   MipmapFilterMode,
   Program,
@@ -57,7 +58,10 @@ export class SkyboxNode extends PipelineNode {
     const renderInst = this.renderInstManager.newRenderInst();
 
     renderInst.setAllowSkippingIfPipelineNotReady(false);
-    renderInst.setMegaStateFlags(fullscreenMegaState);
+    renderInst.setMegaStateFlags({
+      // depthCompare: CompareFunction.GREATER,
+      ...fullscreenMegaState,
+    });
     renderInst.setBindingLayout({
       numUniformBuffers: 1,
       numSamplers: 1,
@@ -65,7 +69,7 @@ export class SkyboxNode extends PipelineNode {
     });
     renderInst.setUniformBuffer(this.pipeline.renderHelper.uniformBuffer);
 
-    this.viewUniforms.viewExtractor(renderInst, 0);
+    this.viewUniforms.prepareUniforms(renderInst, 0);
 
     this.textureMapping[0].texture = this.cubemap;
     this.textureMapping[0].sampler = this.sampler;

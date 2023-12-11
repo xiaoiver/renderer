@@ -8,6 +8,7 @@ import {
   TransparentBlack,
   BlendMode,
   BlendFactor,
+  CullMode,
 } from '@antv/g-device-api';
 import { Entity } from '@lastolivegames/becsy';
 import { flatten } from 'lodash-es';
@@ -18,20 +19,21 @@ import { PipelineNode } from './PipelineNode';
 import { createProgram } from '../utils';
 import { getFormatByteSizePerBlock } from '../../framegraph/utils/format';
 import { PrepareViewUniforms } from '../PrepareViewUniforms';
+import { PrepareFog } from '../PrepareFog';
 
 /**
  * Render opaque meshes.
  */
 export class OpaqueNode extends PipelineNode {
   viewUniforms: PrepareViewUniforms;
+  fogUniforms: PrepareFog;
 
   init() {}
 
   prepare() {
     const template = this.pipeline.renderHelper.pushTemplateRenderInst();
-    // SceneParams: binding = 0, ObjectParams: binding = 1
     template.setBindingLayout({
-      numUniformBuffers: 1,
+      numUniformBuffers: 3,
       numSamplers: 0,
       numStorageBuffers: 1,
     });
@@ -39,7 +41,9 @@ export class OpaqueNode extends PipelineNode {
       setAttachmentStateSimple(
         {
           depthWrite: true,
+          // depthCompare: CompareFunction.GEQUAL,
           blendConstant: TransparentBlack,
+          cullMode: CullMode.BACK,
         },
         {
           rgbBlendMode: BlendMode.ADD,
@@ -52,10 +56,96 @@ export class OpaqueNode extends PipelineNode {
       ),
     );
 
-    // Update Scene Params
-    if (this.viewUniforms.viewExtractor) {
-      this.viewUniforms.viewExtractor(template);
-    }
+    this.viewUniforms.prepareUniforms(template);
+    this.fogUniforms.prepareUniforms(template, 2);
+
+    // Lights binding = 1
+    template.setUniforms(1, [
+      {
+        name: 'directional_lights',
+        value: new Array(10)
+          .fill([
+            // cascades: array<DirectionalCascade, MAX_CASCADES_PER_LIGHT>,
+            ...new Array(4)
+              .fill([
+                // view_projection: mat4x4<f32>,
+                ...new Array(16).fill(0),
+                // texel_size: f32,
+                0,
+                // far_bound: f32,
+                0,
+                // padding
+                0,
+                0,
+              ])
+              .flat(),
+
+            // color: vec4<f32>,
+            0,
+            0,
+            0,
+            0,
+            // direction_to_light: vec3<f32>,
+            0,
+            0,
+            0,
+            // // 'flags' is a bit field indicating various options. u32 is 32 bits so we have up to 32 options.
+            // flags: u32,
+            0,
+            // shadow_depth_bias: f32,
+            0,
+            // shadow_normal_bias: f32,
+            0,
+            // num_cascades: u32,
+            0,
+            // cascades_overlap_proportion: f32,
+            0,
+            // depth_texture_base_index: u32,
+            0,
+            // padding
+            0,
+            0,
+            0,
+          ])
+          .flat(),
+      },
+      {
+        name: 'ambient_color',
+        value: [0, 0, 0, 0],
+      },
+      {
+        name: 'cluster_dimensions',
+        value: [0, 0, 0, 0],
+      },
+      {
+        name: 'cluster_factors',
+        value: [0, 0, 0, 0],
+      },
+      {
+        name: 'n_directional_lights',
+        value: 0,
+      },
+      {
+        name: 'spot_light_shadowmap_offset',
+        value: 0,
+      },
+      {
+        name: 'environment_map_smallest_specular_mip_level',
+        value: 0,
+      },
+      {
+        name: 'padding',
+        value: 0,
+      },
+      {
+        name: 'padding1',
+        value: [0, 0, 0, 0],
+      },
+      {
+        name: 'padding2',
+        value: [0, 0, 0, 0],
+      },
+    ]);
   }
 
   post() {

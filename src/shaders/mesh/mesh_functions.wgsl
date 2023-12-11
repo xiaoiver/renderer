@@ -32,20 +32,20 @@ fn mesh_position_local_to_world(model: mat4x4<f32>, vertex_position: vec4<f32>) 
 //     return position_world_to_clip(world_position.xyz);
 // }
 
-// fn mesh_normal_local_to_world(vertex_normal: vec3<f32>, instance_index: u32) -> vec3<f32> {
-//     // NOTE: The mikktspace method of normal mapping requires that the world normal is
-//     // re-normalized in the vertex shader to match the way mikktspace bakes vertex tangents
-//     // and normal maps so that the exact inverse process is applied when shading. Blender, Unity,
-//     // Unreal Engine, Godot, and more all use the mikktspace method. Do not change this code
-//     // unless you really know what you are doing.
-//     // http://www.mikktspace.com/
-//     return normalize(
-//         mat2x4_f32_to_mat3x3_unpack(
-//             mesh[instance_index].inverse_transpose_model_a,
-//             mesh[instance_index].inverse_transpose_model_b,
-//         ) * vertex_normal
-//     );
-// }
+fn mesh_normal_local_to_world(vertex_normal: vec3<f32>, instance_index: u32) -> vec3<f32> {
+    // NOTE: The mikktspace method of normal mapping requires that the world normal is
+    // re-normalized in the vertex shader to match the way mikktspace bakes vertex tangents
+    // and normal maps so that the exact inverse process is applied when shading. Blender, Unity,
+    // Unreal Engine, Godot, and more all use the mikktspace method. Do not change this code
+    // unless you really know what you are doing.
+    // http://www.mikktspace.com/
+    return normalize(
+        mat2x4_f32_to_mat3x3_unpack(
+            mesh[instance_index].inverse_transpose_model_a,
+            mesh[instance_index].inverse_transpose_model_b,
+        ) * vertex_normal
+    );
+}
 
 // // Calculates the sign of the determinant of the 3x3 model matrix based on a
 // // mesh flag

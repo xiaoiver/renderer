@@ -91,16 +91,16 @@ export class RenderResource extends System {
     this.registerShaderModule(tonemapping_shared);
 
     // PBR
-    this.registerShaderModule(clustered_forward);
+    // this.registerShaderModule(clustered_forward);
     this.registerShaderModule(pbr_types);
     this.registerShaderModule(pbr_bindings);
     this.registerShaderModule(pbr_lighting);
-    this.registerShaderModule(pbr_transmission);
-    this.registerShaderModule(shadow_sampling);
-    this.registerShaderModule(shadows);
+    // this.registerShaderModule(pbr_transmission);
+    // this.registerShaderModule(shadow_sampling);
+    // this.registerShaderModule(shadows);
     this.registerShaderModule(ambient);
     this.registerShaderModule(fog);
-    this.registerShaderModule(environment_map);
+    // this.registerShaderModule(environment_map);
     this.registerShaderModule(parallax_mapping);
     this.registerShaderModule(pbr_functions);
     this.registerShaderModule(gtao_utils);

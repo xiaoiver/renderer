@@ -22,6 +22,8 @@ import {
   Commands,
   BloomSettings,
   Skybox,
+  FogSettings,
+  Color,
 } from '../../src';
 import { Vec3 } from '../../src/math';
 import { Cube } from '../../src/meshes/Cube';
@@ -32,6 +34,7 @@ import posy from '../public/images/posy.jpg';
 import negy from '../public/images/negy.jpg';
 import posz from '../public/images/posz.jpg';
 import negz from '../public/images/negz.jpg';
+import { Linear } from '../../src/components/pbr/FogFalloff';
 
 /**
  * @see https://bevyengine.org/learn/book/getting-started/ecs/
@@ -62,6 +65,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           Fxaa,
           BloomSettings,
           Skybox,
+          FogSettings,
         ).write,
     );
 
@@ -74,7 +78,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           new Camera3dBundle({
             camera: new Camera(),
             projection: new Perspective(),
-            transform: Transform.from_xyz(-2.5, -1.5, 2.0).look_at(
+            transform: Transform.from_xyz(-2.5, 1.5, 2.0).look_at(
               Vec3.ZERO,
               Vec3.Y,
             ),
@@ -88,10 +92,21 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           new Skybox({
             image_handle,
           }),
+          new FogSettings({
+            color: Color.BLUE,
+            falloff: new Linear({
+              start: 0.0,
+              end: 6,
+            }),
+          }),
         )
         .entity.hold();
 
       const mesh = Mesh.from(new Cube(1));
+      mesh.insert_attribute(
+        Mesh.ATTRIBUTE_COLOR,
+        mesh.attribute(Mesh.ATTRIBUTE_POSITION).map(() => [1, 0, 0, 1]),
+      );
       const material = new Material();
       this.commands.spawn(
         new PbrBundle({
@@ -169,4 +184,25 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
       fxaa.edge_threshold_min = edge_threshold_min;
     });
   fxaaFolder.open();
+
+  const fogFolder = gui.addFolder('fog');
+  const fogConfig = {
+    start: 0,
+    end: 6,
+  };
+  fogFolder.add(fogConfig, 'start', 0, 10).onChange((start: number) => {
+    const fog = camera.write(FogSettings);
+    fog.falloff = new Linear({
+      start,
+      end: fogConfig.end,
+    });
+  });
+  fogFolder.add(fogConfig, 'end', 0, 10).onChange((end: number) => {
+    const fog = camera.write(FogSettings);
+    fog.falloff = new Linear({
+      start: fogConfig.start,
+      end,
+    });
+  });
+  fogFolder.open();
 }

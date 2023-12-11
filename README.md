@@ -158,6 +158,39 @@ camera = this.commands.spawn(
 );
 ```
 
+### Fog
+
+Configures the “classic” computer graphics [distance fog](https://en.wikipedia.org/wiki/Distance_fog) effect, in which objects appear progressively more covered in atmospheric haze the further away they are from the camera.
+
+```ts
+camera = this.commands.spawn(
+  //... Omit other components
+  new FogSettings({
+    color: Color.BLUE,
+    falloff: new Linear({
+      start: 0,
+      end: 100,
+    }),
+  }),
+);
+```
+
+The parameters are as follows:
+
+- color `Color` The color of the fog effect.
+- directional_light_color `Color` Color used to modulate the influence of directional light colors on the fog, where the view direction aligns with each directional light direction, producing a “glow” or light dispersion effect.
+- directional_light_exponent `number` The exponent applied to the directional light alignment calculation. A higher value means a more concentrated “glow”.
+- falloff `FogFalloff` The rate at which fog intensity increases with distance is controlled by the falloff mode. Determines which falloff mode to use, and its parameters.
+
+The falloff modes are as follows:
+
+- Linear - A linear fog falloff that grows in intensity between `start` and `end` distances. This falloff mode is simpler to control than other modes, however it can produce results that look “artificial”, depending on the scene.
+  - start `number` Distance from the camera where fog is completely transparent, in world units.
+  - end `number` Distance from the camera where fog is completely opaque, in world units.
+- Exponential
+- ExponentialSquared
+- Atmospheric
+
 ## Appendix
 
 ### 3D Gaussian Splatting
