@@ -79,6 +79,8 @@ new App({
 
 ## ECS
 
+[Bevy ECS](https://bevyengine.org/learn/book/getting-started/ecs/) makes Bevy’s API so elegant.
+
 There're so many ECS architectural implementations for JS/TS. I found [becsy](https://lastolivegames.github.io/becsy) is the most special one even if its multi-threading feature is not yet implemented.
 
 <img src="https://lastolivegames.github.io/becsy/assets/architecture.a3cc1c9e.svg" alt="ecs" width="400px">
@@ -114,6 +116,14 @@ Bevy use [naga_oil](https://github.com/bevyengine/naga_oil). I try to compile it
 
 It helps me a lot during the process of learning the structures in bevy shader system.
 
+## Clustered Forward Shading
+
+Clustered shading expands on the idea of tiled rendering but adds a segmentation on the 3rd axis. The “clustering” is done in view space, by splitting the frustum into a 3D grid.
+
+- https://google.github.io/filament/Filament.html#imagingpipeline/lightpath/clusteredforwardrendering
+- https://www.cse.chalmers.se/~uffe/clustered_shading_preprint.pdf
+- [Relative issue in bevy](https://github.com/bevyengine/bevy/issues/179)
+
 ## Skybox
 
 Create a cubemap and upload images in the following order:
@@ -133,7 +143,7 @@ camera = this.commands.spawn(
 
 <img src="https://mdn.alipayobjects.com/huamei_vbm5bl/afts/img/A*9_1wSpTPeiQAAAAAAAAAAAAADvR5AQ/original" alt="skybox" width="250">
 
-## Post processing
+## Post Processing
 
 ### FXAA
 
@@ -188,8 +198,7 @@ The falloff modes are as follows:
   - start `number` Distance from the camera where fog is completely transparent, in world units.
   - end `number` Distance from the camera where fog is completely opaque, in world units.
 
-<img src="https://mdn.alipayobjects.com/huamei_vbm5bl/afts/img/A*5owGSq6Thv0AAAAAAAAAAAAADvR5AQ/original" alt="linear fog" width="200">
-<img src="https://mdn.alipayobjects.com/huamei_vbm5bl/afts/img/A*h8KiTI68_O8AAAAAAAAAAAAADvR5AQ/original" alt="exponential fog" width="250">
+<img src="https://mdn.alipayobjects.com/huamei_vbm5bl/afts/img/A*5owGSq6Thv0AAAAAAAAAAAAADvR5AQ/original" alt="linear fog" width="200"><img src="https://mdn.alipayobjects.com/huamei_vbm5bl/afts/img/A*h8KiTI68_O8AAAAAAAAAAAAADvR5AQ/original" alt="exponential fog" width="250">
 
 - Exponential - An exponential fog falloff with a given `density`.
   - density `number` Multiplier applied to the world distance (within the exponential fog falloff calculation).
