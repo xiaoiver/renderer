@@ -288,23 +288,15 @@ export class OpaqueNode extends PipelineNode {
         height: 100,
         dimension: TextureDimension.TEXTURE_2D,
         usage: TextureUsage.SAMPLED,
+        pixelStore: {
+          unpackFlipY: true,
+        },
       });
       texture.setImageData([base_color_texture]);
       device.setResourceName(texture, 'BaseColor');
 
-      // const sampler = device.createSampler({
-      //   addressModeU: AddressMode.CLAMP_TO_EDGE,
-      //   addressModeV: AddressMode.CLAMP_TO_EDGE,
-      //   minFilter: FilterMode.BILINEAR,
-      //   magFilter: FilterMode.BILINEAR,
-      //   mipmapFilter: MipmapFilterMode.LINEAR,
-      //   lodMinClamp: 0,
-      //   lodMaxClamp: 0,
-      // });
-
       const mapping = new TextureMapping();
       mapping.texture = texture;
-      // mapping.sampler = sampler;
       renderInst.setSamplerBindingsFromTextureMappings([mapping]);
     }
 
