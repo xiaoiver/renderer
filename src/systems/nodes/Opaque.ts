@@ -9,6 +9,12 @@ import {
   BlendMode,
   BlendFactor,
   CullMode,
+  Texture,
+  TextureDimension,
+  TextureUsage,
+  AddressMode,
+  FilterMode,
+  MipmapFilterMode,
 } from '@antv/g-device-api';
 import { Entity } from '@lastolivegames/becsy';
 import { flatten } from 'lodash-es';
@@ -20,6 +26,8 @@ import { createProgram } from '../utils';
 import { getFormatByteSizePerBlock } from '../../framegraph/utils/format';
 import { PrepareViewUniforms } from '../PrepareViewUniforms';
 import { PrepareFog } from '../PrepareFog';
+import { PrepareMaterial } from '../PrepareMaterial';
+import { TextureMapping } from '../../framegraph';
 
 /**
  * Render opaque meshes.
@@ -27,14 +35,15 @@ import { PrepareFog } from '../PrepareFog';
 export class OpaqueNode extends PipelineNode {
   viewUniforms: PrepareViewUniforms;
   fogUniforms: PrepareFog;
+  materialUniforms: PrepareMaterial;
 
   init() {}
 
   prepare() {
     const template = this.pipeline.renderHelper.pushTemplateRenderInst();
     template.setBindingLayout({
-      numUniformBuffers: 3,
-      numSamplers: 0,
+      numUniformBuffers: 4,
+      numSamplers: 1,
       numStorageBuffers: 1,
     });
     template.setMegaStateFlags(
@@ -56,8 +65,12 @@ export class OpaqueNode extends PipelineNode {
       ),
     );
 
-    this.viewUniforms.prepareUniforms(template);
+    // View binding = 0
+    this.viewUniforms.prepareUniforms(template, 0);
+    // Fog binding = 2
     this.fogUniforms.prepareUniforms(template, 2);
+    // Material binding = 3
+    this.materialUniforms.prepareUniforms(template, 3);
 
     // Lights binding = 1
     template.setUniforms(1, [
@@ -155,7 +168,8 @@ export class OpaqueNode extends PipelineNode {
   submit(renderable: Entity): void {
     const device = this.renderCache.device;
     const mesh = renderable.read(Mesh);
-    const { vertex_shader, fragment_shader } = renderable.read(Material);
+    const { vertex_shader, fragment_shader, base_color_texture } =
+      renderable.read(Material);
 
     const defines: Record<string, number | boolean> = {};
     defines['VERTEX_OUTPUT_INSTANCE_INDEX'] = 1;
@@ -265,6 +279,32 @@ export class OpaqueNode extends PipelineNode {
       renderInst.drawIndexesInstanced(mesh.indices.length, 1);
     } else {
       renderInst.drawPrimitives(vertexCount);
+    }
+
+    if (base_color_texture) {
+      const texture = device.createTexture({
+        format: Format.U8_RGBA_NORM,
+        width: 100,
+        height: 100,
+        dimension: TextureDimension.TEXTURE_2D,
+        usage: TextureUsage.SAMPLED,
+      });
+      device.setResourceName(texture, 'BaseColor');
+
+      // const sampler = device.createSampler({
+      //   addressModeU: AddressMode.CLAMP_TO_EDGE,
+      //   addressModeV: AddressMode.CLAMP_TO_EDGE,
+      //   minFilter: FilterMode.BILINEAR,
+      //   magFilter: FilterMode.BILINEAR,
+      //   mipmapFilter: MipmapFilterMode.LINEAR,
+      //   lodMinClamp: 0,
+      //   lodMaxClamp: 0,
+      // });
+
+      const mapping = new TextureMapping();
+      mapping.texture = texture;
+      // mapping.sampler = sampler;
+      renderInst.setSamplerBindingsFromTextureMappings([mapping]);
     }
 
     this.renderInstManager.submitRenderInst(renderInst, this.renderList);

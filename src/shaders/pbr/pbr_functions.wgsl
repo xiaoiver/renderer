@@ -5,7 +5,7 @@
     pbr_bindings,
     mesh_view_bindings as view_bindings,
     mesh_view_types,
-    // lighting,
+    lighting,
     // transmission,
     // clustered_forward as clustering,
     // shadows,
@@ -22,7 +22,7 @@
 
 fn alpha_discard(material: pbr_types::StandardMaterial, output_color: vec4<f32>) -> vec4<f32> {
     var color = output_color;
-    let alpha_mode = material.flags & pbr_types::STANDARD_MATERIAL_FLAGS_ALPHA_MODE_RESERVED_BITS;
+    let alpha_mode = u32(material.flags) & pbr_types::STANDARD_MATERIAL_FLAGS_ALPHA_MODE_RESERVED_BITS;
     if alpha_mode == pbr_types::STANDARD_MATERIAL_FLAGS_ALPHA_MODE_OPAQUE {
         // NOTE: If rendering as opaque, alpha should be ignored so set to 1.0
         color.a = 1.0;
@@ -150,29 +150,29 @@ fn apply_pbr_lighting(
 ) -> vec4<f32> {
     var output_color: vec4<f32> = in.material.base_color;
 
-//     // TODO use .a for exposure compensation in HDR
-//     let emissive = in.material.emissive;
+    // TODO use .a for exposure compensation in HDR
+    let emissive = in.material.emissive;
 
-//     // calculate non-linear roughness from linear perceptualRoughness
-//     let metallic = in.material.metallic;
-//     let perceptual_roughness = in.material.perceptual_roughness;
-//     let roughness = lighting::perceptualRoughnessToRoughness(perceptual_roughness);
-//     let ior = in.material.ior;
-//     let thickness = in.material.thickness;
-//     let diffuse_transmission = in.material.diffuse_transmission;
-//     let specular_transmission = in.material.specular_transmission;
+    // calculate non-linear roughness from linear perceptualRoughness
+    let metallic = in.material.metallic;
+    let perceptual_roughness = in.material.perceptual_roughness;
+    let roughness = lighting::perceptualRoughnessToRoughness(perceptual_roughness);
+    let ior = in.material.ior;
+    let thickness = in.material.thickness;
+    let diffuse_transmission = in.material.diffuse_transmission;
+    let specular_transmission = in.material.specular_transmission;
 
-//     let specular_transmissive_color = specular_transmission * in.material.base_color.rgb;
+    let specular_transmissive_color = specular_transmission * in.material.base_color.rgb;
 
-//     let occlusion = in.occlusion;
+    let occlusion = in.occlusion;
 
-//     // Neubelt and Pettineo 2013, "Crafting a Next-gen Material Pipeline for The Order: 1886"
-//     let NdotV = max(dot(in.N, in.V), 0.0001);
+    // Neubelt and Pettineo 2013, "Crafting a Next-gen Material Pipeline for The Order: 1886"
+    let NdotV = max(dot(in.N, in.V), 0.0001);
 
-//     // Remapping [0,1] reflectance to F0
-//     // See https://google.github.io/filament/Filament.html#materialsystem/parameterization/remapping
-//     let reflectance = in.material.reflectance;
-//     let F0 = 0.16 * reflectance * reflectance * (1.0 - metallic) + output_color.rgb * metallic;
+    // Remapping [0,1] reflectance to F0
+    // See https://google.github.io/filament/Filament.html#materialsystem/parameterization/remapping
+    let reflectance = in.material.reflectance;
+    let F0 = 0.16 * reflectance * reflectance * (1.0 - metallic) + output_color.rgb * metallic;
 
 //     // Diffuse strength is inversely related to metallicity, specular and diffuse transmission
 //     let diffuse_color = output_color.rgb * (1.0 - metallic) * (1.0 - specular_transmission) * (1.0 - diffuse_transmission);
@@ -490,9 +490,10 @@ fn main_pass_post_lighting_processing(
     var output_color = input_color;
 
     // fog
-    // if (view_bindings::fog.mode != mesh_view_types::FOG_MODE_OFF && (pbr_input.material.flags & pbr_types::STANDARD_MATERIAL_FLAGS_FOG_ENABLED_BIT) != 0u) {
+    if (u32(view_bindings::fog.mode) != mesh_view_types::FOG_MODE_OFF
+        && (u32(pbr_input.material.flags) & pbr_types::STANDARD_MATERIAL_FLAGS_FOG_ENABLED_BIT) != 0u) {
         output_color = apply_fog(view_bindings::fog, output_color, pbr_input.world_position.xyz, view_bindings::view.world_position.xyz);
-    // }
+    }
 
 #ifdef TONEMAP_IN_SHADER
     output_color = tone_mapping(output_color, view_bindings::view.color_grading);

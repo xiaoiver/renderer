@@ -15,13 +15,14 @@ import vert from '../shaders/fullscreen.wgsl?raw';
 import frag from '../shaders/bloom.wgsl?raw';
 import { clamp } from 'lodash-es';
 import { Vec4 } from '../math';
+import { MeshPipeline } from './MeshPipeline';
 
 export class BloomPipeline extends System {
   bloom = this.query(
     (q) => q.addedOrChanged.with(BloomSettings, Camera).trackWrites,
   );
 
-  private rendererResource = this.attach(RenderResource);
+  private pipeline = this.attach(MeshPipeline);
 
   private textureMapping = nArray(1, () => new TextureMapping());
   private program: Program;
@@ -85,7 +86,7 @@ export class BloomPipeline extends System {
       }
       this.program = null;
 
-      this.rendererResource.registerPass(
+      this.pipeline.registerPass(
         'Bloom Downsample First',
         this.pushDownsamplePass,
       );

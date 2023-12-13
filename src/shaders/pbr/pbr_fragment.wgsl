@@ -7,7 +7,7 @@
     prepass_utils,
     mesh_bindings::mesh,
     mesh_view_bindings::view,
-    parallax_mapping::parallaxed_uv,
+    // parallax_mapping::parallaxed_uv,
 }
 
 #ifdef SCREEN_SPACE_AMBIENT_OCCLUSION
@@ -54,21 +54,21 @@ fn pbr_input_from_vertex_output(
     return pbr_input;
 }
 
-// // Prepare a full PbrInput by sampling all textures to resolve
-// // the material members
-// fn pbr_input_from_standard_material(
-//     in: VertexOutput,
-//     is_front: bool,
-// ) -> pbr_types::PbrInput {
-//     let double_sided = (pbr_bindings::material.flags & pbr_types::STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT) != 0u;
+// Prepare a full PbrInput by sampling all textures to resolve
+// the material members
+fn pbr_input_from_standard_material(
+    in: VertexOutput,
+    is_front: bool,
+) -> pbr_types::PbrInput {
+    let double_sided = (u32(pbr_bindings::material.flags) & pbr_types::STANDARD_MATERIAL_FLAGS_DOUBLE_SIDED_BIT) != 0u;
 
-//     var pbr_input: pbr_types::PbrInput = pbr_input_from_vertex_output(in, is_front, double_sided);
-//     pbr_input.material.flags = pbr_bindings::material.flags;
-//     pbr_input.material.base_color *= pbr_bindings::material.base_color;
-//     pbr_input.material.deferred_lighting_pass_id = pbr_bindings::material.deferred_lighting_pass_id;
+    var pbr_input: pbr_types::PbrInput = pbr_input_from_vertex_output(in, is_front, double_sided);
+    pbr_input.material.flags = pbr_bindings::material.flags;
+    pbr_input.material.base_color *= pbr_bindings::material.base_color;
+    pbr_input.material.deferred_lighting_pass_id = pbr_bindings::material.deferred_lighting_pass_id;
 
-// #ifdef VERTEX_UVS
-//     var uv = in.uv;
+#ifdef VERTEX_UVS
+    var uv = in.uv;
 
 // #ifdef VERTEX_TANGENTS
 //     if ((pbr_bindings::material.flags & pbr_types::STANDARD_MATERIAL_FLAGS_DEPTH_MAP_BIT) != 0u) {
@@ -91,12 +91,13 @@ fn pbr_input_from_vertex_output(
 //     }
 // #endif // VERTEX_TANGENTS
 
-//     if ((pbr_bindings::material.flags & pbr_types::STANDARD_MATERIAL_FLAGS_BASE_COLOR_TEXTURE_BIT) != 0u) {
-//         pbr_input.material.base_color *= textureSampleBias(pbr_bindings::base_color_texture, pbr_bindings::base_color_sampler, uv, view.mip_bias);
-//     }
-// #endif // VERTEX_UVS
+    if ((u32(pbr_bindings::material.flags) & pbr_types::STANDARD_MATERIAL_FLAGS_BASE_COLOR_TEXTURE_BIT) != 0u) {
+        pbr_input.material.base_color *= textureSampleBias(pbr_bindings::base_color_texture, pbr_bindings::base_color_sampler, uv, view.mip_bias);
+        pbr_input.material.base_color = vec4(uv, 0.0, 1.0);
+    }
+#endif // VERTEX_UVS
 
-//     pbr_input.material.flags = pbr_bindings::material.flags;
+    pbr_input.material.flags = pbr_bindings::material.flags;
 
 //     // NOTE: Unlit bit not set means == 0 is true, so the true case is if lit
 //     if ((pbr_bindings::material.flags & pbr_types::STANDARD_MATERIAL_FLAGS_UNLIT_BIT) == 0u) {
@@ -193,5 +194,5 @@ fn pbr_input_from_vertex_output(
 // #endif
 //     }
 
-//     return pbr_input;
-// }
+    return pbr_input;
+}

@@ -1,6 +1,6 @@
 import { field } from '@lastolivegames/becsy';
 import { Color } from '../render';
-import { FogFalloff, Linear } from './FogFalloff';
+import { FogFalloff } from './FogFalloff';
 
 export class FogSettings {
   /**
@@ -43,7 +43,7 @@ export class FogSettings {
       color = Color.rgba(1, 1, 1, 1),
       directional_light_color = Color.NONE,
       directional_light_exponent = 8,
-      falloff = new Linear({
+      falloff = new FogFalloff.Linear({
         start: 0.0,
         end: 100.0,
       }),

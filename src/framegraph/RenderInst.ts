@@ -64,7 +64,7 @@ export class RenderInst {
     uniformBufferBindings: [],
     storageBufferBindings: [],
   }));
-  private dynamicUniformBufferByteOffsets: number[] = nArray(4, () => 0);
+  private dynamicUniformBufferByteOffsets: number[] = nArray(10, () => 0);
 
   flags: RenderInstFlags = 0;
   private vertexBuffers: (VertexBufferDescriptor | null)[] | null = null;

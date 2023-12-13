@@ -2,159 +2,6 @@ import { Vec3 } from '../../math';
 import { Color } from '../render';
 
 /**
- * A linear fog falloff that grows in intensity between `start` and `end` distances.
- * This falloff mode is simpler to control than other modes,
- * however it can produce results that look “artificial”, depending on the scene.
- *
- * ```text
- * let fog_intensity = 1.0 - ((end - distance) / (end - start)).clamp(0.0, 1.0);
- * ```
- */
-export class Linear {
-  /**
-   * Distance from the camera where fog is completely transparent, in world units.
-   */
-  start: number;
-
-  /**
-   * Distance from the camera where fog is completely opaque, in world units.
-   */
-  end: number;
-
-  constructor(
-    options: Partial<{
-      start: number;
-      end: number;
-    }>,
-  ) {
-    const { start = 0, end = 100 } = options || {};
-    this.start = start;
-    this.end = end;
-  }
-}
-
-/**
- * An exponential fog falloff with a given `density`.
- *
- * Initially gains intensity quickly with distance, then more slowly.
- * Typically produces more natural results than [`FogFalloff.Linear`], but is a bit harder to control.
- *
- * To move the fog “further away”, use lower density values. To move it “closer” use higher density values.
- *
- * The fog intensity for a given point in the scene is determined by the following formula:
- * ```text
- * let fog_intensity = 1.0 - 1.0 / (distance * density).exp();
- * ```
- */
-export class Exponential {
-  /**
-   * Multiplier applied to the world distance (within the exponential fog falloff calculation).
-   */
-  density: number;
-  constructor(
-    options: Partial<{
-      density: number;
-    }>,
-  ) {
-    const { density = 0 } = options || {};
-    this.density = density;
-  }
-}
-
-/**
- * A squared exponential fog falloff with a given `density`.
- *
- * Similar to [`FogFalloff.Exponential`],
- * but grows more slowly in intensity for closer distances before “catching up”.
- *
- * To move the fog “further away”, use lower density values. To move it “closer” use higher density values.
- */
-export class ExponentialSquared {
-  /**
-   * Multiplier applied to the world distance (within the exponential squared fog falloff calculation).
-   */
-  density: number;
-  constructor(
-    options: Partial<{
-      density: number;
-    }>,
-  ) {
-    const { density = 0 } = options || {};
-    this.density = density;
-  }
-}
-
-/**
- * A more general form of the [`FogFalloff.Exponential`] mode.
- * The falloff formula is separated into two terms, `extinction` and `inscattering`,
- * for a somewhat simplified atmospheric scattering model.
- * Additionally, individual color channels can have their own density values,
- * resulting in a total of six different configuration parameters.
- *
- * ## Formula
- * Unlike other modes, atmospheric falloff doesn't use a simple intensity-based blend of fog color with
- * object color. Instead, it calculates per-channel extinction and inscattering factors, which are
- * then used to calculate the final color.
- *
- * ```text
- * let extinction_factor = 1.0 - 1.0 / (distance * extinction).exp();
- * let inscattering_factor = 1.0 - 1.0 / (distance * inscattering).exp();
- * let result = input_color * (1.0 - extinction_factor) + fog_color * inscattering_factor;
- * ```
- *
- * ## Equivalence to [`FogFalloff.Exponential`]
- * For a density value of `D`, the following two falloff modes will produce identical visual results:
- * ```ts
- * let exponential = new FogFalloff.Exponential({
- *    density: D,
- * });
- * let atmospheric = new FogFalloff.Atmospheric({
- *    extinction: new Vec3(D, D, D),
- *    inscattering: new Vec3(D, D, D),
- * });
- * ```
- * **Note:** While the results are identical, [`FogFalloff.Atmospheric`] is computationally more expensive.
- */
-export class Atmospheric {
-  /**
-   * Controls how much light is removed due to atmospheric “extinction”, i.e. loss of light due to
-   * photons being absorbed by atmospheric particles.
-   *
-   * Each component can be thought of as an independent per `R`/`G`/`B` channel `density` factor from
-   * [`FogFalloff.Exponential`]: Multiplier applied to the world distance (within the fog
-   * falloff calculation) for that specific channel.
-   *
-   * **Note:**
-   * This value is not a `Color`, since it affects the channels exponentially in a non-intuitive way.
-   * For artistic control, use the [`FogFalloff.from_visibility_colors()`] convenience method.
-   */
-  extinction: Vec3;
-
-  /* Controls how much light is added due to light scattering from the sun through the atmosphere.
-   *
-   * Each component can be thought of as an independent per `R`/`G`/`B` channel `density` factor from
-   * [`FogFalloff.Exponential`]: A multiplier applied to the world distance (within the fog
-   * falloff calculation) for that specific channel.
-   *
-   * **Note:**
-   * This value is not a `Color`, since it affects the channels exponentially in a non-intuitive way.
-   * For artistic control, use the [`FogFalloff.from_visibility_colors()`] convenience method.
-   */
-  inscattering: Vec3;
-
-  constructor(
-    options: Partial<{
-      extinction: Vec3;
-      inscattering: Vec3;
-    }>,
-  ) {
-    const { extinction, inscattering } = options || {};
-    this.extinction = extinction;
-    this.inscattering = inscattering;
-  }
-}
-
-/**
  * Allows switching between different fog falloff modes, and configuring their parameters.
  *
  * When using non-linear fog modes it can be hard to determine the right parameter values
@@ -178,11 +25,164 @@ export class Atmospheric {
  *    - [`FogFalloff.from_visibility_contrast_colors()`]
  */
 export type FogFalloff =
-  | Linear
-  | Exponential
-  | ExponentialSquared
-  | Atmospheric;
+  | FogFalloff.Linear
+  | FogFalloff.Exponential
+  | FogFalloff.ExponentialSquared
+  | FogFalloff.Atmospheric;
 export namespace FogFalloff {
+  /**
+   * A linear fog falloff that grows in intensity between `start` and `end` distances.
+   * This falloff mode is simpler to control than other modes,
+   * however it can produce results that look “artificial”, depending on the scene.
+   *
+   * ```text
+   * let fog_intensity = 1.0 - ((end - distance) / (end - start)).clamp(0.0, 1.0);
+   * ```
+   */
+  export class Linear {
+    /**
+     * Distance from the camera where fog is completely transparent, in world units.
+     */
+    start: number;
+
+    /**
+     * Distance from the camera where fog is completely opaque, in world units.
+     */
+    end: number;
+
+    constructor(
+      options: Partial<{
+        start: number;
+        end: number;
+      }>,
+    ) {
+      const { start = 0, end = 100 } = options || {};
+      this.start = start;
+      this.end = end;
+    }
+  }
+
+  /**
+   * An exponential fog falloff with a given `density`.
+   *
+   * Initially gains intensity quickly with distance, then more slowly.
+   * Typically produces more natural results than [`FogFalloff.Linear`], but is a bit harder to control.
+   *
+   * To move the fog “further away”, use lower density values. To move it “closer” use higher density values.
+   *
+   * The fog intensity for a given point in the scene is determined by the following formula:
+   * ```text
+   * let fog_intensity = 1.0 - 1.0 / (distance * density).exp();
+   * ```
+   */
+  export class Exponential {
+    /**
+     * Multiplier applied to the world distance (within the exponential fog falloff calculation).
+     */
+    density: number;
+    constructor(
+      options: Partial<{
+        density: number;
+      }>,
+    ) {
+      const { density = 0 } = options || {};
+      this.density = density;
+    }
+  }
+
+  /**
+   * A squared exponential fog falloff with a given `density`.
+   *
+   * Similar to [`FogFalloff.Exponential`],
+   * but grows more slowly in intensity for closer distances before “catching up”.
+   *
+   * To move the fog “further away”, use lower density values. To move it “closer” use higher density values.
+   */
+  export class ExponentialSquared {
+    /**
+     * Multiplier applied to the world distance (within the exponential squared fog falloff calculation).
+     */
+    density: number;
+    constructor(
+      options: Partial<{
+        density: number;
+      }>,
+    ) {
+      const { density = 0 } = options || {};
+      this.density = density;
+    }
+  }
+
+  /**
+   * A more general form of the [`FogFalloff.Exponential`] mode.
+   * The falloff formula is separated into two terms, `extinction` and `inscattering`,
+   * for a somewhat simplified atmospheric scattering model.
+   * Additionally, individual color channels can have their own density values,
+   * resulting in a total of six different configuration parameters.
+   *
+   * ## Formula
+   * Unlike other modes, atmospheric falloff doesn't use a simple intensity-based blend of fog color with
+   * object color. Instead, it calculates per-channel extinction and inscattering factors, which are
+   * then used to calculate the final color.
+   *
+   * ```text
+   * let extinction_factor = 1.0 - 1.0 / (distance * extinction).exp();
+   * let inscattering_factor = 1.0 - 1.0 / (distance * inscattering).exp();
+   * let result = input_color * (1.0 - extinction_factor) + fog_color * inscattering_factor;
+   * ```
+   *
+   * ## Equivalence to [`FogFalloff.Exponential`]
+   * For a density value of `D`, the following two falloff modes will produce identical visual results:
+   * ```ts
+   * let exponential = new FogFalloff.Exponential({
+   *    density: D,
+   * });
+   * let atmospheric = new FogFalloff.Atmospheric({
+   *    extinction: new Vec3(D, D, D),
+   *    inscattering: new Vec3(D, D, D),
+   * });
+   * ```
+   * **Note:** While the results are identical, [`FogFalloff.Atmospheric`] is computationally more expensive.
+   */
+  export class Atmospheric {
+    /**
+     * Controls how much light is removed due to atmospheric “extinction”, i.e. loss of light due to
+     * photons being absorbed by atmospheric particles.
+     *
+     * Each component can be thought of as an independent per `R`/`G`/`B` channel `density` factor from
+     * [`FogFalloff.Exponential`]: Multiplier applied to the world distance (within the fog
+     * falloff calculation) for that specific channel.
+     *
+     * **Note:**
+     * This value is not a `Color`, since it affects the channels exponentially in a non-intuitive way.
+     * For artistic control, use the [`FogFalloff.from_visibility_colors()`] convenience method.
+     */
+    extinction: Vec3;
+
+    /* Controls how much light is added due to light scattering from the sun through the atmosphere.
+     *
+     * Each component can be thought of as an independent per `R`/`G`/`B` channel `density` factor from
+     * [`FogFalloff.Exponential`]: A multiplier applied to the world distance (within the fog
+     * falloff calculation) for that specific channel.
+     *
+     * **Note:**
+     * This value is not a `Color`, since it affects the channels exponentially in a non-intuitive way.
+     * For artistic control, use the [`FogFalloff.from_visibility_colors()`] convenience method.
+     */
+    inscattering: Vec3;
+
+    constructor(
+      options: Partial<{
+        extinction: Vec3;
+        inscattering: Vec3;
+      }>,
+    ) {
+      const { extinction, inscattering } = options || {};
+      this.extinction = extinction;
+      this.inscattering = inscattering;
+    }
+  }
+
   /**
    * A 2% contrast threshold was originally proposed by Koschmieder, being the
    * minimum visual contrast at which a human observer could detect an object.

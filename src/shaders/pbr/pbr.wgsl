@@ -1,7 +1,6 @@
 #import pbr::{
     pbr_functions::alpha_discard,
-    pbr_fragment::pbr_input_from_vertex_output
-    // pbr_fragment::pbr_input_from_standard_material,
+    pbr_fragment::pbr_input_from_standard_material,
 }
 
 #ifdef PREPASS_PIPELINE
@@ -23,8 +22,7 @@ fn fragment(
     @builtin(front_facing) is_front: bool,
 ) -> FragmentOutput {
     // generate a PbrInput struct from the StandardMaterial bindings
-    // var pbr_input = pbr_input_from_standard_material(in, is_front);
-    var pbr_input = pbr_input_from_vertex_output(in, is_front, false);
+    var pbr_input = pbr_input_from_standard_material(in, is_front);
 
     // alpha discard
     pbr_input.material.base_color = alpha_discard(pbr_input.material, pbr_input.material.base_color);
@@ -36,10 +34,8 @@ fn fragment(
     // in forward mode, we calculate the lit color immediately, and then apply some post-lighting effects here.
     // in deferred mode the lit color and these effects will be calculated in the deferred lighting shader
     var out: FragmentOutput;
-    if (pbr_input.material.flags & STANDARD_MATERIAL_FLAGS_UNLIT_BIT) == 0u {
-        // out.color = apply_pbr_lighting(pbr_input);
-        // out.color = vec4<f32>(pbr_input.N, 1.0);
-        out.color = pbr_input.material.base_color;
+    if (u32(pbr_input.material.flags) & STANDARD_MATERIAL_FLAGS_UNLIT_BIT) == 0u {
+        out.color = apply_pbr_lighting(pbr_input);
     } else {
         out.color = pbr_input.material.base_color;
     }

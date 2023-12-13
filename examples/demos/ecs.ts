@@ -23,12 +23,11 @@ import {
   BloomSettings,
   Skybox,
   FogSettings,
-  Linear,
+  FogFalloff,
   Color,
   Vec3,
-  Exponential,
-  ExponentialSquared,
-  Atmospheric,
+  Tonemapping,
+  ColorGrading,
 } from '../../src';
 import { loadImage } from '../utils/image';
 import posx from '../public/images/posx.jpg';
@@ -47,6 +46,9 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
   // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
   const imageBitmaps = await Promise.all(
     [posx, negx, posy, negy, posz, negz].map(async (src) => loadImage(src)),
+  );
+  const baseColorImage = await loadImage(
+    'https://gw.alipayobjects.com/mdn/rms_6ae20b/afts/img/A*_aqoS73Se3sAAAAAAAAAAAAAARQnAQ',
   );
 
   class StartUpSystem extends System {
@@ -68,6 +70,9 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           BloomSettings,
           Skybox,
           FogSettings,
+          Tonemapping.None,
+          Tonemapping.Reinhard,
+          ColorGrading,
         ).write,
     );
 
@@ -84,6 +89,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
               Vec3.ZERO,
               Vec3.Y,
             ),
+            tonemapping: new Tonemapping.Reinhard(),
           }),
           BloomSettings.NATURAL,
           new Fxaa({
@@ -96,7 +102,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           }),
           new FogSettings({
             color: Color.BLUE,
-            falloff: new Linear({
+            falloff: new FogFalloff.Linear({
               start: 0.0,
               end: 6,
             }),
@@ -109,7 +115,9 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
         Mesh.ATTRIBUTE_COLOR,
         mesh.attribute(Mesh.ATTRIBUTE_POSITION).map(() => [1, 0, 0, 1]),
       );
-      const material = new Material();
+      const material = new Material({
+        base_color_texture: baseColorImage,
+      });
       this.commands.spawn(
         new PbrBundle({
           mesh,
@@ -198,20 +206,20 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
     .onChange((falloff: string) => {
       const fog = camera.write(FogSettings);
       if (falloff === 'Linear') {
-        fog.falloff = new Linear({
+        fog.falloff = new FogFalloff.Linear({
           start: fogConfig.start,
           end: fogConfig.end,
         });
       } else if (falloff === 'Exponential') {
-        fog.falloff = new Exponential({
+        fog.falloff = new FogFalloff.Exponential({
           density: fogConfig.density,
         });
       } else if (falloff === 'ExponentialSquared') {
-        fog.falloff = new ExponentialSquared({
+        fog.falloff = new FogFalloff.ExponentialSquared({
           density: fogConfig.density,
         });
       } else if (falloff === 'Atmospheric') {
-        fog.falloff = new Atmospheric({
+        fog.falloff = new FogFalloff.Atmospheric({
           extinction: Vec3.splat(fogConfig.density),
           inscattering: Vec3.splat(fogConfig.density),
         });
@@ -219,14 +227,14 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
     });
   fogFolder.add(fogConfig, 'start', 0, 10).onChange((start: number) => {
     const fog = camera.write(FogSettings);
-    fog.falloff = new Linear({
+    fog.falloff = new FogFalloff.Linear({
       start,
       end: fogConfig.end,
     });
   });
   fogFolder.add(fogConfig, 'end', 0, 10).onChange((end: number) => {
     const fog = camera.write(FogSettings);
-    fog.falloff = new Linear({
+    fog.falloff = new FogFalloff.Linear({
       start: fogConfig.start,
       end,
     });
@@ -234,15 +242,15 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
   fogFolder.add(fogConfig, 'density', 0, 1).onChange((density: number) => {
     const fog = camera.write(FogSettings);
     if (fogConfig.falloff === 'Exponential') {
-      fog.falloff = new Exponential({
+      fog.falloff = new FogFalloff.Exponential({
         density,
       });
     } else if (fogConfig.falloff === 'ExponentialSquared') {
-      fog.falloff = new ExponentialSquared({
+      fog.falloff = new FogFalloff.ExponentialSquared({
         density,
       });
     } else if (fogConfig.falloff === 'Atmospheric') {
-      fog.falloff = new Atmospheric({
+      fog.falloff = new FogFalloff.Atmospheric({
         extinction: Vec3.splat(density),
         inscattering: Vec3.splat(density),
       });

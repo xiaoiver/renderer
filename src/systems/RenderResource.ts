@@ -101,7 +101,7 @@ export class RenderResource extends System {
     this.registerShaderModule(ambient);
     this.registerShaderModule(fog);
     // this.registerShaderModule(environment_map);
-    this.registerShaderModule(parallax_mapping);
+    // this.registerShaderModule(parallax_mapping);
     this.registerShaderModule(pbr_functions);
     this.registerShaderModule(gtao_utils);
     this.registerShaderModule(pbr_fragment);

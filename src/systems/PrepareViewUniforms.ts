@@ -35,7 +35,8 @@ export class PrepareViewUniforms extends System {
   prepareUniforms: (template: RenderInst, binding?: number) => void;
 
   private cameras = this.query(
-    (q) => q.addedOrChanged.with(ComputedCameraValues).trackWrites,
+    (q) =>
+      q.addedOrChanged.with(ComputedCameraValues, ColorGrading).trackWrites,
   );
 
   constructor() {
@@ -47,6 +48,9 @@ export class PrepareViewUniforms extends System {
     this.cameras.addedOrChanged.forEach((entity) => {
       const computed = entity.read(ComputedCameraValues);
       const transform = entity.read(Transform);
+      const color_grading = entity.read(ColorGrading);
+      const { exposure, gamma, pre_saturation, post_saturation } =
+        color_grading;
 
       // Becsy will trim undeclared fields and functions.
       const projection_matrix = Mat4.copy(computed.projection_matrix);
@@ -116,7 +120,7 @@ export class PrepareViewUniforms extends System {
           },
           {
             name: 'color_grading',
-            value: Vec4.ZERO.to_array(),
+            value: [exposure, gamma, pre_saturation, post_saturation],
           },
           {
             name: 'mip_bias',

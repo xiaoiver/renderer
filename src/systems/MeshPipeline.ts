@@ -1,13 +1,5 @@
 import { Entity, System } from '@lastolivegames/becsy';
-import {
-  Device,
-  SwapChain,
-  setAttachmentStateSimple,
-  TransparentBlack,
-  BlendMode,
-  BlendFactor,
-  OpaqueWhite,
-} from '@antv/g-device-api';
+import { Device, SwapChain, OpaqueWhite } from '@antv/g-device-api';
 import { AppConfig, Material, Transform } from '../components';
 import {
   AntialiasingMode,
@@ -21,11 +13,12 @@ import {
 } from '../framegraph';
 import { Mesh } from '../meshes';
 import { PrepareViewUniforms } from './PrepareViewUniforms';
+import { PrepareFog } from './PrepareFog';
+import { PrepareMaterial } from './PrepareMaterial';
 import { RenderResource } from './RenderResource';
 import { ExtractMeshes } from './ExtractMeshes';
 import { OpaqueNode } from './nodes/Opaque';
 import { PipelineNode } from './nodes/PipelineNode';
-import { PrepareFog } from './PrepareFog';
 
 export class MeshPipeline extends System {
   private appConfig = this.singleton.read(AppConfig);
@@ -54,10 +47,13 @@ export class MeshPipeline extends System {
    */
   private viewUniforms = this.attach(PrepareViewUniforms);
   private fogUniforms = this.attach(PrepareFog);
+  private materialUniforms = this.attach(PrepareMaterial);
 
-  private meshes_query = this.query((q) => q.current.with(Mesh, Transform));
+  private meshes_query = this.query((q) =>
+    q.current.with(Mesh, Material, Transform),
+  );
   private renderables = this.query(
-    (q) => q.addedOrChanged.with(Mesh, Material, Transform).trackWrites,
+    (q) => q.addedOrChanged.with(Mesh, Transform).trackWrites,
   );
 
   async prepare() {
@@ -71,10 +67,13 @@ export class MeshPipeline extends System {
     );
     opaque.viewUniforms = this.viewUniforms;
     opaque.fogUniforms = this.fogUniforms;
+    opaque.materialUniforms = this.materialUniforms;
     this.nodes.push(opaque);
   }
 
   private run(renderables: Readonly<Entity[]>) {
+    console.log('render...');
+
     const { canvas } = this.appConfig;
     const renderInstManager = this.renderHelper.renderInstManager;
     const builder = this.renderHelper.renderGraph.newGraphBuilder();

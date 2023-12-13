@@ -1,12 +1,6 @@
 import { System } from '@lastolivegames/becsy';
 import { RenderInst } from '../framegraph';
-import { FogSettings } from '../components';
-import {
-  Atmospheric,
-  Exponential,
-  ExponentialSquared,
-  Linear,
-} from '../components/pbr/FogFalloff';
+import { FogSettings, FogFalloff } from '../components';
 import { MeshPipeline } from './MeshPipeline';
 
 // Important: These must be kept in sync with `mesh_view_types.wgsl`
@@ -21,7 +15,7 @@ const GPU_FOG_MODE_ATMOSPHERIC = 4;
  */
 export class PrepareFog extends System {
   /**
-   * Used for extracting view uniforms from camera.
+   * Used for extracting fog uniforms.
    */
   prepareUniforms: (template: RenderInst, binding?: number) => void;
 
@@ -33,6 +27,7 @@ export class PrepareFog extends System {
 
   execute(): void {
     this.fogs.addedOrChanged.forEach((entity) => {
+      console.log('fog...');
       this.pipeline.passesChanged = true;
       const fog = entity.read(FogSettings);
       const {
@@ -45,16 +40,16 @@ export class PrepareFog extends System {
       let mode = GPU_FOG_MODE_OFF;
       let be: [number, number, number];
       let bi = [0, 0, 0];
-      if (falloff instanceof Linear) {
+      if (falloff instanceof FogFalloff.Linear) {
         mode = GPU_FOG_MODE_LINEAR;
         be = [falloff.start, falloff.end, 0.0];
-      } else if (falloff instanceof Exponential) {
+      } else if (falloff instanceof FogFalloff.Exponential) {
         mode = GPU_FOG_MODE_EXPONENTIAL;
         be = [falloff.density, 0.0, 0.0];
-      } else if (falloff instanceof ExponentialSquared) {
+      } else if (falloff instanceof FogFalloff.ExponentialSquared) {
         mode = GPU_FOG_MODE_EXPONENTIAL_SQUARED;
         be = [falloff.density, 0.0, 0.0];
-      } else if (falloff instanceof Atmospheric) {
+      } else if (falloff instanceof FogFalloff.Atmospheric) {
         mode = GPU_FOG_MODE_ATMOSPHERIC;
         be = falloff.extinction.to_array();
         bi = falloff.inscattering.to_array();

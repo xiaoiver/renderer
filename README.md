@@ -109,12 +109,14 @@ Bevy use [naga_oil](https://github.com/bevyengine/naga_oil). I try to compile it
 #import render::view::View
 #import pbr::utils::coords_to_viewport_uv
 
-@group(0) @binding(0) var skybox: texture_cube<f32>;
-@group(0) @binding(1) var skybox_sampler: sampler;
-@group(0) @binding(2) var<uniform> view: View;
+@group(0) @binding(1) var<uniform> view: View;
+@group(1) @binding(0) var skybox: texture_cube<f32>;
+@group(1) @binding(1) var skybox_sampler: sampler;
 ```
 
 It helps me a lot during the process of learning the structures in bevy shader system.
+
+**Note** The order of uniforms and texture/sampler pairs is fixed.
 
 ## Clustered Forward Shading
 
@@ -122,7 +124,16 @@ Clustered shading expands on the idea of tiled rendering but adds a segmentation
 
 - https://google.github.io/filament/Filament.html#imagingpipeline/lightpath/clusteredforwardrendering
 - https://www.cse.chalmers.se/~uffe/clustered_shading_preprint.pdf
+- http://www.aortiz.me/2018/12/21/CG.html
 - [Relative issue in bevy](https://github.com/bevyengine/bevy/issues/179)
+- [Relative PR in bevy](https://github.com/bevyengine/bevy/pull/3153)
+
+## HDR & Tonemapping
+
+HDR (High Dynamic Range) refers to the ability of the game engine to handle very bright lights or colors.
+The internal HDR image has to be converted down to SDR (Standard Dynamic Range) before it can be displayed on the screen. This process is called Tonemapping.
+
+- https://bevy-cheatbook.github.io/graphics/hdr-tonemap.html
 
 ## Skybox
 
@@ -177,7 +188,7 @@ camera = this.commands.spawn(
   //... Omit other components
   new FogSettings({
     color: Color.BLUE,
-    falloff: new Linear({
+    falloff: new FogFalloff.Linear({
       start: 0,
       end: 100,
     }),
@@ -194,19 +205,51 @@ The parameters are as follows:
 
 The falloff modes are as follows:
 
-- Linear - A linear fog falloff that grows in intensity between `start` and `end` distances. This falloff mode is simpler to control than other modes, however it can produce results that look “artificial”, depending on the scene.
+- FogFalloff.Linear - A linear fog falloff that grows in intensity between `start` and `end` distances. This falloff mode is simpler to control than other modes, however it can produce results that look “artificial”, depending on the scene.
   - start `number` Distance from the camera where fog is completely transparent, in world units.
   - end `number` Distance from the camera where fog is completely opaque, in world units.
 
 <img src="https://mdn.alipayobjects.com/huamei_vbm5bl/afts/img/A*5owGSq6Thv0AAAAAAAAAAAAADvR5AQ/original" alt="linear fog" width="200"><img src="https://mdn.alipayobjects.com/huamei_vbm5bl/afts/img/A*h8KiTI68_O8AAAAAAAAAAAAADvR5AQ/original" alt="exponential fog" width="250">
 
-- Exponential - An exponential fog falloff with a given `density`.
+- FogFalloff.Exponential - An exponential fog falloff with a given `density`.
   - density `number` Multiplier applied to the world distance (within the exponential fog falloff calculation).
-- ExponentialSquared - A squared exponential fog falloff with a given `density`.
+- FogFalloff.ExponentialSquared - A squared exponential fog falloff with a given `density`.
   - density `number` Multiplier applied to the world distance (within the exponential squared fog falloff calculation).
-- Atmospheric - A more general form of the `Exponential` mode.
+- FogFalloff.Atmospheric - A more general form of the `Exponential` mode.
   - extinction `Vec3` Controls how much light is removed due to atmospheric “extinction”, i.e. loss of light due to photons being absorbed by atmospheric particles.
   - inscattering `Vec3` Controls how much light is added due to light scattering from the sun through the atmosphere.
+
+## Color Grading
+
+Color Grading is a manipulation of the overall look of the image.
+Together with tonemapping, this affects the "tone"/"mood" of the final image.
+
+- https://bevy-cheatbook.github.io/graphics/hdr-tonemap.html#color-grading
+
+```ts
+camera = this.commands.spawn(
+  new Camera3dBundle({
+    //... Omit other components
+    color_grading: new ColorGrading({
+      exposure: 0.0,
+      gamma: 1.0,
+      pre_saturation: 1.0,
+      post_saturation: 1.0,
+    }),
+  }),
+);
+```
+
+## Tonemapping
+
+```ts
+camera = this.commands.spawn(
+  new Camera3dBundle({
+    //... Omit other components
+    tonemapping: new Tonemapping.Reinhard(),
+  }),
+);
+```
 
 ## Appendix
 

@@ -2,7 +2,7 @@ import { Buffer, BufferUsage, Device } from '@antv/g-device-api';
 import { System } from '@lastolivegames/becsy';
 import { RenderResource } from './RenderResource';
 import { Mesh } from '../meshes';
-import { Material, Transform } from '../components';
+import { Transform } from '../components';
 import { Affine3 } from '../math';
 
 /**
@@ -24,7 +24,7 @@ export class ExtractMeshes extends System {
   private device: Device;
 
   private renderables = this.query(
-    (q) => q.addedOrChanged.with(Mesh, Material, Transform).trackWrites,
+    (q) => q.addedOrChanged.with(Mesh, Transform).trackWrites,
   );
 
   async prepare() {
