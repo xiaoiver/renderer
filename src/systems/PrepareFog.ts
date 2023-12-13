@@ -25,6 +25,14 @@ export class PrepareFog extends System {
     (q) => q.addedOrChanged.with(FogSettings).trackWrites,
   );
 
+  async prepare() {
+    this.prepareUniforms = (template, binding) => {
+      template.setUniforms(binding, [
+        { name: 'padding', value: new Array(16).fill(0) },
+      ]);
+    };
+  }
+
   execute(): void {
     this.fogs.addedOrChanged.forEach((entity) => {
       console.log('fog...');

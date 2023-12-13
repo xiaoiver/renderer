@@ -92,8 +92,13 @@ fn pbr_input_from_standard_material(
 // #endif // VERTEX_TANGENTS
 
     if ((u32(pbr_bindings::material.flags) & pbr_types::STANDARD_MATERIAL_FLAGS_BASE_COLOR_TEXTURE_BIT) != 0u) {
-        pbr_input.material.base_color *= textureSampleBias(pbr_bindings::base_color_texture, pbr_bindings::base_color_sampler, uv, view.mip_bias);
-        pbr_input.material.base_color = vec4(uv, 0.0, 1.0);
+        pbr_input.material.base_color *= textureSampleBias(
+            pbr_bindings::base_color_texture, 
+            pbr_bindings::base_color_sampler, 
+            uv,
+            view.mip_bias
+        );
+        // pbr_input.material.base_color = vec4(uv, 0.0, 1.0);
     }
 #endif // VERTEX_UVS
 

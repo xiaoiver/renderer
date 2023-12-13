@@ -37,7 +37,8 @@ fn vertex(vertex_no_morph: Vertex) -> VertexOutput {
 #endif
 
 #ifdef VERTEX_UVS
-    out.uv = vertex.uv;
+// flipY @see https://webgpufundamentals.org/webgpu/lessons/webgpu-textures.html
+    out.uv = vec2f(vertex.uv.x, 1.0 - vertex.uv.y);
 #endif
 
 #ifdef VERTEX_TANGENTS

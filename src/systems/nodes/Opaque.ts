@@ -289,6 +289,7 @@ export class OpaqueNode extends PipelineNode {
         dimension: TextureDimension.TEXTURE_2D,
         usage: TextureUsage.SAMPLED,
       });
+      texture.setImageData([base_color_texture]);
       device.setResourceName(texture, 'BaseColor');
 
       // const sampler = device.createSampler({
