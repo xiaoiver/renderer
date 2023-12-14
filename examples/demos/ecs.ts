@@ -4,6 +4,7 @@ import {
   App,
   System,
   StartUp,
+  OrbitCameraPlugin,
   Camera3dBundle,
   DefaultPlugins,
   Transform,
@@ -28,6 +29,10 @@ import {
   Vec3,
   Tonemapping,
   ColorGrading,
+  OrbitCameraBundle,
+  OrbitCameraController,
+  LookTransform,
+  Smoother,
 } from '../../src';
 import { loadImage } from '../utils/image';
 import posx from '../public/images/posx.jpg';
@@ -73,6 +78,9 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           Tonemapping.None,
           Tonemapping.Reinhard,
           ColorGrading,
+          LookTransform,
+          OrbitCameraController,
+          Smoother,
         ).write,
     );
 
@@ -85,11 +93,17 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           new Camera3dBundle({
             camera: new Camera(),
             projection: new Perspective(),
-            transform: Transform.from_xyz(-2.5, 1.5, 2.0).look_at(
-              Vec3.ZERO,
-              Vec3.Y,
-            ),
+            // transform: Transform.from_xyz(-2.5, 1.5, 2.0).look_at(
+            //   Vec3.ZERO,
+            //   Vec3.Y,
+            // ),
             tonemapping: new Tonemapping.Reinhard(),
+          }),
+          new OrbitCameraBundle({
+            controller: new OrbitCameraController(),
+            eye: new Vec3(-2.5, 1.5, 2.0),
+            target: Vec3.ZERO,
+            up: Vec3.Y,
           }),
           BloomSettings.NATURAL,
           new Fxaa({
@@ -156,8 +170,21 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
     canvas: $canvas,
   })
     .addPlugins(...DefaultPlugins)
+    .addPlugins(OrbitCameraPlugin)
     .addSystems(StartUp, StartUpSystem)
     .run();
+
+  const skyboxFolder = gui.addFolder('skybox');
+  const skyboxConfig = {
+    enabled: true,
+  };
+  skyboxFolder.add(skyboxConfig, 'enabled').onChange((enabled: boolean) => {
+    if (enabled) {
+      camera.add(Skybox, { image_handle: imageBitmaps });
+    } else {
+      camera.remove(Skybox);
+    }
+  });
 
   const fxaaFolder = gui.addFolder('fxaa');
   const fxaaConfig = {

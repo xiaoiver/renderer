@@ -59,7 +59,8 @@ export class SkyboxNode extends PipelineNode {
 
     renderInst.setAllowSkippingIfPipelineNotReady(false);
     renderInst.setMegaStateFlags({
-      // depthCompare: CompareFunction.GREATER,
+      depthWrite: false,
+      depthCompare: CompareFunction.GEQUAL,
       ...fullscreenMegaState,
     });
     renderInst.setBindingLayout({

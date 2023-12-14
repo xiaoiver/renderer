@@ -23,6 +23,7 @@ export * from './meshes';
 export * from './systems';
 export * from './math';
 export { Commands } from './commands/Commands';
+export { OrbitCameraPlugin } from './plugins';
 
 export const DefaultPlugins: PluginType[] = [
   TransformPlugin,

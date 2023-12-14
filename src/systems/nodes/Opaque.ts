@@ -15,6 +15,7 @@ import {
   AddressMode,
   FilterMode,
   MipmapFilterMode,
+  CompareFunction,
 } from '@antv/g-device-api';
 import { Entity } from '@lastolivegames/becsy';
 import { flatten } from 'lodash-es';
@@ -51,6 +52,7 @@ export class OpaqueNode extends PipelineNode {
         {
           depthWrite: true,
           // depthCompare: CompareFunction.GEQUAL,
+          depthCompare: CompareFunction.LEQUAL,
           blendConstant: TransparentBlack,
           cullMode: CullMode.BACK,
         },

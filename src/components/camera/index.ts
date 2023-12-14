@@ -3,4 +3,7 @@ export * from './ComputedCameraValues';
 export * from './Projection';
 export * from './Viewport';
 export * from './Camera3dBundle';
-// export * from './CameraController';
+export * from './LookTransform';
+export * from './LookAngles';
+export * from './OrbitCameraBundle';
+export * from './OrbitCameraController';

@@ -15,6 +15,8 @@ Just another toy renderer. Inspired by [bevy](https://github.com/bevyengine/).
 - Post processing
   - [FXAA](#fxaa)
   - [Fog](#fog)
+- Interaction
+  - Orbit Camera
 
 ## Getting Started
 
@@ -270,6 +272,10 @@ camera = this.commands.spawn(
 ```
 
 ## Appendix
+
+### Orbit Camera
+
+- https://github.com/bonsairobo/smooth-bevy-cameras/blob/main/src/controllers/orbit.rs
 
 ### 3D Gaussian Splatting
 

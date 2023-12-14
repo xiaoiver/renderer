@@ -16,6 +16,7 @@ import {
   PreUpdate,
   StartUp,
 } from './systems';
+import { Keyboard } from './resources/Keyboard';
 
 /**
  * @see https://bevy-cheatbook.github.io/programming/app-builder.html
@@ -89,6 +90,9 @@ export class App {
       config = this.singleton.write(AppConfig);
       initialize(): void {
         this.config.canvas = config.canvas;
+        this.config.resources = {
+          keyboard: new Keyboard(),
+        };
       }
     }
 

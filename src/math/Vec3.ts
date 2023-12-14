@@ -238,6 +238,13 @@ export class Vec3 {
   }
 
   /**
+   * Computes the squared length of `self`.
+   */
+  length_squared() {
+    return this.dot(this);
+  }
+
+  /**
    * Computes `1.0 / length()`.
    */
   length_recip() {
@@ -247,6 +254,15 @@ export class Vec3 {
   normalize() {
     const normalized = this.mul(this.length_recip());
     return normalized;
+  }
+
+  /// Returns the angle (in radians) between two vectors.
+  ///
+  /// The inputs do not need to be unit vectors however they must be non-zero.
+  angle_between(rhs: Vec3) {
+    return Math.acos(
+      this.dot(rhs) / Math.sqrt(this.length_squared() * rhs.length_squared()),
+    );
   }
 
   /**

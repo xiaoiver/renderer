@@ -13,16 +13,25 @@ export class Insert implements Command {
 
   apply(system: System) {
     this.bundles.forEach((bundle) => {
-      // Add bundle.
-      if (bundle instanceof Bundle) {
-        Object.keys(bundle).forEach((key) => {
-          this.id.add(bundle[key].constructor, bundle[key]);
-        });
-      } else {
-        // Add component.
-        // @ts-ignore
-        this.id.add(bundle.constructor, bundle);
-      }
+      this.addBundle(bundle);
     });
+  }
+
+  private addBundle(bundle: Bundle) {
+    // Add bundle.
+    if (bundle instanceof Bundle) {
+      Object.keys(bundle).forEach((key) => {
+        if (bundle[key] instanceof Bundle) {
+          this.addBundle(bundle[key]);
+        } else if (bundle[key]) {
+          // @ts-ignore
+          this.id.add(bundle[key].constructor, bundle[key]);
+        }
+      });
+    } else {
+      // Add component.
+      // @ts-ignore
+      this.id.add(bundle.constructor, bundle);
+    }
   }
 }
