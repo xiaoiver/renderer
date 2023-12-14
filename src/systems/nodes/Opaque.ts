@@ -284,8 +284,8 @@ export class OpaqueNode extends PipelineNode {
     if (base_color_texture) {
       const texture = device.createTexture({
         format: Format.U8_RGBA_NORM,
-        width: 100,
-        height: 100,
+        width: base_color_texture.width,
+        height: base_color_texture.height,
         dimension: TextureDimension.TEXTURE_2D,
         usage: TextureUsage.SAMPLED,
         pixelStore: {
