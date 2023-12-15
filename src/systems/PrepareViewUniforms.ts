@@ -7,26 +7,10 @@ import {
   Transform,
 } from '../components';
 import { RenderInst } from '../framegraph';
+import { MeshPipeline } from './MeshPipeline';
 
 // binding = 0
 const ViewUniformBufferBinding = 0;
-
-// Used in view.wgsl
-interface ViewUniform {
-  view_proj: Mat4;
-  unjittered_view_proj: Mat4;
-  inverse_view_proj: Mat4;
-  view: Mat4;
-  inverse_view: Mat4;
-  projection: Mat4;
-  inverse_projection: Mat4;
-  world_position: Vec3;
-  // viewport(x_origin, y_origin, width, height)
-  viewport: Vec4;
-  frustum: [Vec4, Vec4, Vec4, Vec4, Vec4, Vec4];
-  color_grading: ColorGrading;
-  mip_bias: number;
-}
 
 export class PrepareViewUniforms extends System {
   /**
@@ -34,9 +18,12 @@ export class PrepareViewUniforms extends System {
    */
   prepareUniforms: (template: RenderInst, binding?: number) => void;
 
+  private pipeline = this.attach(MeshPipeline);
+
   private cameras = this.query(
     (q) =>
-      q.addedOrChanged.with(ComputedCameraValues, ColorGrading).trackWrites,
+      q.addedOrChanged.with(ComputedCameraValues, Transform, ColorGrading)
+        .trackWrites,
   );
 
   constructor() {
@@ -51,6 +38,8 @@ export class PrepareViewUniforms extends System {
       const color_grading = entity.read(ColorGrading);
       const { exposure, gamma, pre_saturation, post_saturation } =
         color_grading;
+
+      this.pipeline.passesChanged = true;
 
       // Becsy will trim undeclared fields and functions.
       const projection_matrix = Mat4.copy(computed.projection_matrix);

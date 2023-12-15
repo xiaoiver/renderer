@@ -1,12 +1,37 @@
 import { System } from '@lastolivegames/becsy';
 import Hammer from 'hammerjs';
-import { AppConfig } from '../components';
+import { AppConfig, OrbitCameraController } from '../components';
 import { UpdateControlEvents } from './UpdateControlEvents';
 import { ControlEvent } from './OrbitControl';
+import { Events, EventsReader } from '../Events';
+import { Vec2 } from '../math';
+
+interface MouseWheel {
+  x: number;
+  y: number;
+}
 
 export class Control extends System {
   private appConfig = this.singleton.read(AppConfig);
   private events = this.attach(UpdateControlEvents);
+
+  private mouseWeelEvents: Events<MouseWheel>;
+  private mouseWheelReader: EventsReader<MouseWheel>;
+
+  private orbitCameraController = this.query((q) =>
+    q.current.with(OrbitCameraController),
+  );
+
+  constructor() {
+    super();
+    this.query((q) => q.using(OrbitCameraController).read);
+
+    this.mouseWeelEvents = new Events<MouseWheel>();
+    this.mouseWheelReader = new EventsReader(
+      this.mouseWeelEvents,
+      this.mouseWeelEvents.get_reader(),
+    );
+  }
 
   initialize(): void {
     const { canvas } = this.appConfig;
@@ -20,6 +45,46 @@ export class Control extends System {
     hammertime.on('pinch', this.onPinch);
 
     canvas.addEventListener('wheel', this.onMousewheel);
+  }
+
+  execute(): void {
+    const entity = this.orbitCameraController.current?.[0];
+    if (entity) {
+      const control = entity.read(OrbitCameraController);
+      if (control.enabled) {
+        const {
+          mouse_rotate_sensitivity,
+          mouse_translate_sensitivity,
+          mouse_wheel_zoom_sensitivity,
+          pixels_per_line,
+        } = control;
+
+        let cursor_delta = Vec2.ZERO;
+        // for event in mouse_motion_events.read() {
+        //     cursor_delta += event.delta;
+        // }
+
+        // if keyboard.pressed(KeyCode::ControlLeft) {
+        //     events.send(ControlEvent::Orbit(mouse_rotate_sensitivity * cursor_delta));
+        // }
+
+        // if mouse_buttons.pressed(MouseButton::Right) {
+        //     events.send(ControlEvent::TranslateTarget(
+        //         mouse_translate_sensitivity * cursor_delta,
+        //     ));
+        // }
+
+        let scalar = 1.0;
+        for (const event of this.mouseWheelReader.read()) {
+          const { y } = event;
+          const scroll_amount = y / pixels_per_line;
+          scalar *= 1.0 - scroll_amount * mouse_wheel_zoom_sensitivity;
+        }
+        if (scalar !== 1.0) {
+          this.events.events.send(new ControlEvent.Zoom(scalar));
+        }
+      }
+    }
   }
 
   private onPanstart = (e: HammerInput) => {
@@ -62,46 +127,13 @@ export class Control extends System {
 
   private onPinch = (e: HammerInput) => {
     const deltaZ = (1 - e.scale) * 10;
-    this.dolly(deltaZ);
+    // this.dolly(deltaZ);
   };
 
   private onMousewheel = (e: WheelEvent) => {
-    this.dolly(e.deltaY);
+    this.mouseWeelEvents.send({
+      x: e.deltaX,
+      y: e.deltaY,
+    });
   };
-
-  private dolly(z: number) {
-    this.events.events.send(new ControlEvent.Zoom(0.1));
-    // this.camera.dolly(z);
-  }
-
-  private pan(dx: number, dy: number) {
-    // const { width, height } = this.canvasConfig;
-    // const dimMax = Math.max(width, height);
-    // const deltaX = 1 / dimMax;
-    // const deltaY = 1 / dimMax;
-    // const ndx = (dx * deltaX * MOTION_FACTOR) / 2;
-    // const ndy = (-dy * deltaY * MOTION_FACTOR) / 2;
-    // this.camera.pan(ndx, ndy);
-  }
-
-  private roll(dy: number) {
-    // const { width } = this.canvasConfig;
-    // this.camera.rotate(0, 0, (-20.0 / width) * dy * MOTION_FACTOR);
-  }
-
-  private rotate(rx: number, ry: number) {
-    // const { width, height } = this.canvasConfig;
-    // const dx = 20.0 / height;
-    // const dy = 20.0 / width;
-    // let motionFactorX = MOTION_FACTOR;
-    // let motionFactorY = MOTION_FACTOR;
-    // if (rx * rx > 2 * ry * ry) {
-    //   motionFactorY *= 0.5;
-    // } else if (ry * ry > 2 * rx * rx) {
-    //   motionFactorX *= 0.5;
-    // }
-    // const rotX = rx * dx * motionFactorX;
-    // const rotY = ry * dy * motionFactorY;
-    // this.camera.rotate(rotX, -rotY, 0);
-  }
 }

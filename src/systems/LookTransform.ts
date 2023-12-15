@@ -15,7 +15,6 @@ export class LookTransformSystem extends System {
 
   execute(): void {
     for (const entity of this.cameras.addedOrChanged) {
-      console.log('sync look transform');
       const look_transform = entity.read(LookTransform);
       const smoother = entity.write(Smoother);
       if (smoother.enabled) {

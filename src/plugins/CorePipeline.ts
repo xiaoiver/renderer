@@ -17,7 +17,7 @@ export class CorePipeline implements Plugin {
     component(PipelineDirty);
 
     await new Core3dPlugin().build(app);
-    await new TonemappingPlugin().build(app);
+    // await new TonemappingPlugin().build(app);
     await new BloomPlugin().build(app);
     await new FxaaPlugin().build(app);
   }

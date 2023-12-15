@@ -75,8 +75,8 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           BloomSettings,
           Skybox,
           FogSettings,
-          Tonemapping.None,
-          Tonemapping.Reinhard,
+          // Tonemapping.None,
+          // Tonemapping.Reinhard,
           ColorGrading,
           LookTransform,
           OrbitCameraController,
@@ -97,7 +97,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
             //   Vec3.ZERO,
             //   Vec3.Y,
             // ),
-            tonemapping: new Tonemapping.Reinhard(),
+            // tonemapping: new Tonemapping.Reinhard(),
           }),
           new OrbitCameraBundle({
             controller: new OrbitCameraController(),
@@ -105,7 +105,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
             target: Vec3.ZERO,
             up: Vec3.Y,
           }),
-          BloomSettings.NATURAL,
+          // BloomSettings.NATURAL,
           new Fxaa({
             enabled: true,
             edge_threshold: Sensitivity.High,
@@ -125,10 +125,10 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
         .entity.hold();
 
       const mesh = Mesh.from(new Cube(1));
-      mesh.insert_attribute(
-        Mesh.ATTRIBUTE_COLOR,
-        mesh.attribute(Mesh.ATTRIBUTE_POSITION).map(() => [1, 0, 0, 1]),
-      );
+      // mesh.insert_attribute(
+      //   Mesh.ATTRIBUTE_COLOR,
+      //   mesh.attribute(Mesh.ATTRIBUTE_POSITION).map(() => [1, 0, 0, 1]),
+      // );
       const material = new Material({
         base_color_texture: baseColorImage,
       });

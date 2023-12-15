@@ -7,4 +7,4 @@ export { CameraPlugin } from './Camera';
 export { OrbitCameraPlugin } from './OrbitCamera';
 export { HierarchyPlugin } from './Hierarchy';
 export { CorePipeline } from './CorePipeline';
-export { EventPlugin } from './Event';
+export { InputPlugin } from './Input';

@@ -5,7 +5,7 @@ import {
   HierarchyPlugin,
   CameraPlugin,
   CorePipeline,
-  EventPlugin,
+  InputPlugin,
 } from './plugins';
 
 export {
@@ -31,5 +31,5 @@ export const DefaultPlugins: PluginType[] = [
   CameraPlugin,
   CorePipeline,
   RendererPlugin,
-  EventPlugin,
+  InputPlugin,
 ];

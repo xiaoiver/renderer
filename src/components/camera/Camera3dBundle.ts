@@ -20,7 +20,7 @@ export class Camera3dBundle extends Bundle {
 
   global_transform: GlobalTransform;
 
-  tonemapping: Tonemapping;
+  // tonemapping: Tonemapping;
 
   // dither: DebandDither;
   color_grading: ColorGrading;
@@ -34,7 +34,7 @@ export class Camera3dBundle extends Bundle {
       projection: Perspective | Orthographic;
       transform: Transform;
       global_transform: GlobalTransform;
-      tonemapping: Tonemapping;
+      // tonemapping: Tonemapping;
       color_grading: ColorGrading;
       // frustum: Frustum;
     }>,
@@ -46,7 +46,7 @@ export class Camera3dBundle extends Bundle {
       computed = new ComputedCameraValues(),
       transform,
       projection = new Perspective(),
-      tonemapping = new Tonemapping.Reinhard(),
+      // tonemapping = new Tonemapping.Reinhard(),
       color_grading = new ColorGrading(),
       // frustum = new Frustum([
       //   new HalfSpace(),
@@ -62,7 +62,7 @@ export class Camera3dBundle extends Bundle {
     this.computed = computed;
     this.transform = transform;
     this.projection = projection;
-    this.tonemapping = tonemapping;
+    // this.tonemapping = tonemapping;
     this.color_grading = color_grading;
     // this.frustum = frustum;
   }

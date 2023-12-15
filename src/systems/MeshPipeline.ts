@@ -72,8 +72,6 @@ export class MeshPipeline extends System {
   }
 
   private run(renderables: Readonly<Entity[]>) {
-    console.log('render...');
-
     const { canvas } = this.appConfig;
     const renderInstManager = this.renderHelper.renderInstManager;
     const builder = this.renderHelper.renderGraph.newGraphBuilder();

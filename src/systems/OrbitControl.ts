@@ -1,4 +1,4 @@
-import { System, system } from '@lastolivegames/becsy';
+import { System } from '@lastolivegames/becsy';
 import {
   AppConfig,
   LookAngles,
@@ -8,7 +8,6 @@ import {
 } from '../components';
 import { Vec2, Vec3 } from '../math';
 import { UpdateControlEvents } from './UpdateControlEvents';
-import { LookTransformSystem } from './LookTransform';
 
 export type ControlEvent =
   | ControlEvent.Orbit
@@ -26,7 +25,6 @@ export namespace ControlEvent {
   }
 }
 
-@system((s) => s.before(LookTransformSystem))
 export class OrbitControl extends System {
   private events = this.attach(UpdateControlEvents);
 
@@ -42,25 +40,15 @@ export class OrbitControl extends System {
     this.query((q) => q.using(LookTransform).write.and.using(Transform).read);
   }
 
-  private mouse_rotate_sensitivity: number;
-  private cursor_delta: number;
-
   initialize(): void {
     const {
       resources: { keyboard },
     } = this.appConfig;
-
-    // keyboard.pressed(['ArrowLeft'], () => {
-    //   console.log('ArrowLeft');
-    //   this.events.next(new ControlEvent.Orbit(this.mouse_rotate_sensitivity * this.cursor_delta));
-    // });
   }
 
   execute(): void {
     for (const entity of this.controls.current) {
       const control = entity.read(OrbitCameraController);
-      const { mouse_rotate_sensitivity } = control;
-      // this.mouse_rotate_sensitivity = mouse_rotate_sensitivity;
       if (control.enabled && this.events.reader.len()) {
         const transform = entity.write(LookTransform);
         const scene_transform = entity.read(Transform);
@@ -86,7 +74,6 @@ export class OrbitControl extends System {
             );
           } else if (event instanceof ControlEvent.Zoom) {
             radius_scalar *= event.value;
-            console.log('receive control event...', event.value);
           }
         }
 

@@ -1,13 +1,12 @@
-import { System, system } from '@lastolivegames/becsy';
+import { System } from '@lastolivegames/becsy';
 import {
   AppConfig,
   Camera,
   ComputedCameraValues,
   Orthographic,
   Perspective,
-  Projection,
 } from '../components';
-import { Mat4, Vec2 } from '../math';
+import { Vec2 } from '../math';
 
 /**
  * System in charge of updating a [`Camera`] when its window or projection changes.
@@ -20,7 +19,6 @@ import { Mat4, Vec2 } from '../math';
  * [`OrthographicProjection`] and [`PerspectiveProjection`] are automatically added to
  * the app, as well as the runtime-selected [`Projection`].
  */
-@system((s) => s.afterWritersOf(Camera))
 export class CameraSystem extends System {
   private appConfig = this.singleton.read(AppConfig);
 

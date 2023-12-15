@@ -5,7 +5,7 @@ import {
   World,
   SystemGroup,
 } from '@lastolivegames/becsy';
-import { Plugin, PluginType } from './Plugin';
+import { PluginType } from './Plugin';
 import { AppConfig, IAppConfig } from './components';
 import {
   First,
@@ -15,6 +15,7 @@ import {
   PreStartUp,
   PreUpdate,
   StartUp,
+  Update,
 } from './systems';
 import { Keyboard } from './resources/Keyboard';
 
@@ -96,12 +97,16 @@ export class App {
       }
     }
 
+    @system(PreStartUp)
+    class PreStartUpPlaceHolder extends System {}
     @system(StartUp)
     class StartUpPlaceHolder extends System {}
     @system(PostStartup)
     class PostStartUpPlaceHolder extends System {}
     @system(PreUpdate)
     class PreUpdatePlaceHolder extends System {}
+    @system(Update)
+    class UpdatePlaceHolder extends System {}
     @system(PostUpdate)
     class PostUpdatePlaceHolder extends System {}
     @system(First)

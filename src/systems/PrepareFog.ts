@@ -35,7 +35,6 @@ export class PrepareFog extends System {
 
   execute(): void {
     this.fogs.addedOrChanged.forEach((entity) => {
-      console.log('fog...');
       this.pipeline.passesChanged = true;
       const fog = entity.read(FogSettings);
       const {
