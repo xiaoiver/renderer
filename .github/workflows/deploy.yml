@@ -1,0 +1,50 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # Python 3.11 和 node-gyp 有兼容问题, 导致无法安装依赖
+      # https://github.com/slint-ui/slint/commit/a9c48e33502fdebc36c5aa2f4f516c2218424679#diff-944291df2c9c06359d37cc8833d182d705c9e8c3108e7cfe132d61a06e9133dd
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm deploy
+
+      - run: |
+          cd examples/dist
+          git init
+          git config --local user.name xiaoiver
+          git config --local user.email pyqiverson@gmail.com
+          git add .
+          git commit -m "update by release action"
+
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{secrets.PERSONAL_ACCESS_TOKEN}}
+          directory: examples/dist
+          branch: gh-pages
+          force: true

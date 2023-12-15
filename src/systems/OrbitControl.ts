@@ -1,6 +1,5 @@
 import { System } from '@lastolivegames/becsy';
 import {
-  AppConfig,
   LookAngles,
   LookTransform,
   OrbitCameraController,
@@ -28,22 +27,11 @@ export namespace ControlEvent {
 export class OrbitControl extends System {
   private events = this.attach(UpdateControlEvents);
 
-  /**
-   * Global app config.
-   */
-  private appConfig = this.singleton.read(AppConfig);
-
   private controls = this.query((q) => q.current.with(OrbitCameraController));
 
   constructor() {
     super();
     this.query((q) => q.using(LookTransform).write.and.using(Transform).read);
-  }
-
-  initialize(): void {
-    const {
-      resources: { keyboard },
-    } = this.appConfig;
   }
 
   execute(): void {

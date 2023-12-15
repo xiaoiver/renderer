@@ -17,7 +17,6 @@ import {
   StartUp,
   Update,
 } from './systems';
-import { Keyboard } from './resources/Keyboard';
 
 /**
  * @see https://bevy-cheatbook.github.io/programming/app-builder.html
@@ -91,9 +90,6 @@ export class App {
       config = this.singleton.write(AppConfig);
       initialize(): void {
         this.config.canvas = config.canvas;
-        this.config.resources = {
-          keyboard: new Keyboard(),
-        };
       }
     }
 
@@ -117,7 +113,11 @@ export class App {
     // Build all plugins.
     await Promise.all(this.plugins.map((plugin) => new plugin().build(this)));
 
-    this.systems.forEach(([group, s]) => system(group)(s));
+    this.systems.forEach(([group, s], i) => {
+      // @see https://github.com/LastOliveGames/becsy/blob/main/tests/query.test.ts#L22C3-L22C58
+      Object.defineProperty(s, 'name', { value: `_System${i}` });
+      system(group)(s);
+    });
 
     // Create world.
     // All systems will be instantiated and initialized before the returned promise resolves.
