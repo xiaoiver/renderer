@@ -5,8 +5,8 @@ import {
   ComputedCameraValues,
   Orthographic,
   Perspective,
-} from '../components';
-import { Vec2 } from '../math';
+} from '../../components';
+import { Vec2 } from '../../math';
 
 /**
  * System in charge of updating a [`Camera`] when its window or projection changes.

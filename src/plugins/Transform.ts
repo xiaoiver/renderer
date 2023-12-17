@@ -14,6 +14,6 @@ export class TransformPlugin implements Plugin {
     component(GlobalTransform);
     component(TransformBundle);
 
-    app.addSystems(PreUpdate, SyncSimpleTransforms, PropagateTransforms);
+    app.add_systems(PreUpdate, SyncSimpleTransforms, PropagateTransforms);
   }
 }

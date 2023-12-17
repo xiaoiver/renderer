@@ -169,9 +169,9 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
   new App({
     canvas: $canvas,
   })
-    .addPlugins(...DefaultPlugins)
-    .addPlugins(OrbitCameraPlugin)
-    .addSystems(StartUp, StartUpSystem)
+    .add_plugins(...DefaultPlugins)
+    .add_plugins(OrbitCameraPlugin)
+    .add_systems(StartUp, StartUpSystem)
     .run();
 
   const skyboxFolder = gui.addFolder('skybox');

@@ -1,5 +1,5 @@
 import { System } from '@lastolivegames/becsy';
-import { LookTransform, Smoother, Transform } from '../components';
+import { LookTransform, Smoother, Transform } from '../../components';
 
 export class LookTransformSystem extends System {
   private cameras = this.query(

@@ -17,6 +17,8 @@ import {
   StartUp,
   Update,
 } from './systems';
+import { EventCtor, Events, EventsReader } from './Events';
+import { Resource } from './Resource';
 
 /**
  * @see https://bevy-cheatbook.github.io/programming/app-builder.html
@@ -39,14 +41,17 @@ export class App {
    */
   private readonly systems: [SystemGroup, SystemType<any>][] = [];
 
+  private updateEventsSystemCounter = 0;
+  private resources = new WeakMap<any, Resource>();
+
   constructor(private config?: Partial<IAppConfig>) {}
 
   /**
    * @example
    * new App()
-   *   .addPlugin(P1)
+   *   .add_plugin(P1)
    */
-  addPlugin(plugin: PluginType) {
+  add_plugin(plugin: PluginType) {
     this.plugins.push(plugin);
     return this;
   }
@@ -54,27 +59,67 @@ export class App {
   /**
    * @example
    * new App()
-   *   .addPlugins(P1, P2)
+   *   .add_plugins(P1, P2)
    */
-  addPlugins(...plugins: PluginType[]) {
+  add_plugins(...plugins: PluginType[]) {
     plugins.forEach((plugin) => {
-      this.addPlugin(plugin);
+      this.add_plugin(plugin);
     });
     return this;
   }
 
-  addEvent() {}
+  /**
+   * Setup the application to manage events of type `T`.
+   *
+   * This is done by adding a [`Resource`] of type [`Events::<T>`],
+   * and inserting an [`event_update_system`] into [`First`].
+   *
+   * See [`Events`] for defining events.
+   *
+   * @example
+   * app.add_event(MyEvent);
+   */
+  add_event<E>(eventCtor: EventCtor<E>) {
+    const events = new Events<E>();
+    const reader = new EventsReader(events, events.get_reader());
+    this.init_resource(eventCtor, reader);
+
+    class UpdateEvents extends System {
+      execute(): void {
+        if (
+          events.events_a.events.length !== 0 ||
+          events.events_b.events.length !== 0
+        ) {
+          events.update();
+        }
+      }
+    }
+    Object.defineProperty(UpdateEvents, 'name', {
+      value: `_UpdateEventsSystem${this.updateEventsSystemCounter++}`,
+    });
+
+    this.add_systems(First, UpdateEvents);
+    return this;
+  }
 
   /**
    * Adds a system to the given schedule in this app's [`Schedules`].
    * @example
    * new App()
-   *   .addSystems(StartUp, S1, S2);
+   *   .add_systems(StartUp, S1, S2);
    */
-  addSystems(group: SystemGroup, ...systems: SystemType<any>[]) {
+  add_systems(group: SystemGroup, ...systems: SystemType<any>[]) {
     this.systems.push(
       ...systems.map((s) => [group, s] as [SystemGroup, SystemType<any>]),
     );
+    return this;
+  }
+
+  /**
+   * Initialize a [`Resource`] with standard starting values by adding it to the [`World`].
+   */
+  init_resource<K, R extends Resource>(key: K, resouce: R) {
+    this.resources.set(key, resouce);
     return this;
   }
 
@@ -83,6 +128,7 @@ export class App {
    */
   async run() {
     const config = this.config;
+    const resources = this.resources;
 
     // Create a global init system.
     @system(PreStartUp)
@@ -90,6 +136,7 @@ export class App {
       config = this.singleton.write(AppConfig);
       initialize(): void {
         this.config.canvas = config.canvas;
+        this.config.resources = resources;
       }
     }
 

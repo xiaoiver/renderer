@@ -1,5 +1,5 @@
 import { System } from '@lastolivegames/becsy';
-import { Camera } from '../components';
+import { Camera } from '../../components';
 
 // TODO: support multi view
 export class ExtractCameras extends System {

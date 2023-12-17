@@ -8,7 +8,7 @@ import { App } from './App';
  * @example
  * class MyPlugin implements Plugin {
  *   build(app: App) {
- *     app.addSystems(HelloWorld);
+ *     app.add_systems(HelloWorld);
  *   }
  * }
  */

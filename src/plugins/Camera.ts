@@ -13,12 +13,9 @@ import {
 } from '../components';
 import {
   CameraSystem,
-  Control,
   LookTransformSystem,
-  PreStartUp,
   PreUpdate,
   Update,
-  UpdateControlEvents,
 } from '../systems';
 
 export class CameraPlugin implements Plugin {
@@ -31,10 +28,8 @@ export class CameraPlugin implements Plugin {
     component(LookTransform);
     component(Smoother);
 
-    app.addSystems(PreStartUp, UpdateControlEvents);
-    app.addSystems(PreStartUp, Control);
-    app.addSystems(PreUpdate, CameraSystem);
-    app.addSystems(Update, LookTransformSystem);
+    app.add_systems(PreUpdate, CameraSystem);
+    app.add_systems(Update, LookTransformSystem);
 
     system((s) => s.afterWritersOf(Camera))(CameraSystem);
   }

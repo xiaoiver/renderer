@@ -8,6 +8,6 @@ export class SkyboxPlugin implements Plugin {
   async build(app: App) {
     component(Skybox);
 
-    app.addSystems(PreUpdate, SkyboxPipeline);
+    app.add_systems(PreUpdate, SkyboxPipeline);
   }
 }

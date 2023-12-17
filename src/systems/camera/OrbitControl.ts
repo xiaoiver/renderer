@@ -1,31 +1,20 @@
 import { System } from '@lastolivegames/becsy';
 import {
+  AppConfig,
   LookAngles,
   LookTransform,
   OrbitCameraController,
   Transform,
-} from '../components';
-import { Vec2, Vec3 } from '../math';
-import { UpdateControlEvents } from './UpdateControlEvents';
+} from '../../components';
+import { Vec3 } from '../../math';
+import { ControlEvent } from '../../plugins/OrbitCamera';
+import { EventsReader } from '../../Events';
 
-export type ControlEvent =
-  | ControlEvent.Orbit
-  | ControlEvent.TranslateTarget
-  | ControlEvent.Zoom;
-export namespace ControlEvent {
-  export class Orbit {
-    constructor(public value: Vec2) {}
-  }
-  export class TranslateTarget {
-    constructor(public value: Vec2) {}
-  }
-  export class Zoom {
-    constructor(public value: number) {}
-  }
-}
-
+/**
+ * Update camera's look transform according to ControlEvent.
+ */
 export class OrbitControl extends System {
-  private events = this.attach(UpdateControlEvents);
+  private appConfig = this.singleton.read(AppConfig);
 
   private controls = this.query((q) => q.current.with(OrbitCameraController));
 
@@ -37,18 +26,20 @@ export class OrbitControl extends System {
   execute(): void {
     for (const entity of this.controls.current) {
       const control = entity.read(OrbitCameraController);
-      if (control.enabled && this.events.reader.len()) {
+      const reader = this.appConfig.resources.get(
+        ControlEvent,
+      ) as EventsReader<ControlEvent>;
+
+      if (control.enabled && reader.len()) {
         const transform = entity.write(LookTransform);
         const scene_transform = entity.read(Transform);
-
         const look_angles = LookAngles.from_vector(
           transform.look_direction().neg(),
         );
         let radius_scalar = 1.0;
         const radius = transform.radius();
-
         const dt = this.delta;
-        for (const event of this.events.reader.read()) {
+        for (const event of reader.read()) {
           if (event instanceof ControlEvent.Orbit) {
             const delta = event.value;
             look_angles.add_yaw(dt * -delta.x);
@@ -64,9 +55,7 @@ export class OrbitControl extends System {
             radius_scalar *= event.value;
           }
         }
-
         // look_angles.assert_not_looking_up();
-
         const new_radius = Math.max(
           Math.min(radius_scalar * radius, 1000000.0),
           0.001,
@@ -74,7 +63,6 @@ export class OrbitControl extends System {
         transform.eye = transform.target.add(
           look_angles.unit_vector().mul(new_radius),
         );
-
         // Can only control one camera at a time.
         return;
       }

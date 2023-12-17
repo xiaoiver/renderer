@@ -11,6 +11,6 @@ export class FogPlugin implements Plugin {
   async build(app: App) {
     component(FogSettings);
 
-    app.addSystems(PreUpdate, PrepareFog);
+    app.add_systems(PreUpdate, PrepareFog);
   }
 }

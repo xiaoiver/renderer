@@ -20,6 +20,6 @@ export class TonemappingPlugin implements Plugin {
 
     // TODO: Load luts
     // await app.addResource()
-    app.addSystems(PreUpdate, TonemappingPipeline);
+    app.add_systems(PreUpdate, TonemappingPipeline);
   }
 }

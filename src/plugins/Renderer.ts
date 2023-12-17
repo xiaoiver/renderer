@@ -22,10 +22,10 @@ export class RendererPlugin implements Plugin {
     component(Mesh);
     component(Material);
 
-    app.addSystems(PreStartUp, RenderResource);
-    app.addSystems(PreUpdate, PrepareViewUniforms);
-    app.addSystems(PreUpdate, PrepareMaterial);
-    app.addSystems(Update, ExtractMeshes);
-    app.addSystems(Update, MeshPipeline);
+    app.add_systems(PreStartUp, RenderResource);
+    app.add_systems(PreUpdate, PrepareViewUniforms);
+    app.add_systems(PreUpdate, PrepareMaterial);
+    app.add_systems(Update, ExtractMeshes);
+    app.add_systems(Update, MeshPipeline);
   }
 }

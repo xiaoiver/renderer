@@ -11,6 +11,6 @@ export class FxaaPlugin implements Plugin {
   async build(app: App) {
     component(Fxaa);
 
-    app.addSystems(PreUpdate, FxaaPipeline);
+    app.add_systems(PreUpdate, FxaaPipeline);
   }
 }

@@ -25,7 +25,7 @@ export class OrbitCameraController {
     const {
       enabled = true,
       mouse_rotate_sensitivity = Vec2.splat(0.08),
-      mouse_translate_sensitivity = Vec2.splat(0.1),
+      mouse_translate_sensitivity = Vec2.splat(0.01),
       mouse_wheel_zoom_sensitivity = 0.2,
       pixels_per_line = 53.0,
       smoothing_weight = 0.8,

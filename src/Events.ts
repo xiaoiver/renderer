@@ -1,3 +1,6 @@
+export type EventCtor<E extends Event> = { new (...args: any[]): E };
+export class Event {}
+
 /**
  * An event collection that represents the events that occurred within the last two
  * [`Events::update`] calls.
@@ -15,7 +18,7 @@
  * [`Events::update`] exactly once per update/frame.
  *
  * [`event_update_system`] is a system that does this, typically initialized automatically using
- * [`add_event`](https://docs.rs/bevy///bevy/app/struct.App.html#method.add_event).
+ * [`add_event`](https://docs.rs/bevy*bevy/app/struct.App.html#method.add_event).
  * [`EventReader`]s are expected to read events from this collection at least once per loop/frame.
  * Events will persist across a single frame boundary and so ordering of event producers and
  * consumers is not critical (although poorly-planned ordering may cause accumulating lag).
@@ -66,18 +69,23 @@
  * manually across frames to control when events are cleared.
  * This complicates consumption and risks ever-expanding memory usage if not cleaned up,
  * but can be done by adding your event as a resource instead of using
- * [`add_event`](https://docs.rs/bevy////bevy/app/struct.App.html#method.add_event).
+ * [`add_event`](https://docs.rs/bevy/bevy/app/struct.App.html#method.add_event).
  *
  * [Example usage.](https://github.com/bevyengine/bevy/blob/latest/examples/ecs/event.rs)
  * [Example usage standalone.](https://github.com/bevyengine/bevy/blob/latest/crates/bevy_ecs/examples/events.rs)
  */
-export class Events<E> {
-  /// Holds the oldest still active events.
-  /// Note that a.start_event_count + a.len() should always === events_b.start_event_count.
+export class Events<E extends Event = Event> {
+  /**
+   * Holds the oldest still active events.
+   * Note that a.start_event_count + a.len() should always === events_b.start_event_count.
+   */
   events_a: EventSequence<E> = { events: [], start_event_count: 0 };
-  /// Holds the newer events.
+  /**
+   * Holds the newer events.
+   */
   events_b: EventSequence<E> = { events: [], start_event_count: 0 };
   event_count: number = 0;
+  private reader = new ManualEventReader<E>();
 
   /**
    * Returns the index of the oldest event stored in the event buffer.
@@ -108,10 +116,12 @@ export class Events<E> {
     return new ManualEventReader<E>();
   }
 
-  /// Swaps the event buffers and clears the oldest event buffer. In general, this should be
-  /// called once per frame/update.
-  ///
-  /// If you need access to the events that were removed, consider using [`Events::update_drain`].
+  /**
+   * Swaps the event buffers and clears the oldest event buffer. In general, this should be
+   * called once per frame/update.
+   *
+   * If you need access to the events that were removed, consider using [`Events::update_drain`].
+   */
   update() {
     let _ = this.update_drain();
   }
@@ -153,22 +163,51 @@ export class Events<E> {
     return this.events_a.events.length + this.events_b.events.length;
   }
 
-  /// Returns true if there are no events currently stored in the event buffer.
+  /**
+   * Returns true if there are no events currently stored in the event buffer.
+   */
   is_empty() {
     return this.len() === 0;
   }
+
+  drain() {
+    this.reset_start_event_count();
+
+    // Drain the oldest events first, then the newest
+    return this.events_a.events
+      .splice(0, this.events_a.events.length)
+      .concat(this.events_b.events.splice(0, this.events_b.events.length))
+      .map((i) => i.event);
+  }
+
+  extend(evs: E[]) {
+    let old_count = this.event_count;
+    let event_count = this.event_count;
+    let events = evs.map((event) => {
+      let event_id = new EventId(event_count);
+      event_count += 1;
+      return { event_id, event } as EventInstance<E>;
+    });
+
+    this.events_b.events.push(...events);
+
+    this.event_count = event_count;
+  }
 }
 
-/// An `EventId` uniquely identifies an event stored in a specific [`World`].
-///
-/// An `EventId` can among other things be used to trace the flow of an event from the point it was
-/// sent to the point it was processed.
-///
-/// [`World`]: crate::world::World
+/**
+ * An `EventId` uniquely identifies an event stored in a specific [`World`].
+ *
+ * An `EventId` can among other things be used to trace the flow of an event from the point it was
+ * sent to the point it was processed.
+ *
+ * [`World`]: crate::world::World
+ */
 class EventId<E> {
-  /// Uniquely identifies the event associated with this ID.
-  // This value corresponds to the order in which each event was added to the world.
-
+  /**
+   * Uniquely identifies the event associated with this ID.
+   * This value corresponds to the order in which each event was added to the world.
+   */
   constructor(public id: number) {}
 
   eq(other: this) {
@@ -186,8 +225,10 @@ interface EventSequence<E> {
   start_event_count: number;
 }
 
-/// Stores the state for an [`EventReader`].
-/// Access to the [`Events<E>`] resource is required to read any incoming events.
+/**
+ * Stores the state for an [`EventReader`].
+ * Access to the [`Events<E>`] resource is required to read any incoming events.
+ */
 export class ManualEventReader<E> {
   constructor(public last_event_count: number = 0) {}
 
@@ -199,7 +240,9 @@ export class ManualEventReader<E> {
     return new EventIteratorWithId(this, events);
   }
 
-  /// See [`EventReader::len`]
+  /**
+   * See [`EventReader::len`]
+   */
   len(events: Events<E>) {
     // The number of events in this reader is the difference between the most recent event
     // and the last event seen by it. This will be at most the number of events contained
@@ -217,6 +260,10 @@ class EventIterator<E> {
       const { event } = item;
       yield event;
     }
+  }
+
+  next() {
+    return this.iter.next()?.event;
   }
 }
 
@@ -264,6 +311,15 @@ class EventIteratorWithId<E> {
       yield item;
     }
   }
+
+  next() {
+    if (this.unread === 0) {
+      return undefined;
+    }
+    this.reader.last_event_count += 1;
+    this.unread -= 1;
+    return this.chain.shift();
+  }
 }
 
 /**
@@ -272,9 +328,11 @@ class EventIteratorWithId<E> {
 export class EventsReader<E> {
   constructor(public events: Events<E>, public reader: ManualEventReader<E>) {}
 
-  /// Iterates over the events this [`EventReader`] has not seen yet. This updates the
-  /// [`EventReader`]'s event counter, which means subsequent event reads will not include events
-  /// that happened before now.
+  /**
+   * Iterates over the events this [`EventReader`] has not seen yet. This updates the
+   * [`EventReader`]'s event counter, which means subsequent event reads will not include events
+   * that happened before now.
+   */
   read() {
     return this.reader.read(this.events);
   }
