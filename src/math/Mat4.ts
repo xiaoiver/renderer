@@ -60,10 +60,11 @@ export class Mat4 {
   }
 
   static from(m: Affine3) {
+    const { m00, m01, m02, m10, m11, m12, m20, m21, m22 } = m.matrix3;
     return Mat4.from_cols(
-      m.matrix3.x_axis.extend(0),
-      m.matrix3.y_axis.extend(0),
-      m.matrix3.z_axis.extend(0),
+      new Vec3(m00, m01, m02).extend(0),
+      new Vec3(m10, m11, m12).extend(0),
+      new Vec3(m20, m21, m22).extend(0),
       m.translation.extend(1),
     );
   }
@@ -243,13 +244,16 @@ export class Mat4 {
    */
   mul_mat4(rhs: Mat4) {
     return Mat4.from_cols(
-      this.mul(rhs.x_axis) as Vec4,
-      this.mul(rhs.y_axis) as Vec4,
-      this.mul(rhs.z_axis) as Vec4,
-      this.mul(rhs.w_axis) as Vec4,
+      this.mul(rhs.x_axis),
+      this.mul(rhs.y_axis),
+      this.mul(rhs.z_axis),
+      this.mul(rhs.w_axis),
     );
   }
 
+  mul(rhs: number): Mat4;
+  mul(rhs: Vec4): Vec4;
+  mul(rhs: Mat4): Mat4;
   mul(rhs: number | Vec4 | Mat4): Vec4 | Mat4 {
     if (typeof rhs === 'number') {
       return this.mul_scalar(rhs);

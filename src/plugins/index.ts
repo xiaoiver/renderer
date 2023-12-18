@@ -5,5 +5,6 @@ export { RendererPlugin } from './Renderer';
 export { TransformPlugin } from './Transform';
 export { HierarchyPlugin } from './Hierarchy';
 export { InputPlugin } from './Input';
+export { VisibilityPlugin } from './Visibility';
 export * from './camera';
 export * from './core';

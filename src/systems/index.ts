@@ -10,6 +10,8 @@ export { PrepareFog } from './PrepareFog';
 export { PrepareMaterial } from './PrepareMaterial';
 export { PrepareLights } from './PrepareLights';
 export { RenderResource } from './RenderResource';
+export { UpdateFrusta } from './UpdateFrusta';
 export * from './camera';
 export * from './input';
+export * from './light';
 export * from './stages';

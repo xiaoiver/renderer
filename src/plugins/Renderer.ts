@@ -13,19 +13,24 @@ import {
   RenderResource,
   ExtractMeshes,
   PrepareMaterial,
+  PostUpdate,
+  AddClusters,
 } from '../systems';
-import { Material } from '../components';
+import { ClusterConfig, Clusters, Material } from '../components';
 import { Mesh } from '../meshes';
 
 export class RendererPlugin implements Plugin {
   async build(app: App) {
     component(Mesh);
     component(Material);
+    component(ClusterConfig);
+    component(Clusters);
 
     app.add_systems(PreStartUp, RenderResource);
     app.add_systems(PreUpdate, PrepareViewUniforms);
     app.add_systems(PreUpdate, PrepareMaterial);
     app.add_systems(Update, ExtractMeshes);
     app.add_systems(Update, MeshPipeline);
+    app.add_systems(PostUpdate, AddClusters);
   }
 }

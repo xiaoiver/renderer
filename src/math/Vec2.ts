@@ -1,5 +1,6 @@
 import { Type } from '@lastolivegames/becsy';
 import { BVec2 } from './BVec2';
+import { Vec3 } from './Vec3';
 
 /**
  * A 2-dimensional vector.
@@ -104,6 +105,10 @@ export class Vec2 {
     return new Vec2(Math.max(this.x, rhs.x), Math.max(this.y, rhs.y));
   }
 
+  ceil() {
+    return new Vec2(Math.ceil(this.x), Math.ceil(this.y));
+  }
+
   /**
    * Returns a vector mask containing the result of a `>=` comparison for each element of `self` and `rhs`.
    *
@@ -119,6 +124,10 @@ export class Vec2 {
    */
   cmple(rhs: Vec2) {
     return new BVec2(this.x <= rhs.x, this.y <= rhs.y);
+  }
+
+  extend(z: number) {
+    return new Vec3(this.x, this.y, z);
   }
 }
 

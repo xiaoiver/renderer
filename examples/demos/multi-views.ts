@@ -17,7 +17,6 @@ import {
   Perspective,
   Frustum,
   Commands,
-  Skybox,
   Vec3,
   ColorGrading,
   Tonemapping,
@@ -25,34 +24,17 @@ import {
 } from '../../src';
 import { loadImage } from '../utils/image';
 // @ts-ignore
-import posx from '../public/images/posx.jpg';
-// @ts-ignore
-import negx from '../public/images/negx.jpg';
-// @ts-ignore
-import posy from '../public/images/posy.jpg';
-// @ts-ignore
-import negy from '../public/images/negy.jpg';
-// @ts-ignore
-import posz from '../public/images/posz.jpg';
-// @ts-ignore
-import negz from '../public/images/negz.jpg';
-// @ts-ignore
 import glsl_wgsl_compiler_bg from '../public/glsl_wgsl_compiler_bg.wasm?url';
 
 /**
- * @see https://bevyengine.org/learn/book/getting-started/ecs/
+ * @see https://github.com/bevyengine/bevy/blob/main/examples/3d/split_screen.rs
  */
 export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
-  let camera: Entity;
-
-  // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
-  const imageBitmaps = await Promise.all(
-    [posx, negx, posy, negy, posz, negz].map(async (src) => loadImage(src)),
-  );
   const baseColorImage = await loadImage(
     'https://gw.alipayobjects.com/mdn/rms_6ae20b/afts/img/A*_aqoS73Se3sAAAAAAAAAAAAAARQnAQ',
   );
 
+  let cameraEntity: Entity;
   class StartUpSystem extends System {
     commands = new Commands(this);
 
@@ -67,7 +49,6 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           ComputedCameraValues,
           Perspective,
           Frustum,
-          Skybox,
           ColorGrading,
           Tonemapping,
           DebandDither,
@@ -75,10 +56,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
     );
 
     initialize(): void {
-      // const image_handle = this.commands.insert_resource(imageBitmaps);
-      const image_handle = imageBitmaps;
-
-      camera = this.commands
+      cameraEntity = this.commands
         .spawn(
           new Camera3dBundle({
             camera: new Camera(),
@@ -88,11 +66,21 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
               Vec3.Y,
             ),
           }),
-          new Skybox({
-            image_handle,
-          }),
         )
         .entity.hold();
+
+      // this.commands.spawn(
+      //   new Camera3dBundle({
+      //     camera: new Camera({
+      //       order: 1,
+      //     }),
+      //     projection: new Perspective(),
+      //     transform: Transform.from_xyz(-2.5, 1.5, 2.0).look_at(
+      //       Vec3.ZERO,
+      //       Vec3.Y,
+      //     ),
+      //   }),
+      // );
 
       const mesh = Mesh.from(new Cube(1));
       const material = new Material({
@@ -105,6 +93,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           transform: Transform.from_xyz(0, 0, 0),
         }),
       );
+
       this.commands.execute();
     }
   }
@@ -117,16 +106,14 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
     .add_systems(StartUp, StartUpSystem);
   app.run();
 
-  const skyboxFolder = gui.addFolder('skybox');
-  const skyboxConfig = {
-    enabled: true,
+  const viewportFolder = gui.addFolder('viewport');
+  const viewConfig = {
+    width: 6,
+    height: 0,
   };
-  skyboxFolder.add(skyboxConfig, 'enabled').onChange((enabled: boolean) => {
-    if (enabled) {
-      camera.add(Skybox, { image_handle: imageBitmaps });
-    } else {
-      camera.remove(Skybox);
-    }
+  viewportFolder.add(viewConfig, 'width', 50, 500).onChange((width: number) => {
+    const camera = cameraEntity.write(Camera);
+    camera.viewport;
   });
 
   return async () => {

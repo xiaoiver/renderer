@@ -1,4 +1,5 @@
-import { Affine3, Mat4 } from '../../math';
+import { field } from '@lastolivegames/becsy';
+import { Affine3, Mat4, Vec3 } from '../../math';
 import { Aabb } from './Aabb';
 import { HalfSpace } from './HalfSpace';
 import { Sphere } from './Sphere';
@@ -25,7 +26,7 @@ import { Sphere } from './Sphere';
  * [`CameraProjection`] component and [`GlobalTransform`] of the camera entity.
  */
 export class Frustum {
-  half_spaces: [
+  @field.object declare half_spaces: [
     HalfSpace,
     HalfSpace,
     HalfSpace,
@@ -35,7 +36,7 @@ export class Frustum {
   ];
 
   constructor(
-    half_spaces: [
+    half_spaces?: [
       HalfSpace,
       HalfSpace,
       HalfSpace,
@@ -44,15 +45,39 @@ export class Frustum {
       HalfSpace,
     ],
   ) {
-    this.half_spaces = half_spaces;
+    this.half_spaces = half_spaces || [
+      new HalfSpace(),
+      new HalfSpace(),
+      new HalfSpace(),
+      new HalfSpace(),
+      new HalfSpace(),
+      new HalfSpace(),
+    ];
   }
 
   /**
    * Returns a frustum derived from `view_projection`.
    */
-  from_view_projection(view_projection: Mat4) {
+  static from_view_projection(view_projection: Mat4) {
     const frustum = this.from_view_projection_no_far(view_projection);
     frustum.half_spaces[5] = new HalfSpace(view_projection.row(2));
+    return frustum;
+  }
+
+  /**
+   * Returns a frustum derived from `view_projection`, but with a custom far plane.
+   */
+  static from_view_projection_custom_far(
+    view_projection: Mat4,
+    view_translation: Vec3,
+    view_backward: Vec3,
+    far: number,
+  ) {
+    const frustum = this.from_view_projection_no_far(view_projection);
+    const far_center = view_translation.sub(view_backward.mul(far));
+    frustum.half_spaces[5] = new HalfSpace(
+      view_backward.extend(-view_backward.dot(far_center)),
+    );
     return frustum;
   }
 
@@ -62,7 +87,7 @@ export class Frustum {
    * Rendering by Lengyel.
    * Returns a frustum derived from `view_projection`, without a far plane.
    */
-  from_view_projection_no_far(view_projection: Mat4) {
+  static from_view_projection_no_far(view_projection: Mat4) {
     const row3 = view_projection.row(3);
     const half_spaces = new Array<HalfSpace>(6).fill(new HalfSpace()) as [
       HalfSpace,

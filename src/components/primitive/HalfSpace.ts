@@ -25,7 +25,7 @@ import { Vec4, v4Type } from '../../math';
  * It is used to define a [`Frustum`], but is also a useful mathematical primitive for rendering tasks such as  light computation.
  */
 export class HalfSpace {
-  @field(v4Type) declare normal_d: Vec4;
+  // @field(v4Type) declare normal_d: Vec4;
 
   /**
    * Constructs a `HalfSpace` from a 4D vector whose first 3 components
@@ -33,8 +33,8 @@ export class HalfSpace {
    * the signed distance along the normal from the plane to the origin.
    * The constructor ensures the normal vector is normalized and the distance is appropriately scaled.
    */
-  constructor(normal_d: Vec4 = Vec4.ZERO) {
-    this.normal_d = normal_d;
+  constructor(public normal_d: Vec4 = Vec4.ZERO) {
+    // this.normal_d = normal_d;
   }
 
   /**

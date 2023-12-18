@@ -5,7 +5,6 @@ import { Orthographic, Perspective } from './Projection';
 import { Bundle } from '../Bundle';
 import { ComputedCameraValues } from './ComputedCameraValues';
 import { Frustum } from '../primitive/Frustum';
-import { HalfSpace } from '../primitive/HalfSpace';
 import { Tonemapping } from '../pipeline';
 import { ColorGrading, DebandDither } from '../render';
 
@@ -26,7 +25,7 @@ export class Camera3dBundle extends Bundle {
 
   color_grading: ColorGrading;
 
-  // frustum: Frustum;
+  frustum: Frustum;
 
   constructor(
     options?: Partial<{
@@ -38,7 +37,7 @@ export class Camera3dBundle extends Bundle {
       tonemapping: Tonemapping;
       color_grading: ColorGrading;
       dither: DebandDither;
-      // frustum: Frustum;
+      frustum: Frustum;
     }>,
   ) {
     super();
@@ -47,27 +46,22 @@ export class Camera3dBundle extends Bundle {
       camera = new Camera(),
       computed = new ComputedCameraValues(),
       transform,
+      global_transform = new GlobalTransform(),
       projection = new Perspective(),
       tonemapping = new Tonemapping(),
       color_grading = new ColorGrading(),
       dither = new DebandDither(),
-      // frustum = new Frustum([
-      //   new HalfSpace(),
-      //   new HalfSpace(),
-      //   new HalfSpace(),
-      //   new HalfSpace(),
-      //   new HalfSpace(),
-      //   new HalfSpace(),
-      // ]),
+      frustum = new Frustum(),
     } = options || {};
 
     this.camera = camera;
     this.computed = computed;
     this.transform = transform;
+    this.global_transform = global_transform;
     this.projection = projection;
     this.tonemapping = tonemapping;
     this.color_grading = color_grading;
     this.dither = dither;
-    // this.frustum = frustum;
+    this.frustum = frustum;
   }
 }

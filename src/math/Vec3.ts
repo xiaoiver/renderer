@@ -52,6 +52,10 @@ export class Vec3 {
     return new Vec3(this.z, this.z, this.z);
   }
 
+  xy() {
+    return new Vec2(this.x, this.y);
+  }
+
   /**
    * Computes the length of `self`.
    */

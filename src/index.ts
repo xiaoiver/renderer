@@ -6,6 +6,7 @@ import {
   CameraPlugin,
   CorePipeline,
   InputPlugin,
+  VisibilityPlugin,
 } from './plugins';
 
 export {
@@ -32,4 +33,5 @@ export const DefaultPlugins: PluginType[] = [
   CorePipeline,
   RendererPlugin,
   InputPlugin,
+  VisibilityPlugin,
 ];

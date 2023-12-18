@@ -8,3 +8,4 @@ export * from './pipeline';
 export * from './pbr';
 export * from './render';
 export * from './light';
+export * from './primitive';

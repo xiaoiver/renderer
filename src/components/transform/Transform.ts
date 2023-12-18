@@ -122,4 +122,14 @@ export class Transform {
       this.translation,
     );
   }
+
+  /**
+   * Get the unit vector in the local `Z` direction.
+   */
+  local_z() {
+    return this.rotation.mul(Vec3.Z);
+  }
+  back() {
+    return this.local_z();
+  }
 }
