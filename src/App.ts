@@ -43,6 +43,7 @@ export class App {
 
   private updateEventsSystemCounter = 0;
   private resources = new WeakMap<any, Resource>();
+  private rafId: number;
 
   constructor(private config?: Partial<IAppConfig>) {}
 
@@ -175,16 +176,19 @@ export class App {
 
     const tick = async () => {
       await this.world.execute();
-      requestAnimationFrame(tick);
+      this.rafId = requestAnimationFrame(tick);
     };
-    requestAnimationFrame(tick);
+    this.rafId = requestAnimationFrame(tick);
+
+    return this;
   }
 
   /**
    * Exit the app.
    * @see https://bevy-cheatbook.github.io/programming/app-builder.html#quitting-the-app
    */
-  exit() {
-    this.world.terminate();
+  async exit() {
+    cancelAnimationFrame(this.rafId);
+    await this.world.terminate();
   }
 }

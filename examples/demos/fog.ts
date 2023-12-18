@@ -4,13 +4,10 @@ import {
   App,
   System,
   StartUp,
-  OrbitCameraPlugin,
   Camera3dBundle,
   DefaultPlugins,
   Transform,
   GlobalTransform,
-  // Parent,
-  // Children,
   Camera,
   ComputedCameraValues,
   Fxaa,
@@ -22,28 +19,13 @@ import {
   Perspective,
   Commands,
   BloomSettings,
-  Skybox,
   FogSettings,
   FogFalloff,
   Color,
   Vec3,
-  Tonemapping,
   ColorGrading,
-  OrbitCameraBundle,
-  OrbitCameraController,
-  LookTransform,
-  Smoother,
-  FpsCameraBundle,
-  FpsCameraController,
-  FpsCameraPlugin,
 } from '../../src';
 import { loadImage } from '../utils/image';
-import posx from '../public/images/posx.jpg';
-import negx from '../public/images/negx.jpg';
-import posy from '../public/images/posy.jpg';
-import negy from '../public/images/negy.jpg';
-import posz from '../public/images/posz.jpg';
-import negz from '../public/images/negz.jpg';
 
 /**
  * @see https://bevyengine.org/learn/book/getting-started/ecs/
@@ -51,10 +33,6 @@ import negz from '../public/images/negz.jpg';
 export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
   let camera: Entity;
 
-  // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
-  const imageBitmaps = await Promise.all(
-    [posx, negx, posy, negy, posz, negz].map(async (src) => loadImage(src)),
-  );
   const baseColorImage = await loadImage(
     'https://gw.alipayobjects.com/mdn/rms_6ae20b/afts/img/A*_aqoS73Se3sAAAAAAAAAAAAAARQnAQ',
   );
@@ -69,60 +47,31 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           Material,
           Transform,
           GlobalTransform,
-          // Parent,
-          // Children,
           Camera,
           ComputedCameraValues,
           Perspective,
           Fxaa,
           BloomSettings,
-          Skybox,
           FogSettings,
-          // Tonemapping.None,
-          // Tonemapping.Reinhard,
           ColorGrading,
-          LookTransform,
-          // OrbitCameraController,
-          FpsCameraController,
-          Smoother,
         ).write,
     );
 
     initialize(): void {
-      // const image_handle = this.commands.insert_resource(imageBitmaps);
-      const image_handle = imageBitmaps;
-
       camera = this.commands
         .spawn(
           new Camera3dBundle({
             camera: new Camera(),
             projection: new Perspective(),
-            // transform: Transform.from_xyz(-2.5, 1.5, 2.0).look_at(
-            //   Vec3.ZERO,
-            //   Vec3.Y,
-            // ),
-            // tonemapping: new Tonemapping.Reinhard(),
+            transform: Transform.from_xyz(-2.5, 1.5, 2.0).look_at(
+              Vec3.ZERO,
+              Vec3.Y,
+            ),
           }),
-          // new OrbitCameraBundle({
-          //   controller: new OrbitCameraController(),
-          //   eye: new Vec3(-2.5, 1.5, 2.0),
-          //   target: Vec3.ZERO,
-          //   up: Vec3.Y,
-          // }),
-          new FpsCameraBundle({
-            controller: new FpsCameraController(),
-            eye: new Vec3(-2.5, 5.0, 5.0),
-            target: Vec3.ZERO,
-            up: Vec3.Y,
-          }),
-          // BloomSettings.NATURAL,
           new Fxaa({
             enabled: true,
             edge_threshold: Sensitivity.High,
             edge_threshold_min: Sensitivity.High,
-          }),
-          new Skybox({
-            image_handle,
           }),
           new FogSettings({
             color: Color.BLUE,
@@ -135,10 +84,6 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
         .entity.hold();
 
       const mesh = Mesh.from(new Cube(1));
-      // mesh.insert_attribute(
-      //   Mesh.ATTRIBUTE_COLOR,
-      //   mesh.attribute(Mesh.ATTRIBUTE_POSITION).map(() => [1, 0, 0, 1]),
-      // );
       const material = new Material({
         base_color_texture: baseColorImage,
       });
@@ -149,78 +94,17 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           transform: Transform.from_xyz(0, 0, 0),
         }),
       );
-      // this.commands.spawn(
-      //   new PbrBundle({
-      //     mesh,
-      //     material,
-      //     transform: Transform.from_xyz(0.5, 0.5, 0.5),
-      //   }),
-      // );
 
       this.commands.execute();
     }
   }
 
-  // const child = commands
-  //   .spawn_empty()
-  //   .insert(
-  //     Transform.from_xyz(1, 2, 3),
-  //     new GlobalTransform(),
-  //   );
-
-  // const parent = commands
-  //   .spawn_empty()
-  //   .insert(
-  //     Transform.from_xyz(1, 2, 3),
-  //     new GlobalTransform(),
-  //   )
-  //   .add_child(child.id());
-
-  new App({
+  const app = new App({
     canvas: $canvas,
   })
     .add_plugins(...DefaultPlugins)
-    // .add_plugins(OrbitCameraPlugin)
-    .add_plugins(FpsCameraPlugin)
-    .add_systems(StartUp, StartUpSystem)
-    .run();
-
-  const skyboxFolder = gui.addFolder('skybox');
-  const skyboxConfig = {
-    enabled: true,
-  };
-  skyboxFolder.add(skyboxConfig, 'enabled').onChange((enabled: boolean) => {
-    if (enabled) {
-      camera.add(Skybox, { image_handle: imageBitmaps });
-    } else {
-      camera.remove(Skybox);
-    }
-  });
-
-  const fxaaFolder = gui.addFolder('fxaa');
-  const fxaaConfig = {
-    enabled: true,
-    edge_threshold: 'High',
-    edge_threshold_min: 'High',
-  };
-  fxaaFolder.add(fxaaConfig, 'enabled').onChange((enabled: boolean) => {
-    const fxaa = camera.write(Fxaa);
-    fxaa.enabled = enabled;
-  });
-  const SensitivityLabels = ['Low', 'Medium', 'High', 'Ultra', 'Extreme'];
-  fxaaFolder
-    .add(fxaaConfig, 'edge_threshold', SensitivityLabels)
-    .onChange((edge_threshold: string) => {
-      const fxaa = camera.write(Fxaa);
-      fxaa.edge_threshold = SensitivityLabels.indexOf(edge_threshold);
-    });
-  fxaaFolder
-    .add(fxaaConfig, 'edge_threshold_min', SensitivityLabels)
-    .onChange((edge_threshold_min: string) => {
-      const fxaa = camera.write(Fxaa);
-      fxaa.edge_threshold_min = SensitivityLabels.indexOf(edge_threshold_min);
-    });
-  fxaaFolder.open();
+    .add_systems(StartUp, StartUpSystem);
+  app.run();
 
   const fogFolder = gui.addFolder('fog');
   const fogConfig = {
@@ -295,4 +179,8 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
     }
   });
   fogFolder.open();
+
+  return async () => {
+    await app.exit();
+  };
 }

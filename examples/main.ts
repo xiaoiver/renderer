@@ -23,12 +23,12 @@ if (demos[initialValue]) select.value = initialValue;
 
 const $container = document.getElementById('container')!;
 
-let callback: () => void;
+let callback: () => Promise<void>;
 render();
 
 async function render() {
   if (callback) {
-    callback();
+    await callback();
   }
   $container.innerHTML = '';
 

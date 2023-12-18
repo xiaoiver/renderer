@@ -1,7 +1,7 @@
 import * as lil from 'lil-gui';
 
 export interface RenderFunction {
-  ($canvas: HTMLCanvasElement, gui: lil.GUI): Promise<() => void>;
+  ($canvas: HTMLCanvasElement, gui: lil.GUI): Promise<() => Promise<void>>;
   params?: { width: number; height: number };
 }
 
@@ -34,7 +34,5 @@ export async function initExample(
   const gui = new lil.GUI({ autoPlace: false });
   $container.appendChild(gui.domElement);
 
-  await render($canvas, gui);
-
-  return () => {};
+  return await render($canvas, gui);
 }
