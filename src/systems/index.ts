@@ -8,6 +8,7 @@ export { FxaaPipeline } from './FxaaPipeline';
 export { PrepareViewUniforms } from './PrepareViewUniforms';
 export { PrepareFog } from './PrepareFog';
 export { PrepareMaterial } from './PrepareMaterial';
+export { PrepareLights } from './PrepareLights';
 export { RenderResource } from './RenderResource';
 export * from './camera';
 export * from './input';

@@ -8,8 +8,8 @@ export const ScalingMode = World.defineEnum('ScalingMode');
  */
 @component(ScalingMode)
 class Fixed {
-  @field.float64 declare width: number;
-  @field.float64 declare height: number;
+  @field.float32 declare width: number;
+  @field.float32 declare height: number;
 }
 @component(ScalingMode)
 class WindowSize {}

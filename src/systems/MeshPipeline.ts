@@ -19,6 +19,7 @@ import { RenderResource } from './RenderResource';
 import { ExtractMeshes } from './ExtractMeshes';
 import { OpaqueNode } from './nodes/Opaque';
 import { PipelineNode } from './nodes/PipelineNode';
+import { PrepareLights } from './PrepareLights';
 
 export class MeshPipeline extends System {
   private appConfig = this.singleton.read(AppConfig);
@@ -46,6 +47,7 @@ export class MeshPipeline extends System {
    * Retrieve view uniforms extracted from camera.
    */
   private viewUniforms = this.attach(PrepareViewUniforms);
+  private lightsUniforms = this.attach(PrepareLights);
   private fogUniforms = this.attach(PrepareFog);
   private materialUniforms = this.attach(PrepareMaterial);
 
@@ -66,6 +68,7 @@ export class MeshPipeline extends System {
       this,
     );
     opaque.viewUniforms = this.viewUniforms;
+    opaque.lightsUniforms = this.lightsUniforms;
     opaque.fogUniforms = this.fogUniforms;
     opaque.materialUniforms = this.materialUniforms;
     this.nodes.push(opaque);

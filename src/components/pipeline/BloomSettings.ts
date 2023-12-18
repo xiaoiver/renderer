@@ -92,7 +92,7 @@ export class BloomSettings {
    * * 0.0 means no bloom
    * * Greater than 0.0 means a proportionate amount of scattered light is added
    */
-  @field.float64 declare intensity: number;
+  @field.float32 declare intensity: number;
 
   /**
    * Low frequency contribution boost.
@@ -114,7 +114,7 @@ export class BloomSettings {
    * * 0.0 means no bloom
    * * Greater than 0.0 means a proportionate amount of scattered light is added
    */
-  @field.float64 declare low_frequency_boost: number;
+  @field.float32 declare low_frequency_boost: number;
   /**
    * Low frequency contribution boost curve.
    * Controls the curvature of the blend factor function
@@ -126,7 +126,7 @@ export class BloomSettings {
    * * 0.0 - base base intensity and boosted intensity are linearly interpolated
    * * 1.0 - all frequencies below maximum are at boosted intensity level
    */
-  @field.float64 declare low_frequency_boost_curvature: number;
+  @field.float32 declare low_frequency_boost_curvature: number;
   /**
    * Tightens how much the light scatters (default: 1.0).
    *
@@ -134,13 +134,13 @@ export class BloomSettings {
    * * 0.0 - maximum scattering angle is 0 degrees (no scattering)
    * * 1.0 - maximum scattering angle is 90 degrees
    */
-  @field.float64 declare high_pass_frequency: number;
+  @field.float32 declare high_pass_frequency: number;
 
   /**
    * Baseline of the quadratic threshold curve (default: 0.0).
    * RGB values under the threshold curve will not contribute to the effect.
    */
-  @field.float64 declare prefilter_settings_threshold: number;
+  @field.float32 declare prefilter_settings_threshold: number;
 
   /**
    * Controls how much to blend between the thresholded and non-thresholded colors (default: 0.0).
@@ -148,7 +148,7 @@ export class BloomSettings {
    * 1.0 = Fully soft threshold
    * Values outside of the range [0.0, 1.0] will be clamped.
    */
-  @field.float64 declare prefilter_settings_threshold_softness: number;
+  @field.float32 declare prefilter_settings_threshold_softness: number;
 
   /**
    * Controls whether bloom textures

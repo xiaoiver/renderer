@@ -1,4 +1,5 @@
 import { field } from '@lastolivegames/becsy';
+import { Color } from '../render';
 
 /**
  * A light that emits light in all directions from a central point.
@@ -20,21 +21,50 @@ import { field } from '@lastolivegames/becsy';
  * Source: [Wikipedia](https://en.wikipedia.org/wiki/Lumen_(unit)#Lighting)
  */
 export class PointLight {
-  // @field.float64 color: Color,
+  static DEFAULT_SHADOW_DEPTH_BIAS = 0.02;
+  static DEFAULT_SHADOW_NORMAL_BIAS = 0.6;
+
+  @field.object declare color: Color;
   /**
    * Luminous power in lumens
    */
-  @field.float64 intensity: number;
-  @field.float64 range: number;
-  @field.float64 radius: number;
-  @field.boolean shadows_enabled: boolean;
-  @field.float64 shadow_depth_bias: number;
+  @field.float32 declare intensity: number;
+  @field.float32 declare range: number;
+  @field.float32 declare radius: number;
+  @field.boolean declare shadows_enabled: boolean;
+  @field.float32 declare shadow_depth_bias: number;
   /**
    * A bias applied along the direction of the fragment's surface normal. It is scaled to the
    * shadow map's texel size so that it can be small close to the camera and gets larger further away.
    */
-  @field.float64 shadow_normal_bias: number;
-}
+  @field.float32 declare shadow_normal_bias: number;
 
-const DEFAULT_SHADOW_DEPTH_BIAS = 0.02;
-const DEFAULT_SHADOW_NORMAL_BIAS = 0.6;
+  constructor(
+    options?: Partial<{
+      color: Color;
+      intensity: number;
+      range: number;
+      radius: number;
+      shadows_enabled: boolean;
+      shadow_depth_bias: number;
+      shadow_normal_bias: number;
+    }>,
+  ) {
+    const {
+      color = Color.rgb(1, 1, 1),
+      intensity = 800, // Roughly a 60W non-halogen incandescent bulb
+      range = 20,
+      radius = 0,
+      shadows_enabled = false,
+      shadow_depth_bias = PointLight.DEFAULT_SHADOW_DEPTH_BIAS,
+      shadow_normal_bias = PointLight.DEFAULT_SHADOW_NORMAL_BIAS,
+    } = options || {};
+    this.color = color;
+    this.intensity = intensity;
+    this.range = range;
+    this.radius = radius;
+    this.shadows_enabled = shadows_enabled;
+    this.shadow_depth_bias = shadow_depth_bias;
+    this.shadow_normal_bias = shadow_normal_bias;
+  }
+}

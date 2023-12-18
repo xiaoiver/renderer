@@ -8,7 +8,7 @@ export class Perspective {
    * The vertical field of view (FOV) in radians.
    * Defaults to a value of π/4 radians or 45 degrees.
    */
-  @field.float64 declare fov: number;
+  @field.float32 declare fov: number;
 
   /**
    * The aspect ratio (width divided by height) of the viewing frustum.
@@ -17,7 +17,7 @@ export class Perspective {
    *
    * Defaults to a value of `1.0`.
    */
-  @field.float64 declare aspect_ratio: number;
+  @field.float32 declare aspect_ratio: number;
 
   /**
    * The distance from the camera in world units of the viewing frustum's near plane.
@@ -25,7 +25,7 @@ export class Perspective {
    *
    * Defaults to a value of `0.1`.
    */
-  @field.float64 declare near: number;
+  @field.float32 declare near: number;
 
   /**
    * The distance from the camera in world units of the viewing frustum's far plane.
@@ -33,7 +33,7 @@ export class Perspective {
    *
    * Defaults to a value of `1000.0`.
    */
-  @field.float64 declare far: number;
+  @field.float32 declare far: number;
 
   constructor(
     fov: number = Math.PI / 4,
@@ -84,7 +84,7 @@ export class Orthographic {
    *
    * Defaults to a value of `0.1`.
    */
-  @field.float64 declare near: number;
+  @field.float32 declare near: number;
 
   /**
    * The distance from the camera in world units of the viewing frustum's far plane.
@@ -92,7 +92,7 @@ export class Orthographic {
    *
    * Defaults to a value of `1000.0`.
    */
-  @field.float64 declare far: number;
+  @field.float32 declare far: number;
 
   /**
    * Specifies the origin of the viewport as a normalized position from 0 to 1, where (0, 0) is the bottom left
@@ -123,7 +123,7 @@ export class Orthographic {
    *
    * Defaults to `1.0`
    */
-  @field.float64 declare scale: number;
+  @field.float32 declare scale: number;
 
   /**
    * The area that the projection covers relative to `viewport_origin`.

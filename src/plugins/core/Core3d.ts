@@ -1,7 +1,10 @@
+import { component } from '@lastolivegames/becsy';
 import { App } from '../../App';
 import { Plugin } from '../../Plugin';
 import { FogPlugin } from '../Fog';
 import { SkyboxPlugin } from '../Skybox';
+import { AmbientLight } from '../../components';
+import { PreUpdate, PrepareLights } from '../../systems';
 
 /**
  * PREPASS,
@@ -19,7 +22,11 @@ import { SkyboxPlugin } from '../Skybox';
  */
 export class Core3dPlugin implements Plugin {
   async build(app: App) {
+    component(AmbientLight);
+
     await new FogPlugin().build(app);
     await new SkyboxPlugin().build(app);
+
+    app.add_systems(PreUpdate, PrepareLights);
   }
 }

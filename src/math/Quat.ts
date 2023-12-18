@@ -353,4 +353,4 @@ export class Quat {
 }
 
 // @ts-ignore
-export const quatType = Type.vector(Type.float64, ['x', 'y', 'z', 'w'], Quat);
+export const quatType = Type.vector(Type.float32, ['x', 'y', 'z', 'w'], Quat);

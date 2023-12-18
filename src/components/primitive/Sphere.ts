@@ -5,7 +5,7 @@ import { Aabb } from './Aabb';
 export class Sphere {
   @field(v3Type) declare center: Vec3;
 
-  @field.float64 declare radius: number;
+  @field.float32 declare radius: number;
 
   constructor(center: Vec3 = Vec3.ZERO, radius: number = 0) {
     this.center = center;
