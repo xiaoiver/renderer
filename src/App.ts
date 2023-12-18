@@ -137,6 +137,7 @@ export class App {
       config = this.singleton.write(AppConfig);
       initialize(): void {
         this.config.canvas = config.canvas;
+        this.config.shaderCompilerPath = config.shaderCompilerPath;
         this.config.resources = resources;
       }
     }

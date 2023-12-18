@@ -30,6 +30,8 @@ import {
   FpsCameraPlugin,
 } from '../../src';
 import { loadImage } from '../utils/image';
+// @ts-ignore
+import glsl_wgsl_compiler_bg from '../public/glsl_wgsl_compiler_bg.wasm?url';
 
 /**
  * @see https://bevyengine.org/learn/book/getting-started/ecs/
@@ -107,6 +109,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
 
   const app = new App({
     canvas: $canvas,
+    shaderCompilerPath: glsl_wgsl_compiler_bg,
   })
     .add_plugins(...DefaultPlugins)
     .add_plugins(FpsCameraPlugin)

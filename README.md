@@ -272,7 +272,7 @@ camera = this.commands.spawn(
 
 ## Controllers
 
-Add plugin like `FpsCameraPlugin` first, it will enhance the capability of default camera.
+Add plugin like `FpsCameraPlugin` first, it will enhance the capability of default camera. [smooth-bevy-cameras](https://github.com/bonsairobo/smooth-bevy-cameras)
 
 ```ts
 new App({
@@ -317,10 +317,6 @@ Now we support the following pairs which support different interaction with keyb
   - Mouse wheel: Zoom
 
 ## Appendix
-
-### Orbit Camera
-
-- https://github.com/bonsairobo/smooth-bevy-cameras/blob/main/src/controllers/orbit.rs
 
 ### 3D Gaussian Splatting
 

@@ -10,12 +10,16 @@ export interface IAppConfig {
    */
   canvas: HTMLCanvasElement;
 
+  shaderCompilerPath: string;
+
   resources: WeakMap<any, Resource>;
 }
 
 @component
 export class AppConfig implements IAppConfig {
   @field.object declare canvas: HTMLCanvasElement;
+
+  @field.object declare shaderCompilerPath: string;
 
   @field.object declare resources: WeakMap<any, Resource>;
 }

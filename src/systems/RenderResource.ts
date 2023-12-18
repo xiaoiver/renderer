@@ -52,10 +52,10 @@ export class RenderResource extends System {
   renderHelper: RenderHelper;
 
   async prepare() {
-    const { canvas } = this.appConfig;
+    const { canvas, shaderCompilerPath } = this.appConfig;
 
     const deviceContribution = new WebGPUDeviceContribution({
-      shaderCompilerPath: '/glsl_wgsl_compiler_bg.wasm',
+      shaderCompilerPath,
     });
 
     // Create swap chain and get device
