@@ -11,6 +11,9 @@ Just another toy renderer. Inspired by [bevy](https://github.com/bevyengine/).
 - [Clustered Forward Shading](#clustered-forward-shading)
 - [Standard Material](#standart-material)
 - [Skybox](#skybox)
+- [Tonemapping](#tonemapping) - Support multiple methods such as Reinhard and AcesFitted.
+  - [Color Grading](#color-grading)
+  - [Deband Dithering](#deband-dithering)
 - Batching
 - Post processing
   - [FXAA](#fxaa)
@@ -158,6 +161,8 @@ The internal HDR image has to be converted down to SDR (Standard Dynamic Range) 
 
 Create a cubemap and upload images in the following order:
 
+[Online DEMO](https://xiaoiver.github.io/renderer/?name=Skybox)
+
 ```ts
 // The order of the array layers is [+X, -X, +Y, -Y, +Z, -Z]
 const imageBitmaps = await Promise.all(
@@ -187,6 +192,8 @@ The parameters are as follows:
 - edge_threshold `Sensitivity` Defaults to `Sensitivity.High`
 - edge_threshold_min `Sensitivity` Defaults to `Sensitivity.High`
 
+[Online DEMO](https://xiaoiver.github.io/renderer/?name=FXAA)
+
 ```ts
 camera = this.commands.spawn(
   //... Omit other components
@@ -201,6 +208,8 @@ camera = this.commands.spawn(
 ### Fog
 
 Configures the “classic” computer graphics [distance fog](https://en.wikipedia.org/wiki/Distance_fog) effect, in which objects appear progressively more covered in atmospheric haze the further away they are from the camera.
+
+[Online DEMO](https://xiaoiver.github.io/renderer/?name=Fog)
 
 ```ts
 camera = this.commands.spawn(
@@ -238,12 +247,46 @@ The falloff modes are as follows:
   - extinction `Vec3` Controls how much light is removed due to atmospheric “extinction”, i.e. loss of light due to photons being absorbed by atmospheric particles.
   - inscattering `Vec3` Controls how much light is added due to light scattering from the sun through the atmosphere.
 
-## Color Grading
+## Tonemapping
+
+https://bevy-cheatbook.github.io/graphics/hdr-tonemap.html#tonemapping
+
+Tonemapping is the step of the rendering process where the colors of pixels are converted from their in-engine intermediate repesentation into the final values as they should be displayed on-screen.
+
+This is very important with HDR applications, as in that case the image can contain very bright pixels (above 1.0) which need to be remapped into a range that can be displayed.
+
+[Online DEMO](https://xiaoiver.github.io/renderer/?name=Tonemapping)
+
+```ts
+camera = this.commands.spawn(
+  new Camera3dBundle({
+    //... Omit other components
+    tonemapping: new Tonemapping(TonemmapingMethod.Reinhard),
+  }),
+);
+```
+
+The following tonemapping algorithms DO NOT require the special data from tonemapping_luts:
+
+- Reinhard
+- ReinhardLuminance
+- AcesFitted
+- SomewhatBoringDisplayTransform
+
+The following tonemapping algorithms require the special data from tonemapping_luts:
+
+- AgX
+- TonyMcMapface
+- BlenderFilmic
+
+### Color Grading
 
 Color Grading is a manipulation of the overall look of the image.
 Together with tonemapping, this affects the "tone"/"mood" of the final image.
 
 - https://bevy-cheatbook.github.io/graphics/hdr-tonemap.html#color-grading
+
+[Online DEMO](https://xiaoiver.github.io/renderer/?name=Tonemapping)
 
 ```ts
 camera = this.commands.spawn(
@@ -259,13 +302,26 @@ camera = this.commands.spawn(
 );
 ```
 
-## Tonemapping
+- exposure `number` Exposure value (EV) offset, measured in stops.
+- gamma `number` Non-linear luminance adjustment applied before tonemapping. `y = pow(x, gamma)`
+- pre_saturation `number` Saturation adjustment applied before tonemapping. Values below 1.0 desaturate, with a value of 0.0 resulting in a grayscale image with luminance defined by ITU-R BT.709. Values above 1.0 increase saturation.
+- post_saturation `number` Saturation adjustment applied after tonemapping.
+
+```wgsl
+color = saturation(color, color_grading.pre_saturation);
+```
+
+### Deband Dithering
+
+Deband dithering helps color gradients or other areas with subtle changes in color to appear higher-quality, without a "color banding" effect. It is enabled by default, and can be disabled per-camera.
 
 ```ts
 camera = this.commands.spawn(
   new Camera3dBundle({
     //... Omit other components
-    tonemapping: new Tonemapping.Reinhard(),
+    dither: new DebandDither({
+      enabled: true,
+    }),
   }),
 );
 ```
@@ -304,13 +360,13 @@ camera = this.commands.spawn(
 
 Now we support the following pairs which support different interaction with keyboard and mouse:
 
-- `FpsCameraPlugin` + `FpsCameraBundle`
+- `FpsCameraPlugin` + `FpsCameraBundle` [Online DEMO](https://xiaoiver.github.io/renderer/?name=FPSCameraController)
 
   - WASD: Translate on the XZ plane
   - Shift/Space: Translate along the Y axis
   - Mouse: Rotate camera
 
-- `OrbitCameraPlugin` + `OrbitCameraBundle`
+- `OrbitCameraPlugin` + `OrbitCameraBundle` [Online DEMO](https://xiaoiver.github.io/renderer/?name=OrbitCameraController)
 
   - CTRL + mouse drag: Rotate camera
   - Right mouse drag: Pan camera

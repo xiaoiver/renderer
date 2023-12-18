@@ -7,7 +7,7 @@ import {
   fullscreenMegaState,
   nArray,
 } from '@antv/g-device-api';
-// import { Tonemapping, TonemappingEnum } from '../components';
+import { DebandDither, Tonemapping, TonemappingMethod } from '../components';
 import {
   RGAttachmentSlot,
   RGGraphBuilder,
@@ -17,14 +17,14 @@ import {
 } from '../framegraph';
 import { createProgram } from './utils';
 import { MeshPipeline } from './MeshPipeline';
+import { PrepareViewUniforms } from './PrepareViewUniforms';
 import vert from '../shaders/fullscreen.wgsl?raw';
 import frag from '../shaders/tonemapping/tonemapping.wgsl?raw';
-import { PrepareViewUniforms } from './PrepareViewUniforms';
 
 export class TonemappingPipeline extends System {
-  // tonemapping = this.query(
-  //   (q) => q.addedOrChanged.withAny(TonemappingEnum).trackWrites,
-  // );
+  tonemapping = this.query(
+    (q) => q.addedOrChanged.with(Tonemapping, DebandDither).trackWrites,
+  );
 
   private pipeline = this.attach(MeshPipeline);
   private viewUniforms = this.attach(PrepareViewUniforms);
@@ -34,29 +34,37 @@ export class TonemappingPipeline extends System {
   private defines: Record<string, boolean | number> = {};
 
   execute(): void {
-    // this.tonemapping.addedOrChanged.forEach((entity) => {
-    //   this.pipeline.passesChanged = true;
-    //   if (entity.has(Tonemapping.None)) {
-    //     this.defines['TONEMAP_METHOD_NONE'] = 1;
-    //   } else if (entity.has(Tonemapping.Reinhard)) {
-    //     this.defines['TONEMAP_METHOD_REINHARD'] = 1;
-    //   } else if (entity.has(Tonemapping.ReinhardLuminance)) {
-    //     this.defines['TONEMAP_METHOD_REINHARD_LUMINANCE'] = 1;
-    //   } else if (entity.has(Tonemapping.AcesFitted)) {
-    //     this.defines['TONEMAP_METHOD_ACES_FITTED'] = 1;
-    //   } else if (entity.has(Tonemapping.AgX)) {
-    //     this.defines['TONEMAP_METHOD_AGX'] = 1;
-    //   } else if (entity.has(Tonemapping.SomewhatBoringDisplayTransform)) {
-    //     this.defines['TONEMAP_METHOD_SOMWHAT_BORING_DISPLAY_TRANSFORM'] = 1;
-    //   } else if (entity.has(Tonemapping.TonyMcMapface)) {
-    //     this.defines['TONEMAP_METHOD_TONY_MC_MAPFACE'] = 1;
-    //   } else if (entity.has(Tonemapping.BlenderFilmic)) {
-    //     this.defines['TONEMAP_METHOD_BLENDER_FILMIC'] = 1;
-    //   }
-    //   // Reset program.
-    //   this.finalize();
-    //   // this.pipeline.registerPass('Tonemapping', this.pushTonemappingPass);
-    // });
+    this.tonemapping.addedOrChanged.forEach((entity) => {
+      this.pipeline.passesChanged = true;
+      // Reset program.
+      this.finalize();
+
+      const { method } = entity.read(Tonemapping);
+      if (method === TonemappingMethod.None) {
+        this.defines['TONEMAP_METHOD_NONE'] = 1;
+      } else if (method === TonemappingMethod.Reinhard) {
+        this.defines['TONEMAP_METHOD_REINHARD'] = 1;
+      } else if (method === TonemappingMethod.ReinhardLuminance) {
+        this.defines['TONEMAP_METHOD_REINHARD_LUMINANCE'] = 1;
+      } else if (method === TonemappingMethod.AcesFitted) {
+        this.defines['TONEMAP_METHOD_ACES_FITTED'] = 1;
+      } else if (method === TonemappingMethod.AgX) {
+        this.defines['TONEMAP_METHOD_AGX'] = 1;
+      } else if (method === TonemappingMethod.SomewhatBoringDisplayTransform) {
+        this.defines['TONEMAP_METHOD_SOMWHAT_BORING_DISPLAY_TRANSFORM'] = 1;
+      } else if (method === TonemappingMethod.TonyMcMapface) {
+        this.defines['TONEMAP_METHOD_TONY_MC_MAPFACE'] = 1;
+      } else if (method === TonemappingMethod.BlenderFilmic) {
+        this.defines['TONEMAP_METHOD_BLENDER_FILMIC'] = 1;
+      }
+
+      const { enabled } = entity.read(DebandDither);
+      if (enabled) {
+        this.defines['DEBAND_DITHER'] = 1;
+      }
+
+      this.pipeline.registerPass('Tonemapping', this.pushTonemappingPass);
+    });
   }
 
   finalize(): void {
@@ -64,6 +72,7 @@ export class TonemappingPipeline extends System {
       this.program.destroy();
       this.program = null;
       this.pipeline.unregisterPass('Tonemapping');
+      this.defines = {};
     }
   }
 
@@ -115,6 +124,7 @@ export class TonemappingPipeline extends System {
         renderInst.setProgram(this.program);
 
         // View
+        renderInst.setUniformBuffer(renderHelper.uniformBuffer);
         this.viewUniforms.prepareUniforms(renderInst, 0);
 
         // hdr_texture & sampler

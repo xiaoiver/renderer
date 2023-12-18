@@ -24,6 +24,8 @@ import {
   Color,
   Vec3,
   ColorGrading,
+  Tonemapping,
+  DebandDither,
 } from '../../src';
 import { loadImage } from '../utils/image';
 // @ts-ignore
@@ -56,6 +58,8 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           BloomSettings,
           FogSettings,
           ColorGrading,
+          Tonemapping,
+          DebandDither,
         ).write,
     );
 

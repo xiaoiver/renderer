@@ -7,7 +7,7 @@ import { ComputedCameraValues } from './ComputedCameraValues';
 import { Frustum } from '../primitive/Frustum';
 import { HalfSpace } from '../primitive/HalfSpace';
 import { Tonemapping } from '../pipeline';
-import { ColorGrading } from '../render';
+import { ColorGrading, DebandDither } from '../render';
 
 export class Camera3dBundle extends Bundle {
   camera: Camera;
@@ -20,9 +20,10 @@ export class Camera3dBundle extends Bundle {
 
   global_transform: GlobalTransform;
 
-  // tonemapping: Tonemapping;
+  tonemapping: Tonemapping;
 
-  // dither: DebandDither;
+  dither: DebandDither;
+
   color_grading: ColorGrading;
 
   // frustum: Frustum;
@@ -34,8 +35,9 @@ export class Camera3dBundle extends Bundle {
       projection: Perspective | Orthographic;
       transform: Transform;
       global_transform: GlobalTransform;
-      // tonemapping: Tonemapping;
+      tonemapping: Tonemapping;
       color_grading: ColorGrading;
+      dither: DebandDither;
       // frustum: Frustum;
     }>,
   ) {
@@ -46,8 +48,9 @@ export class Camera3dBundle extends Bundle {
       computed = new ComputedCameraValues(),
       transform,
       projection = new Perspective(),
-      // tonemapping = new Tonemapping.Reinhard(),
+      tonemapping = new Tonemapping(),
       color_grading = new ColorGrading(),
+      dither = new DebandDither(),
       // frustum = new Frustum([
       //   new HalfSpace(),
       //   new HalfSpace(),
@@ -62,8 +65,9 @@ export class Camera3dBundle extends Bundle {
     this.computed = computed;
     this.transform = transform;
     this.projection = projection;
-    // this.tonemapping = tonemapping;
+    this.tonemapping = tonemapping;
     this.color_grading = color_grading;
+    this.dither = dither;
     // this.frustum = frustum;
   }
 }

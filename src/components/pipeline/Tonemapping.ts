@@ -1,35 +1,28 @@
-import { World, component } from '@lastolivegames/becsy';
+import { field } from '@lastolivegames/becsy';
 
-// export const TonemappingEnum = World.defineEnum('Tonemapping');
+export class Tonemapping {
+  @field.uint8 declare method: TonemappingMethod;
 
-export type Tonemapping =
-  | Tonemapping.None
-  | Tonemapping.Reinhard
-  | Tonemapping.ReinhardLuminance
-  | Tonemapping.AcesFitted
-  | Tonemapping.AgX
-  | Tonemapping.SomewhatBoringDisplayTransform
-  | Tonemapping.TonyMcMapface
-  | Tonemapping.BlenderFilmic;
-export namespace Tonemapping {
+  constructor(method: TonemappingMethod = TonemappingMethod.Reinhard) {
+    this.method = method;
+  }
+}
+export enum TonemappingMethod {
   /**
    * Bypass tonemapping.
    */
-  // @component(TonemappingEnum)
-  export class None {}
+  None,
 
   /**
    * Suffers from lots hue shifting, brights don't desaturate naturally.
    * Bright primaries and secondaries don't desaturate at all.
    */
-  // @component(TonemappingEnum)
-  export class Reinhard {}
+  Reinhard,
 
   /**
    * Suffers from hue shifting. Brights don't desaturate much at all across the spectrum.
    */
-  // @component(TonemappingEnum)
-  export class ReinhardLuminance {}
+  ReinhardLuminance,
 
   /**
    * Same base implementation that Godot 4.0 uses for Tonemap ACES.
@@ -38,8 +31,7 @@ export namespace Tonemapping {
    * Bright greens and reds turn orange. Bright blues turn magenta.
    * Significantly increased contrast. Brights desaturate across the spectrum.
    */
-  // @component(TonemappingEnum)
-  export class AcesFitted {}
+  AcesFitted,
 
   /**
    * By Troy Sobotka @see https://github.com/sobotka/AgX
@@ -47,8 +39,7 @@ export namespace Tonemapping {
    * Little to no hue shifting. Subtle [Abney shifting](https://en.wikipedia.org/wiki/Abney_effect).
    * NOTE: Requires the `tonemapping_luts` cargo feature.
    */
-  // @component(TonemappingEnum)
-  export class AgX {}
+  AgX,
 
   /**
    * By Tomasz Stachowiak
@@ -57,8 +48,8 @@ export namespace Tonemapping {
    * Designed as a compromise if you want e.g. decent skin tones in low light, but can't afford to re-do your
    * VFX to look good without hue shifting.
    */
-  // @component(TonemappingEnum)
-  export class SomewhatBoringDisplayTransform {}
+  SomewhatBoringDisplayTransform,
+
   /**
    * By Tomasz Stachowiak
    * @see https://github.com/h3r2tic/tony-mc-mapface
@@ -72,14 +63,12 @@ export namespace Tonemapping {
    * To avoid posterization, selective desaturation is employed, with care to avoid the [Abney effect](https://en.wikipedia.org/wiki/Abney_effect).
    * NOTE: Requires the `tonemapping_luts` cargo feature.
    */
-  // @component(TonemappingEnum)
-  export class TonyMcMapface {}
+  TonyMcMapface,
 
   /**
    * Default Filmic Display Transform from blender.
    * Somewhat neutral. Suffers from hue shifting. Brights desaturate across the spectrum.
    * NOTE: Requires the `tonemapping_luts` cargo feature.
    */
-  // @component(TonemappingEnum)
-  export class BlenderFilmic {}
+  BlenderFilmic,
 }

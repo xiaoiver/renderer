@@ -1,7 +1,7 @@
-import { App } from '../App';
-import { Plugin } from '../Plugin';
-import { FogPlugin } from './Fog';
-import { SkyboxPlugin } from './Skybox';
+import { App } from '../../App';
+import { Plugin } from '../../Plugin';
+import { FogPlugin } from '../Fog';
+import { SkyboxPlugin } from '../Skybox';
 
 /**
  * PREPASS,

@@ -3,7 +3,7 @@
  */
 export { RendererPlugin } from './Renderer';
 export { TransformPlugin } from './Transform';
-export * from './camera';
 export { HierarchyPlugin } from './Hierarchy';
-export { CorePipeline } from './CorePipeline';
 export { InputPlugin } from './Input';
+export * from './camera';
+export * from './core';

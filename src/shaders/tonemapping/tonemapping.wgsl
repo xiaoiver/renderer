@@ -1,8 +1,6 @@
-// #define TONEMAPPING_PASS
-
-#import view::View
+#import render::view::View
 #import fullscreen_vertex_shader::FullscreenVertexOutput
-// #import tonemapping::{tone_mapping, powsafe, screen_space_dither}
+#import core_pipeline::tonemapping::{tone_mapping, powsafe, screen_space_dither}
 
 @group(0) @binding(0) var<uniform> view: View;
 @group(1) @binding(0) var hdr_texture: texture_2d<f32>;
@@ -13,21 +11,16 @@
 
 @fragment
 fn fragment(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
-    // let hdr_color = textureSample(hdr_texture, hdr_sampler, in.uv);
+    let hdr_color = textureSample(hdr_texture, hdr_sampler, in.uv);
+    var output_rgb = tone_mapping(hdr_color, view.color_grading).rgb;
 
-    // var output_rgb = tone_mapping(hdr_color, view.color_grading).rgb;
+#ifdef DEBAND_DITHER
+    output_rgb = powsafe(output_rgb.rgb, 1.0 / 2.2);
+    output_rgb = output_rgb + screen_space_dither(in.position.xy);
+    // This conversion back to linear space is required because our output texture format is
+    // SRGB; the GPU will assume our output is linear and will apply an SRGB conversion.
+    output_rgb = powsafe(output_rgb.rgb, 2.2);
+#endif
 
-// #ifdef DEBAND_DITHER
-//     output_rgb = powsafe(output_rgb.rgb, 1.0 / 2.2);
-//     output_rgb = output_rgb + screen_space_dither(in.position.xy);
-//     // This conversion back to linear space is required because our output texture format is
-//     // SRGB; the GPU will assume our output is linear and will apply an SRGB conversion.
-//     output_rgb = powsafe(output_rgb.rgb, 2.2);
-// #endif
-
-    // var output_rgb = hdr_color.rgb;
-
-    // return vec4<f32>(output_rgb, hdr_color.a);
-
-    return vec4<f32>(1.0, 0.0, 0.0, 1.0);
+    return vec4<f32>(output_rgb, hdr_color.a);
 }

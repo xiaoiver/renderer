@@ -43,9 +43,9 @@ export class FpsControl extends System {
         for (const event of reader.read()) {
           if (event instanceof FpsControlEvent.Rotate) {
             // Rotates with pitch and yaw.
-            // const delta = event.value;
-            // look_angles.add_yaw(dt * -delta.x);
-            // look_angles.add_pitch(dt * delta.y);
+            const delta = event.value;
+            look_angles.add_yaw(dt * -delta.x);
+            look_angles.add_pitch(dt * -delta.y);
           } else if (event instanceof FpsControlEvent.TranslateEye) {
             const delta = event.value;
             // Translates up/down (Y) left/right (X) and forward/back (Z).

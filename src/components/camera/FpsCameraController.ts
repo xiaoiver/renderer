@@ -20,7 +20,7 @@ export class FpsCameraController {
   ) {
     const {
       enabled = true,
-      mouse_rotate_sensitivity = Vec2.splat(0.2),
+      mouse_rotate_sensitivity = Vec2.splat(0.002),
       translate_sensitivity = 2.0,
       smoothing_weight = 0.9,
     } = options;

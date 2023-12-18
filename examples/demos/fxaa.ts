@@ -20,6 +20,8 @@ import {
   Commands,
   Vec3,
   ColorGrading,
+  Tonemapping,
+  DebandDither,
 } from '../../src';
 import { loadImage } from '../utils/image';
 // @ts-ignore
@@ -50,6 +52,8 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           Perspective,
           Fxaa,
           ColorGrading,
+          Tonemapping,
+          DebandDither,
         ).write,
     );
 

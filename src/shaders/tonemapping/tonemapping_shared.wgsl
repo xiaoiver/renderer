@@ -25,62 +25,62 @@
 //  #endif
 // }
 
-// // --------------------------------------
-// // --- SomewhatBoringDisplayTransform ---
-// // --------------------------------------
-// // By Tomasz Stachowiak
+// --------------------------------------
+// --- SomewhatBoringDisplayTransform ---
+// --------------------------------------
+// By Tomasz Stachowiak
 
-// fn rgb_to_ycbcr(col: vec3<f32>) -> vec3<f32> {
-//     let m = mat3x3<f32>(
-//         0.2126, 0.7152, 0.0722, 
-//         -0.1146, -0.3854, 0.5, 
-//         0.5, -0.4542, -0.0458
-//     );
-//     return col * m;
-// }
+fn rgb_to_ycbcr(col: vec3<f32>) -> vec3<f32> {
+    let m = mat3x3<f32>(
+        0.2126, 0.7152, 0.0722, 
+        -0.1146, -0.3854, 0.5, 
+        0.5, -0.4542, -0.0458
+    );
+    return col * m;
+}
 
-// fn ycbcr_to_rgb(col: vec3<f32>) -> vec3<f32> {
-//     let m = mat3x3<f32>(
-//         1.0, 0.0, 1.5748, 
-//         1.0, -0.1873, -0.4681, 
-//         1.0, 1.8556, 0.0
-//     );
-//     return max(vec3(0.0), col * m);
-// }
+fn ycbcr_to_rgb(col: vec3<f32>) -> vec3<f32> {
+    let m = mat3x3<f32>(
+        1.0, 0.0, 1.5748, 
+        1.0, -0.1873, -0.4681, 
+        1.0, 1.8556, 0.0
+    );
+    return max(vec3(0.0), col * m);
+}
 
-// fn tonemap_curve(v: f32) -> f32 {
-// #ifdef 0
-//     // Large linear part in the lows, but compresses highs.
-//     float c = v + v * v + 0.5 * v * v * v;
-//     return c / (1.0 + c);
-// #else
-//     return 1.0 - exp(-v);
-// #endif
-// }
+fn tonemap_curve(v: f32) -> f32 {
+#ifdef 0
+    // Large linear part in the lows, but compresses highs.
+    float c = v + v * v + 0.5 * v * v * v;
+    return c / (1.0 + c);
+#else
+    return 1.0 - exp(-v);
+#endif
+}
 
-// fn tonemap_curve3_(v: vec3<f32>) -> vec3<f32> {
-//     return vec3(tonemap_curve(v.r), tonemap_curve(v.g), tonemap_curve(v.b));
-// }
+fn tonemap_curve3_(v: vec3<f32>) -> vec3<f32> {
+    return vec3(tonemap_curve(v.r), tonemap_curve(v.g), tonemap_curve(v.b));
+}
 
-// fn somewhat_boring_display_transform(col: vec3<f32>) -> vec3<f32> {
-//     var boring_color = col;
-//     let ycbcr = rgb_to_ycbcr(boring_color);
+fn somewhat_boring_display_transform(col: vec3<f32>) -> vec3<f32> {
+    var boring_color = col;
+    let ycbcr = rgb_to_ycbcr(boring_color);
 
-//     let bt = tonemap_curve(length(ycbcr.yz) * 2.4);
-//     var desat = max((bt - 0.7) * 0.8, 0.0);
-//     desat *= desat;
+    let bt = tonemap_curve(length(ycbcr.yz) * 2.4);
+    var desat = max((bt - 0.7) * 0.8, 0.0);
+    desat *= desat;
 
-//     let desat_col = mix(boring_color.rgb, ycbcr.xxx, desat);
+    let desat_col = mix(boring_color.rgb, ycbcr.xxx, desat);
 
-//     let tm_luma = tonemap_curve(ycbcr.x);
-//     let tm0 = boring_color.rgb * max(0.0, tm_luma / max(1e-5, tonemapping_luminance(boring_color.rgb)));
-//     let final_mult = 0.97;
-//     let tm1 = tonemap_curve3_(desat_col);
+    let tm_luma = tonemap_curve(ycbcr.x);
+    let tm0 = boring_color.rgb * max(0.0, tm_luma / max(1e-5, tonemapping_luminance(boring_color.rgb)));
+    let final_mult = 0.97;
+    let tm1 = tonemap_curve3_(desat_col);
 
-//     boring_color = mix(tm0, tm1, bt * bt);
+    boring_color = mix(tm0, tm1, bt * bt);
 
-//     return boring_color * final_mult;
-// }
+    return boring_color * final_mult;
+}
 
 // // ------------------------------------------
 // // ------------- Tony McMapface -------------
@@ -95,52 +95,52 @@
 //     return sample_current_lut(saturate(uv)).rgb;
 // }
 
-// // ---------------------------------
-// // ---------- ACES Fitted ----------
-// // ---------------------------------
+// ---------------------------------
+// ---------- ACES Fitted ----------
+// ---------------------------------
 
-// // Same base implementation that Godot 4.0 uses for Tonemap ACES.
+// Same base implementation that Godot 4.0 uses for Tonemap ACES.
 
-// // https://github.com/TheRealMJP/BakingLab/blob/master/BakingLab/ACES.hlsl
+// https://github.com/TheRealMJP/BakingLab/blob/master/BakingLab/ACES.hlsl
 
-// // The code in this file was originally written by Stephen Hill (@self_shadow), who deserves all
-// // credit for coming up with this fit and implementing it. Buy him a beer next time you see him. :)
+// The code in this file was originally written by Stephen Hill (@self_shadow), who deserves all
+// credit for coming up with this fit and implementing it. Buy him a beer next time you see him. :)
 
-// fn RRTAndODTFit(v: vec3<f32>) -> vec3<f32> {
-//     let a = v * (v + 0.0245786) - 0.000090537;
-//     let b = v * (0.983729 * v + 0.4329510) + 0.238081;
-//     return a / b;
-// }
+fn RRTAndODTFit(v: vec3<f32>) -> vec3<f32> {
+    let a = v * (v + 0.0245786) - 0.000090537;
+    let b = v * (0.983729 * v + 0.4329510) + 0.238081;
+    return a / b;
+}
 
-// fn ACESFitted(color: vec3<f32>) -> vec3<f32> {    
-//     var fitted_color = color;
+fn ACESFitted(color: vec3<f32>) -> vec3<f32> {    
+    var fitted_color = color;
 
-//     // sRGB => XYZ => D65_2_D60 => AP1 => RRT_SAT
-//     let rgb_to_rrt = mat3x3<f32>(
-//         vec3(0.59719, 0.35458, 0.04823),
-//         vec3(0.07600, 0.90834, 0.01566),
-//         vec3(0.02840, 0.13383, 0.83777)    
-//     );
+    // sRGB => XYZ => D65_2_D60 => AP1 => RRT_SAT
+    let rgb_to_rrt = mat3x3<f32>(
+        vec3(0.59719, 0.35458, 0.04823),
+        vec3(0.07600, 0.90834, 0.01566),
+        vec3(0.02840, 0.13383, 0.83777)    
+    );
 
-//     // ODT_SAT => XYZ => D60_2_D65 => sRGB
-//     let odt_to_rgb = mat3x3<f32>(
-//         vec3(1.60475, -0.53108, -0.07367),
-//         vec3(-0.10208, 1.10813, -0.00605),
-//         vec3(-0.00327, -0.07276, 1.07602)
-//     );
+    // ODT_SAT => XYZ => D60_2_D65 => sRGB
+    let odt_to_rgb = mat3x3<f32>(
+        vec3(1.60475, -0.53108, -0.07367),
+        vec3(-0.10208, 1.10813, -0.00605),
+        vec3(-0.00327, -0.07276, 1.07602)
+    );
 
-//     fitted_color *= rgb_to_rrt;
+    fitted_color *= rgb_to_rrt;
 
-//     // Apply RRT and ODT
-//     fitted_color = RRTAndODTFit(fitted_color);
+    // Apply RRT and ODT
+    fitted_color = RRTAndODTFit(fitted_color);
 
-//     fitted_color *= odt_to_rgb;
+    fitted_color *= odt_to_rgb;
 
-//     // Clamp to [0, 1]
-//     fitted_color = saturate(fitted_color);
+    // Clamp to [0, 1]
+    fitted_color = saturate(fitted_color);
 
-//     return fitted_color;
-// }
+    return fitted_color;
+}
 
 // -------------------------------
 // ------------- AgX -------------
@@ -228,16 +228,16 @@ fn saturation(color: vec3<f32>, saturationAmount: f32) -> vec3<f32> {
 //     return applyLUT3D(normalized, block_size);
 // }
 
-// // from https://64.github.io/tonemapping/
-// // reinhard on RGB oversaturates colors
-// fn tonemapping_reinhard(color: vec3<f32>) -> vec3<f32> {
-//     return color / (1.0 + color);
-// }
+// from https://64.github.io/tonemapping/
+// reinhard on RGB oversaturates colors
+fn tonemapping_reinhard(color: vec3<f32>) -> vec3<f32> {
+    return color / (1.0 + color);
+}
 
-// fn tonemapping_reinhard_extended(color: vec3<f32>, max_white: f32) -> vec3<f32> {
-//     let numerator = color * (1.0 + (color / vec3<f32>(max_white * max_white)));
-//     return numerator / (1.0 + color);
-// }
+fn tonemapping_reinhard_extended(color: vec3<f32>, max_white: f32) -> vec3<f32> {
+    let numerator = color * (1.0 + (color / vec3<f32>(max_white * max_white)));
+    return numerator / (1.0 + color);
+}
 
 // luminance coefficients from Rec. 709.
 // https://en.wikipedia.org/wiki/Rec._709
@@ -245,16 +245,16 @@ fn tonemapping_luminance(v: vec3<f32>) -> f32 {
     return dot(v, vec3<f32>(0.2126, 0.7152, 0.0722));
 }
 
-// fn tonemapping_change_luminance(c_in: vec3<f32>, l_out: f32) -> vec3<f32> {
-//     let l_in = tonemapping_luminance(c_in);
-//     return c_in * (l_out / l_in);
-// }
+fn tonemapping_change_luminance(c_in: vec3<f32>, l_out: f32) -> vec3<f32> {
+    let l_in = tonemapping_luminance(c_in);
+    return c_in * (l_out / l_in);
+}
 
-// fn tonemapping_reinhard_luminance(color: vec3<f32>) -> vec3<f32> {
-//     let l_old = tonemapping_luminance(color);
-//     let l_new = l_old / (1.0 + l_old);
-//     return tonemapping_change_luminance(color, l_new);
-// }
+fn tonemapping_reinhard_luminance(color: vec3<f32>) -> vec3<f32> {
+    let l_old = tonemapping_luminance(color);
+    let l_new = l_old / (1.0 + l_old);
+    return tonemapping_change_luminance(color, l_new);
+}
 
 // fn rgb_to_srgb_simple(color: vec3<f32>) -> vec3<f32> {
 //     return pow(color, vec3<f32>(1.0 / 2.2));
@@ -274,10 +274,10 @@ fn tone_mapping(in: vec4<f32>, color_grading: ColorGrading) -> vec4<f32> {
     // Possible future grading:
 
     // highlight gain gamma: 0..
-    // let luma = powsafe(vec3(tonemapping_luminance(color)), 1.0); 
+    let luma = powsafe(vec3(tonemapping_luminance(color)), 1.0); 
 
     // highlight gain: 0.. 
-    // color += color * luma.xxx * 1.0; 
+    color += color * luma.xxx * 1.0; 
 
     // Linear pre tonemapping grading
     color = saturation(color, color_grading.pre_saturation);
@@ -285,28 +285,28 @@ fn tone_mapping(in: vec4<f32>, color_grading: ColorGrading) -> vec4<f32> {
     color = color * powsafe(vec3(2.0), color_grading.exposure);
     color = max(color, vec3(0.0));
 
-//     // tone_mapping
-// #ifdef TONEMAP_METHOD_NONE
-//     color = color;
-// #else ifdef TONEMAP_METHOD_REINHARD
-//     color = tonemapping_reinhard(color.rgb);
-// // #else ifdef TONEMAP_METHOD_REINHARD_LUMINANCE
-// //     color = tonemapping_reinhard_luminance(color.rgb);
-// // #else ifdef TONEMAP_METHOD_ACES_FITTED
-// //     color = ACESFitted(color.rgb);
-// // #else ifdef TONEMAP_METHOD_AGX
-// //     color = applyAgXLog(color);
-// //     color = applyLUT3D(color, 32.0);
-// // #else ifdef TONEMAP_METHOD_SOMEWHAT_BORING_DISPLAY_TRANSFORM
-// //     color = somewhat_boring_display_transform(color.rgb);
-// // #else ifdef TONEMAP_METHOD_TONY_MC_MAPFACE
-// //     color = sample_tony_mc_mapface_lut(color); 
-// // #else ifdef TONEMAP_METHOD_BLENDER_FILMIC
-// //     color = sample_blender_filmic_lut(color.rgb);
-// #endif
+    // tone_mapping
+#ifdef TONEMAP_METHOD_NONE
+    color = color;
+#else ifdef TONEMAP_METHOD_REINHARD
+    color = tonemapping_reinhard(color.rgb);
+#else ifdef TONEMAP_METHOD_REINHARD_LUMINANCE
+    color = tonemapping_reinhard_luminance(color.rgb);
+#else ifdef TONEMAP_METHOD_ACES_FITTED
+    color = ACESFitted(color.rgb);
+// #else ifdef TONEMAP_METHOD_AGX
+//     color = applyAgXLog(color);
+//     color = applyLUT3D(color, 32.0);
+#else ifdef TONEMAP_METHOD_SOMEWHAT_BORING_DISPLAY_TRANSFORM
+    color = somewhat_boring_display_transform(color.rgb);
+// #else ifdef TONEMAP_METHOD_TONY_MC_MAPFACE
+//     color = sample_tony_mc_mapface_lut(color); 
+// #else ifdef TONEMAP_METHOD_BLENDER_FILMIC
+//     color = sample_blender_filmic_lut(color.rgb);
+#endif
 
-//     // Perceptual post tonemapping grading
-//     color = saturation(color, color_grading.post_saturation);
+    // Perceptual post tonemapping grading
+    color = saturation(color, color_grading.post_saturation);
     
     return vec4(color, in.a);
 }
