@@ -2,7 +2,7 @@ import { System } from '@lastolivegames/becsy';
 import { AppConfig, OrbitCameraController } from '../../components';
 import { EventsReader } from '../../Events';
 import { Vec2 } from '../../math';
-import { ControlEvent } from '../../plugins/OrbitCamera';
+import { OrbitControlEvent } from '../../plugins/camera/OrbitCamera';
 import { MouseMotion, MouseWheel } from '../../plugins/Input';
 import { InputKeyCode, InputMouseButton, KeyCode, MouseButton } from '../input';
 import { Input } from '../../resources/Input';
@@ -10,7 +10,7 @@ import { Input } from '../../resources/Input';
 /**
  * Emit ControlEvent according to user input.
  */
-export class EmitControlEvent extends System {
+export class EmitOrbitControlEvent extends System {
   private appConfig = this.singleton.read(AppConfig);
 
   private orbitCameraController = this.query((q) =>
@@ -46,8 +46,8 @@ export class EmitControlEvent extends System {
           MouseMotion,
         ) as EventsReader<MouseMotion>;
         const reader = resources.get(
-          ControlEvent,
-        ) as EventsReader<ControlEvent>;
+          OrbitControlEvent,
+        ) as EventsReader<OrbitControlEvent>;
 
         let cursor_delta = Vec2.ZERO;
         for (const event of mouse_motion_events.read()) {
@@ -57,13 +57,15 @@ export class EmitControlEvent extends System {
         if (keyboard.pressed('ControlLeft')) {
           console.log('ControlLeft...');
           reader.events.send(
-            new ControlEvent.Orbit(cursor_delta.mul(mouse_rotate_sensitivity)),
+            new OrbitControlEvent.Orbit(
+              cursor_delta.mul(mouse_rotate_sensitivity),
+            ),
           );
         }
 
         if (mouse_buttons.pressed(MouseButton.Right)) {
           reader.events.send(
-            new ControlEvent.TranslateTarget(
+            new OrbitControlEvent.TranslateTarget(
               mouse_translate_sensitivity.mul(cursor_delta),
             ),
           );
@@ -76,7 +78,7 @@ export class EmitControlEvent extends System {
           scalar *= 1.0 - scroll_amount * mouse_wheel_zoom_sensitivity;
         }
         if (scalar !== 1.0) {
-          reader.events.send(new ControlEvent.Zoom(scalar));
+          reader.events.send(new OrbitControlEvent.Zoom(scalar));
         }
       }
     }

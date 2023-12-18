@@ -7,3 +7,5 @@ export * from './LookTransform';
 export * from './LookAngles';
 export * from './OrbitCameraBundle';
 export * from './OrbitCameraController';
+export * from './FpsCameraBundle';
+export * from './FpsCameraController';

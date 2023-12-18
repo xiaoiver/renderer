@@ -22,8 +22,8 @@ export * from './components';
 export * from './meshes';
 export * from './systems';
 export * from './math';
+export * from './plugins';
 export { Commands } from './commands/Commands';
-export { OrbitCameraPlugin } from './plugins';
 
 export const DefaultPlugins: PluginType[] = [
   TransformPlugin,

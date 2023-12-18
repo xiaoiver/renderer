@@ -15,8 +15,7 @@ Just another toy renderer. Inspired by [bevy](https://github.com/bevyengine/).
 - Post processing
   - [FXAA](#fxaa)
   - [Fog](#fog)
-- Interaction
-  - Orbit Camera
+- [Controllers](#controllers) - Exponentially-smoothed camera controllers.
 
 ## Getting Started
 
@@ -270,6 +269,52 @@ camera = this.commands.spawn(
   }),
 );
 ```
+
+## Controllers
+
+Add plugin like `FpsCameraPlugin` first, it will enhance the capability of default camera.
+
+```ts
+new App({
+  canvas: $canvas,
+})
+  .add_plugins(...DefaultPlugins)
+  .add_plugins(FpsCameraPlugin)
+  // .add_plugins(OrbitCameraPlugin)
+  .add_systems(StartUp, StartUpSystem)
+  .run();
+```
+
+Then create `FpsCameraBundle`:
+
+```ts
+camera = this.commands.spawn(
+  new Camera3dBundle({
+    camera: new Camera(),
+    projection: new Perspective(),
+  }),
+  new FpsCameraBundle({
+    controller: new FpsCameraController(),
+    eye: new Vec3(-2.5, 5.0, 5.0),
+    target: Vec3.ZERO,
+    up: Vec3.Y,
+  }),
+);
+```
+
+Now we support the following pairs which support different interaction with keyboard and mouse:
+
+- `FpsCameraPlugin` + `FpsCameraBundle`
+
+  - WASD: Translate on the XZ plane
+  - Shift/Space: Translate along the Y axis
+  - Mouse: Rotate camera
+
+- `OrbitCameraPlugin` + `OrbitCameraBundle`
+
+  - CTRL + mouse drag: Rotate camera
+  - Right mouse drag: Pan camera
+  - Mouse wheel: Zoom
 
 ## Appendix
 

@@ -1,10 +1,6 @@
 export { ExtractMeshes } from './ExtractMeshes';
 export { MeshPipeline } from './MeshPipeline';
 export { SyncSimpleTransforms, PropagateTransforms } from './Transform';
-export { CameraSystem } from './camera/Camera';
-export { EmitControlEvent } from './camera/EmitControlEvent';
-export { OrbitControl } from './camera/OrbitControl';
-export { LookTransformSystem } from './camera/LookTransform';
 export { SkyboxPipeline } from './SkyboxPipeline';
 export { TonemappingPipeline } from './TonemappingPipeline';
 export { BloomPipeline } from './BloomPipeline';
@@ -13,5 +9,6 @@ export { PrepareViewUniforms } from './PrepareViewUniforms';
 export { PrepareFog } from './PrepareFog';
 export { PrepareMaterial } from './PrepareMaterial';
 export { RenderResource } from './RenderResource';
+export * from './camera';
 export * from './input';
 export * from './stages';

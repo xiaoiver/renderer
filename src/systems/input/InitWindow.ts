@@ -3,7 +3,7 @@ import { AppConfig } from '../../components';
 import { EventsReader } from '../../Events';
 import { MouseMotion, MouseWheel } from '../../plugins/Input';
 import { ButtonState, MouseButton, MouseButtonInput } from './MouseButtonInput';
-import { KeyCode, KeyboardInput } from './KeyboardInput';
+import { KeyboardInput } from './KeyboardInput';
 import { Vec2 } from '../../math';
 
 const MouseEventButtonMap = {
@@ -58,7 +58,7 @@ export class InitWindow extends System {
       MouseMotion,
     ) as EventsReader<MouseMotion>;
 
-    console.log(e.movementX, e.movementY);
+    // console.log(e.movementX, e.movementY);
     reader.events.send({
       delta: new Vec2(e.movementX, e.movementY),
     });

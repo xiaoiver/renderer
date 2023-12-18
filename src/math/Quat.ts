@@ -217,6 +217,9 @@ export class Quat {
    *
    * The product is not guaranteed to be normalized.
    */
+  mul(rhs: Vec3): Vec3;
+  mul(rhs: number): Quat;
+  mul(rhs: Quat): Quat;
   mul(rhs: number | Quat | Vec3): Quat | Vec3 {
     if (typeof rhs === 'number') {
       return Quat.from_vec4(Vec4.from(this).mul(rhs));

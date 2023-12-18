@@ -33,6 +33,9 @@ import {
   OrbitCameraController,
   LookTransform,
   Smoother,
+  FpsCameraBundle,
+  FpsCameraController,
+  FpsCameraPlugin,
 } from '../../src';
 import { loadImage } from '../utils/image';
 import posx from '../public/images/posx.jpg';
@@ -79,7 +82,8 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           // Tonemapping.Reinhard,
           ColorGrading,
           LookTransform,
-          OrbitCameraController,
+          // OrbitCameraController,
+          FpsCameraController,
           Smoother,
         ).write,
     );
@@ -99,9 +103,15 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
             // ),
             // tonemapping: new Tonemapping.Reinhard(),
           }),
-          new OrbitCameraBundle({
-            controller: new OrbitCameraController(),
-            eye: new Vec3(-2.5, 1.5, 2.0),
+          // new OrbitCameraBundle({
+          //   controller: new OrbitCameraController(),
+          //   eye: new Vec3(-2.5, 1.5, 2.0),
+          //   target: Vec3.ZERO,
+          //   up: Vec3.Y,
+          // }),
+          new FpsCameraBundle({
+            controller: new FpsCameraController(),
+            eye: new Vec3(-2.5, 5.0, 5.0),
             target: Vec3.ZERO,
             up: Vec3.Y,
           }),
@@ -170,7 +180,8 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
     canvas: $canvas,
   })
     .add_plugins(...DefaultPlugins)
-    .add_plugins(OrbitCameraPlugin)
+    // .add_plugins(OrbitCameraPlugin)
+    .add_plugins(FpsCameraPlugin)
     .add_systems(StartUp, StartUpSystem)
     .run();
 

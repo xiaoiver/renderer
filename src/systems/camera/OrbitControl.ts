@@ -7,7 +7,7 @@ import {
   Transform,
 } from '../../components';
 import { Vec3 } from '../../math';
-import { ControlEvent } from '../../plugins/OrbitCamera';
+import { OrbitControlEvent } from '../../plugins/camera/OrbitCamera';
 import { EventsReader } from '../../Events';
 
 /**
@@ -27,8 +27,8 @@ export class OrbitControl extends System {
     for (const entity of this.controls.current) {
       const control = entity.read(OrbitCameraController);
       const reader = this.appConfig.resources.get(
-        ControlEvent,
-      ) as EventsReader<ControlEvent>;
+        OrbitControlEvent,
+      ) as EventsReader<OrbitControlEvent>;
 
       if (control.enabled && reader.len()) {
         const transform = entity.write(LookTransform);
@@ -40,18 +40,18 @@ export class OrbitControl extends System {
         const radius = transform.radius();
         const dt = this.delta;
         for (const event of reader.read()) {
-          if (event instanceof ControlEvent.Orbit) {
+          if (event instanceof OrbitControlEvent.Orbit) {
             const delta = event.value;
             look_angles.add_yaw(dt * -delta.x);
             look_angles.add_pitch(dt * delta.y);
-          } else if (event instanceof ControlEvent.TranslateTarget) {
+          } else if (event instanceof OrbitControlEvent.TranslateTarget) {
             const delta = event.value;
             const right_dir = scene_transform.rotation.mul_vec3(Vec3.X.neg());
             const up_dir = scene_transform.rotation.mul_vec3(Vec3.Y);
             transform.target.add_assign(
               right_dir.mul(dt * delta.x).add(up_dir.mul(dt * delta.y)),
             );
-          } else if (event instanceof ControlEvent.Zoom) {
+          } else if (event instanceof OrbitControlEvent.Zoom) {
             radius_scalar *= event.value;
           }
         }

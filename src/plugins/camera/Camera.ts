@@ -1,6 +1,6 @@
 import { component, system } from '@lastolivegames/becsy';
-import { App } from '../App';
-import { Plugin } from '../Plugin';
+import { App } from '../../App';
+import { Plugin } from '../../Plugin';
 import {
   Camera,
   ComputedCameraValues,
@@ -10,13 +10,13 @@ import {
   Projection,
   LookTransform,
   Smoother,
-} from '../components';
+} from '../../components';
 import {
   CameraSystem,
   LookTransformSystem,
   PreUpdate,
   Update,
-} from '../systems';
+} from '../../systems';
 
 export class CameraPlugin implements Plugin {
   async build(app: App) {
