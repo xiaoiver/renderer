@@ -9,12 +9,8 @@ import {
   BlendMode,
   BlendFactor,
   CullMode,
-  Texture,
   TextureDimension,
   TextureUsage,
-  AddressMode,
-  FilterMode,
-  MipmapFilterMode,
   CompareFunction,
 } from '@antv/g-device-api';
 import { Entity } from '@lastolivegames/becsy';

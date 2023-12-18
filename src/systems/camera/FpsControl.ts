@@ -29,15 +29,15 @@ export class FpsControl extends System {
 
       if (control.enabled && reader.len()) {
         const transform = entity.write(LookTransform);
-        const scene_transform = entity.read(Transform);
+        // const scene_transform = entity.read(Transform);
 
         const look_vector = transform.look_direction();
         const look_angles = LookAngles.from_vector(look_vector);
 
-        let yaw_rot = Quat.from_axis_angle(Vec3.Y, look_angles.get_yaw());
-        let rot_x = yaw_rot.mul(Vec3.X);
-        let rot_y = yaw_rot.mul(Vec3.Y);
-        let rot_z = yaw_rot.mul(Vec3.Z);
+        const yaw_rot = Quat.from_axis_angle(Vec3.Y, look_angles.get_yaw());
+        const rot_x = yaw_rot.mul(Vec3.X);
+        const rot_y = yaw_rot.mul(Vec3.Y);
+        const rot_z = yaw_rot.mul(Vec3.Z);
 
         const dt = this.delta;
         for (const event of reader.read()) {

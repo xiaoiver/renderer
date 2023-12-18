@@ -10,11 +10,8 @@ import {
   fillVec4,
 } from '../framegraph';
 import { createProgram } from './utils';
-import { RenderResource } from './RenderResource';
 import vert from '../shaders/fullscreen.wgsl?raw';
 import frag from '../shaders/bloom.wgsl?raw';
-import { clamp } from 'lodash-es';
-import { Vec4 } from '../math';
 import { MeshPipeline } from './MeshPipeline';
 
 export class BloomPipeline extends System {

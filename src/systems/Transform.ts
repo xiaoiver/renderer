@@ -1,6 +1,5 @@
 import { System } from '@lastolivegames/becsy';
 import { Children, GlobalTransform, Parent, Transform } from '../components';
-import { Mat3, Vec3 } from '../math';
 
 /**
  * Update [`GlobalTransform`] component of entities that aren't in the hierarchy
@@ -43,10 +42,8 @@ export class PropagateTransforms extends System {
 
   execute(): void {
     this.root_query.current.forEach((entity) => {
-      const { parent } = entity.read(Children);
-
+      // const { parent } = entity.read(Children);
       // const r = parent.read(Parent);
-
       // this.parent_query
       // console.log(r, entity.__id, parent.__id);
     });

@@ -25,9 +25,9 @@ import {
   ColorGrading,
   LookTransform,
   Smoother,
-  FpsCameraBundle,
-  FpsCameraController,
-  FpsCameraPlugin,
+  OrbitCameraBundle,
+  OrbitCameraController,
+  OrbitCameraPlugin,
 } from '../../src';
 import { loadImage } from '../utils/image';
 
@@ -57,7 +57,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           FogSettings,
           ColorGrading,
           LookTransform,
-          FpsCameraController,
+          OrbitCameraController,
           Smoother,
         ).write,
     );
@@ -69,8 +69,8 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
             camera: new Camera(),
             projection: new Perspective(),
           }),
-          new FpsCameraBundle({
-            controller: new FpsCameraController(),
+          new OrbitCameraBundle({
+            controller: new OrbitCameraController(),
             eye: new Vec3(-2.5, 2.0, 2.0),
             target: Vec3.ZERO,
             up: Vec3.Y,
@@ -109,11 +109,11 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
     canvas: $canvas,
   })
     .add_plugins(...DefaultPlugins)
-    .add_plugins(FpsCameraPlugin)
+    .add_plugins(OrbitCameraPlugin)
     .add_systems(StartUp, StartUpSystem);
   app.run();
 
   return async () => {
-    app.exit();
+    await app.exit();
   };
 }

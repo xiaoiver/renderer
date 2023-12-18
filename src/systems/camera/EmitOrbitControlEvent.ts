@@ -49,7 +49,7 @@ export class EmitOrbitControlEvent extends System {
           OrbitControlEvent,
         ) as EventsReader<OrbitControlEvent>;
 
-        let cursor_delta = Vec2.ZERO;
+        const cursor_delta = Vec2.ZERO;
         for (const event of mouse_motion_events.read()) {
           cursor_delta.add_assign(event.delta);
         }
