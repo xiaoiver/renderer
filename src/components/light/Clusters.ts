@@ -2,12 +2,18 @@ import { field } from '@lastolivegames/becsy';
 import { Vec2, Vec3, v2Type, v3Type } from '../../math';
 
 export class Clusters {
-  /// Tile size
+  /**
+   * Tile size
+   */
   @field(v2Type) declare tile_size: Vec2;
-  /// Number of clusters in `X` / `Y` / `Z` in the view frustum
+  /**
+   * Number of clusters in `X` / `Y` / `Z` in the view frustum
+   */
   @field(v3Type) declare dimensions: Vec3;
-  /// Distance to the far plane of the first depth slice. The first depth slice is special
-  /// and explicitly-configured to avoid having unnecessarily many slices close to the camera.
+  /**
+   * Distance to the far plane of the first depth slice. The first depth slice is special
+   * and explicitly-configured to avoid having unnecessarily many slices close to the camera.
+   */
   @field.float32 declare near: number;
   @field.float32 declare far: number;
   // @field.object declare  lights: VisiblePointLights[]

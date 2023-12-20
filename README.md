@@ -10,6 +10,11 @@ Just another toy renderer. Inspired by [bevy](https://github.com/bevyengine/).
 - Framegraph
 - [Clustered Forward Shading](#clustered-forward-shading)
 - [Standard Material](#standart-material)
+- Light
+  - [Ambient Light](#ambient-light)
+  - [Directional Light](#directional-light)
+  - [Point Light](#point-light)
+  - [Spot Light](#spot-light)
 - [Skybox](#skybox)
 - [Tonemapping](#tonemapping) - Support multiple methods such as Reinhard and AcesFitted.
   - [Color Grading](#color-grading)
@@ -150,12 +155,31 @@ Clustered shading expands on the idea of tiled rendering but adds a segmentation
 | metallic_roughness_texture | TexImageSource | Metallic and roughness maps, stored as a single texture. The blue channel contains metallic values, and the green channel contains the roughness values. Other channels are unused. Those values are multiplied by the scalar ones of the material, see [`metallic`] and [`perceptual_roughness`] for details. Note that with the default values of [`metallic`] and [`perceptual_roughness`], setting this texture has no effect. If you want to exclusively use the `metallic_roughness_texture` values for your material, make sure to set [`metallic`] and [`perceptual_roughness`] to `1.0`.                                                                                                                                  |
 | reflectance                | number         | Specular intensity for non-metals on a linear scale of `[0.0, 1.0]`. Use the value as a way to control the intensity of the specular highlight of the material, i.e. how reflective is the material, rather than the physical property "reflectance." Set to `0.0`, no specular highlight is visible, the highlight is strongest when `reflectance` is set to `1.0`. Defaults to `0.5` which is mapped to 4% reflectance in the shader.                                                                                                                                                                                                                                                                                            |
 
-## HDR & Tonemapping
+## Light
 
-HDR (High Dynamic Range) refers to the ability of the game engine to handle very bright lights or colors.
-The internal HDR image has to be converted down to SDR (Standard Dynamic Range) before it can be displayed on the screen. This process is called Tonemapping.
+### Ambient Light
 
-- https://bevy-cheatbook.github.io/graphics/hdr-tonemap.html
+An ambient light, which lights the entire scene equally.
+
+[Online DEMO](https://xiaoiver.github.io/renderer/?name=light)
+
+```ts
+this.commands.spawn(
+  new AmbientLight({
+    color: Color.RED,
+    brightness: 0.2,
+  }),
+);
+```
+
+- color `Color`
+- brightness `number` - A direct scale factor multiplied with `color` before being passed to the shader. Default to `0.05`.
+
+### Directional Light
+
+### Point Light
+
+### Spot Light
 
 ## Skybox
 
@@ -249,7 +273,10 @@ The falloff modes are as follows:
 
 ## Tonemapping
 
-https://bevy-cheatbook.github.io/graphics/hdr-tonemap.html#tonemapping
+HDR (High Dynamic Range) refers to the ability of the game engine to handle very bright lights or colors.
+The internal HDR image has to be converted down to SDR (Standard Dynamic Range) before it can be displayed on the screen. This process is called Tonemapping.
+
+- https://bevy-cheatbook.github.io/graphics/hdr-tonemap.html#tonemapping
 
 Tonemapping is the step of the rendering process where the colors of pixels are converted from their in-engine intermediate repesentation into the final values as they should be displayed on-screen.
 

@@ -5,3 +5,4 @@ export { render as Fog } from './fog';
 export { render as FXAA } from './fxaa';
 export { render as ToneMapping } from './tonemapping';
 export { render as MultiViews } from './multi-views';
+export { render as Light } from './light';

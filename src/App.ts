@@ -164,7 +164,10 @@ export class App {
 
     this.systems.forEach(([group, s], i) => {
       // @see https://github.com/LastOliveGames/becsy/blob/main/tests/query.test.ts#L22C3-L22C58
-      Object.defineProperty(s, 'name', { value: `_System${i}` });
+      // @ts-ignore
+      if (import.meta.env.PROD) {
+        Object.defineProperty(s, 'name', { value: `_System${i}` });
+      }
       system(group)(s);
     });
 

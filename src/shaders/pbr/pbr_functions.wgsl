@@ -9,7 +9,7 @@
     // transmission,
     // clustered_forward as clustering,
     // shadows,
-    // ambient,
+    ambient,
     mesh_types::{MESH_FLAGS_SHADOW_RECEIVER_BIT, MESH_FLAGS_TRANSMITTED_SHADOW_RECEIVER_BIT},
     utils::E,
 }
@@ -174,8 +174,8 @@ fn apply_pbr_lighting(
     let reflectance = in.material.reflectance;
     let F0 = 0.16 * reflectance * reflectance * (1.0 - metallic) + output_color.rgb * metallic;
 
-//     // Diffuse strength is inversely related to metallicity, specular and diffuse transmission
-//     let diffuse_color = output_color.rgb * (1.0 - metallic) * (1.0 - specular_transmission) * (1.0 - diffuse_transmission);
+    // Diffuse strength is inversely related to metallicity, specular and diffuse transmission
+    let diffuse_color = output_color.rgb * (1.0 - metallic) * (1.0 - specular_transmission) * (1.0 - diffuse_transmission);
 
 //     // Diffuse transmissive strength is inversely related to metallicity and specular transmission, but directly related to diffuse transmission
 //     let diffuse_transmissive_color = output_color.rgb * (1.0 - metallic) * (1.0 - specular_transmission) * diffuse_transmission;
@@ -183,14 +183,14 @@ fn apply_pbr_lighting(
 //     // Calculate the world position of the second Lambertian lobe used for diffuse transmission, by subtracting material thickness
 //     let diffuse_transmissive_lobe_world_position = in.world_position - vec4<f32>(in.world_normal, 0.0) * thickness;
 
-//     let R = reflect(-in.V, in.N);
+    let R = reflect(-in.V, in.N);
 
 //     let f_ab = lighting::F_AB(perceptual_roughness, NdotV);
 
-//     var direct_light: vec3<f32> = vec3<f32>(0.0);
+    var direct_light: vec3<f32> = vec3<f32>(0.0);
 
-//     // Transmitted Light (Specular and Diffuse)
-//     var transmitted_light: vec3<f32> = vec3<f32>(0.0);
+    // Transmitted Light (Specular and Diffuse)
+    var transmitted_light: vec3<f32> = vec3<f32>(0.0);
 
 //     let view_z = dot(vec4<f32>(
 //         view_bindings::view.inverse_view[0].z,
@@ -298,8 +298,8 @@ fn apply_pbr_lighting(
 //         }
 //     }
 
-//     // Ambient light (indirect)
-//     var indirect_light = ambient::ambient_light(in.world_position, in.N, in.V, NdotV, diffuse_color, F0, perceptual_roughness, occlusion);
+    // Ambient light (indirect)
+    var indirect_light = ambient::ambient_light(in.world_position, in.N, in.V, NdotV, diffuse_color, F0, perceptual_roughness, occlusion);
 
 //     if diffuse_transmission > 0.0 {
 //         // NOTE: We use the diffuse transmissive color, the second Lambertian lobe's calculated
@@ -351,7 +351,7 @@ fn apply_pbr_lighting(
 //     let specular_transmitted_environment_light = vec3<f32>(0.0);
 // #endif
 
-//     let emissive_light = emissive.rgb * output_color.a;
+    let emissive_light = emissive.rgb * output_color.a;
 
 //     if specular_transmission > 0.0 {
 //         transmitted_light += transmission::specular_transmissive_light(in.world_position, in.frag_coord.xyz, view_z, in.N, in.V, F0, ior, thickness, perceptual_roughness, specular_transmissive_color, specular_transmitted_environment_light).rgb;
@@ -372,11 +372,11 @@ fn apply_pbr_lighting(
 //         ).rgb;
 //     }
 
-//     // Total light
-//     output_color = vec4<f32>(
-//         transmitted_light + direct_light + indirect_light + emissive_light,
-//         output_color.a
-//     );
+    // Total light
+    output_color = vec4<f32>(
+        transmitted_light + direct_light + indirect_light + emissive_light,
+        output_color.a
+    );
 
 //     output_color = clustering::cluster_debug_visualization(
 //         output_color,

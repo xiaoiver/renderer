@@ -3,8 +3,8 @@ import { App } from '../../App';
 import { Plugin } from '../../Plugin';
 import { FogPlugin } from '../Fog';
 import { SkyboxPlugin } from '../Skybox';
-import { AmbientLight } from '../../components';
-import { PreUpdate, PrepareLights } from '../../systems';
+import { AmbientLight, ExtractedDirectionalLight } from '../../components';
+import { ExtractLights, PreUpdate, PrepareLights } from '../../systems';
 
 /**
  * PREPASS,
@@ -23,10 +23,12 @@ import { PreUpdate, PrepareLights } from '../../systems';
 export class Core3dPlugin implements Plugin {
   async build(app: App) {
     component(AmbientLight);
+    component(ExtractedDirectionalLight);
 
     await new FogPlugin().build(app);
     await new SkyboxPlugin().build(app);
 
+    app.add_systems(PreUpdate, ExtractLights);
     app.add_systems(PreUpdate, PrepareLights);
   }
 }

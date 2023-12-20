@@ -33,7 +33,7 @@ import { loadImage } from '../utils/image';
 import glsl_wgsl_compiler_bg from '../public/glsl_wgsl_compiler_bg.wasm?url';
 
 /**
- * @see https://bevyengine.org/learn/book/getting-started/ecs/
+ * @see examples/3d/atmospheric_fog.rs
  */
 export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
   let camera: Entity;
