@@ -102,7 +102,7 @@ fn fetch_spot_shadow(light_id: u32, frag_position: vec4<f32>, surface_normal: ve
 
      // Number determined by trial and error that gave nice results.
      let texel_size = 0.0134277345;
-    return sample_shadow_map(shadow_uv, depth, i32(light_id) + view_bindings::lights.spot_light_shadowmap_offset, texel_size);
+    return sample_shadow_map(shadow_uv, depth, i32(light_id) + i32(view_bindings::lights.spot_light_shadowmap_offset), texel_size);
 }
 
 fn get_cascade_index(light_id: u32, view_z: f32) -> u32 {

@@ -57,9 +57,9 @@ struct Lights {
     // z is -near
     // w is cluster_dimensions.z / (-far - -near)
     cluster_factors: vec4<f32>,
-    n_directional_lights: u32,
-    spot_light_shadowmap_offset: i32,
-    environment_map_smallest_specular_mip_level: u32,
+    n_directional_lights: f32,
+    spot_light_shadowmap_offset: f32,
+    environment_map_smallest_specular_mip_level: f32,
 };
 
 struct Fog {

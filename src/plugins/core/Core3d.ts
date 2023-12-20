@@ -3,8 +3,28 @@ import { App } from '../../App';
 import { Plugin } from '../../Plugin';
 import { FogPlugin } from '../Fog';
 import { SkyboxPlugin } from '../Skybox';
-import { AmbientLight, ExtractedDirectionalLight } from '../../components';
-import { ExtractLights, PreUpdate, PrepareLights } from '../../systems';
+import {
+  AmbientLight,
+  DirectionalLight,
+  ExtractedDirectionalLight,
+  PointLight,
+  Cascade,
+  CascadeShadowConfig,
+  Cascades,
+  ClusterConfig,
+  Clusters,
+  CascadesFrusta,
+} from '../../components';
+import {
+  ExtractLights,
+  PreUpdate,
+  PrepareLights,
+  PostUpdate,
+  AddClusters,
+  AssignLightsToClusters,
+  ClearDirectionalLightCascades,
+  BuildDirectionalLightCascades,
+} from '../../systems';
 
 /**
  * PREPASS,
@@ -22,7 +42,15 @@ import { ExtractLights, PreUpdate, PrepareLights } from '../../systems';
  */
 export class Core3dPlugin implements Plugin {
   async build(app: App) {
+    component(ClusterConfig);
+    component(Clusters);
+    component(Cascade);
+    component(Cascades);
+    component(CascadesFrusta);
+    component(CascadeShadowConfig);
     component(AmbientLight);
+    component(PointLight);
+    component(DirectionalLight);
     component(ExtractedDirectionalLight);
 
     await new FogPlugin().build(app);
@@ -30,5 +58,9 @@ export class Core3dPlugin implements Plugin {
 
     app.add_systems(PreUpdate, ExtractLights);
     app.add_systems(PreUpdate, PrepareLights);
+    app.add_systems(PostUpdate, AddClusters);
+    app.add_systems(PostUpdate, AssignLightsToClusters);
+    app.add_systems(PostUpdate, ClearDirectionalLightCascades);
+    app.add_systems(PostUpdate, BuildDirectionalLightCascades);
   }
 }

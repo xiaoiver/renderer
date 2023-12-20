@@ -31,6 +31,7 @@ import {
   Cascades,
   CascadeShadowConfig,
   AmbientLight,
+  CascadeShadowConfigBuilder,
 } from '../../src';
 import { loadImage } from '../utils/image';
 // @ts-ignore
@@ -42,6 +43,7 @@ import glsl_wgsl_compiler_bg from '../public/glsl_wgsl_compiler_bg.wasm?url';
 export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
   let camera: Entity;
   let ambient: Entity;
+  let directional: Entity;
 
   const baseColorImage = await loadImage(
     'https://gw.alipayobjects.com/mdn/rms_6ae20b/afts/img/A*_aqoS73Se3sAAAAAAAAAAAAAARQnAQ',
@@ -84,20 +86,24 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
         )
         .entity.hold();
 
-      // Sun
-      this.commands.spawn(
-        new DirectionalLightBundle({
-          directional_light: new DirectionalLight({
-            color: Color.rgb(0.98, 0.95, 0.82),
-            shadows_enabled: true,
+      directional = this.commands
+        .spawn(
+          new DirectionalLightBundle({
+            directional_light: new DirectionalLight({
+              color: Color.rgb(0.98, 0.95, 0.82),
+              shadows_enabled: true,
+            }),
+            transform: Transform.from_xyz(0.0, 0.0, 0.0).look_at(
+              new Vec3(-1, -1, -1),
+              Vec3.Y,
+            ),
+            cascade_shadow_config: new CascadeShadowConfigBuilder({
+              first_cascade_far_bound: 4.0,
+              maximum_distance: 10.0,
+            }).build(),
           }),
-          transform: Transform.from_xyz(0.0, 0.0, 0.0).look_at(
-            new Vec3(-0.15, -0.05, 0.25),
-            Vec3.Y,
-          ),
-          // cascade_shadow_config,
-        }),
-      );
+        )
+        .entity.hold();
 
       camera = this.commands
         .spawn(
@@ -155,6 +161,18 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
     .onChange((brightness: number) => {
       const ambient_light = ambient.write(AmbientLight);
       ambient_light.brightness = brightness;
+    });
+
+  const directionalFolder = gui.addFolder('directional');
+  const directionalConfig = {
+    color: '#FF4400',
+    brightness: 0.05,
+  };
+  directionalFolder
+    .addColor(directionalConfig, 'color')
+    .onChange((color: string) => {
+      const directional_light = directional.write(DirectionalLight);
+      directional_light.color = Color.hex(color);
     });
 
   return async () => {

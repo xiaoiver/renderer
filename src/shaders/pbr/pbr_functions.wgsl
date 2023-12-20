@@ -177,27 +177,27 @@ fn apply_pbr_lighting(
     // Diffuse strength is inversely related to metallicity, specular and diffuse transmission
     let diffuse_color = output_color.rgb * (1.0 - metallic) * (1.0 - specular_transmission) * (1.0 - diffuse_transmission);
 
-//     // Diffuse transmissive strength is inversely related to metallicity and specular transmission, but directly related to diffuse transmission
-//     let diffuse_transmissive_color = output_color.rgb * (1.0 - metallic) * (1.0 - specular_transmission) * diffuse_transmission;
+    // Diffuse transmissive strength is inversely related to metallicity and specular transmission, but directly related to diffuse transmission
+    let diffuse_transmissive_color = output_color.rgb * (1.0 - metallic) * (1.0 - specular_transmission) * diffuse_transmission;
 
-//     // Calculate the world position of the second Lambertian lobe used for diffuse transmission, by subtracting material thickness
-//     let diffuse_transmissive_lobe_world_position = in.world_position - vec4<f32>(in.world_normal, 0.0) * thickness;
+    // Calculate the world position of the second Lambertian lobe used for diffuse transmission, by subtracting material thickness
+    let diffuse_transmissive_lobe_world_position = in.world_position - vec4<f32>(in.world_normal, 0.0) * thickness;
 
     let R = reflect(-in.V, in.N);
 
-//     let f_ab = lighting::F_AB(perceptual_roughness, NdotV);
+    let f_ab = lighting::F_AB(perceptual_roughness, NdotV);
 
     var direct_light: vec3<f32> = vec3<f32>(0.0);
 
     // Transmitted Light (Specular and Diffuse)
     var transmitted_light: vec3<f32> = vec3<f32>(0.0);
 
-//     let view_z = dot(vec4<f32>(
-//         view_bindings::view.inverse_view[0].z,
-//         view_bindings::view.inverse_view[1].z,
-//         view_bindings::view.inverse_view[2].z,
-//         view_bindings::view.inverse_view[3].z
-//     ), in.world_position);
+    let view_z = dot(vec4<f32>(
+        view_bindings::view.inverse_view[0].z,
+        view_bindings::view.inverse_view[1].z,
+        view_bindings::view.inverse_view[2].z,
+        view_bindings::view.inverse_view[3].z
+    ), in.world_position);
 //     let cluster_index = clustering::fragment_cluster_index(in.frag_coord.xy, view_z, in.is_orthographic);
 //     let offset_and_counts = clustering::unpack_offset_and_counts(cluster_index);
 
@@ -264,19 +264,19 @@ fn apply_pbr_lighting(
 //         }
 //     }
 
-//     // directional lights (direct)
-//     let n_directional_lights = view_bindings::lights.n_directional_lights;
-//     for (var i: u32 = 0u; i < n_directional_lights; i = i + 1u) {
-//         var shadow: f32 = 1.0;
+    // directional lights (direct)
+    let n_directional_lights = u32(view_bindings::lights.n_directional_lights);
+    for (var i: u32 = 0u; i < n_directional_lights; i = i + 1u) {
+        var shadow: f32 = 1.0;
 //         if ((in.flags & MESH_FLAGS_SHADOW_RECEIVER_BIT) != 0u
 //                 && (view_bindings::lights.directional_lights[i].flags & mesh_view_types::DIRECTIONAL_LIGHT_FLAGS_SHADOWS_ENABLED_BIT) != 0u) {
 //             shadow = shadows::fetch_directional_shadow(i, in.world_position, in.world_normal, view_z);
 //         }
-//         var light_contrib = lighting::directional_light(i, roughness, NdotV, in.N, in.V, R, F0, f_ab, diffuse_color);
+        var light_contrib = lighting::directional_light(i, roughness, NdotV, in.N, in.V, R, F0, f_ab, diffuse_color);
 // #ifdef DIRECTIONAL_LIGHT_SHADOW_MAP_DEBUG_CASCADES
 //         light_contrib = shadows::cascade_debug_visualization(light_contrib, i, view_z);
 // #endif
-//         direct_light += light_contrib * shadow;
+        direct_light += light_contrib * shadow;
 
 //         if diffuse_transmission > 0.0 {
 //             // NOTE: We use the diffuse transmissive color, the second Lambertian lobe's calculated
@@ -296,7 +296,7 @@ fn apply_pbr_lighting(
 //             let light_contrib = lighting::directional_light(i, 1.0, 1.0, -in.N, -in.V, vec3<f32>(0.0), vec3<f32>(0.0), vec2<f32>(0.1), diffuse_transmissive_color);
 //             transmitted_light += light_contrib * transmitted_shadow;
 //         }
-//     }
+    }
 
     // Ambient light (indirect)
     var indirect_light = ambient::ambient_light(in.world_position, in.N, in.V, NdotV, diffuse_color, F0, perceptual_roughness, occlusion);
@@ -402,7 +402,7 @@ fn apply_fog(fog_params: mesh_view_types::Fog, input_color: vec4<f32>, fragment_
     var scattering = vec3<f32>(0.0);
     if fog_params.directional_light_color.a > 0.0 {
         let view_to_world_normalized = view_to_world / distance;
-        let n_directional_lights = view_bindings::lights.n_directional_lights;
+        let n_directional_lights = u32(view_bindings::lights.n_directional_lights);
         for (var i: u32 = 0u; i < n_directional_lights; i = i + 1u) {
             let light = view_bindings::lights.directional_lights[i];
             scattering += pow(

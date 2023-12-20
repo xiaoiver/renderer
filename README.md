@@ -177,6 +177,33 @@ this.commands.spawn(
 
 ### Directional Light
 
+A Directional light. Directional lights don't exist in reality but they are a good approximation for light sources VERY far away, like the sun or the moon.
+
+[Online DEMO](https://xiaoiver.github.io/renderer/?name=light)
+
+```ts
+this.commands.spawn(
+  new DirectionalLightBundle({
+    directional_light: new DirectionalLight({
+      color: Color.rgb(0.98, 0.95, 0.82),
+      shadows_enabled: true,
+    }),
+    transform: Transform.from_xyz(0.0, 0.0, 0.0).look_at(
+      new Vec3(-1, -1, -1),
+      Vec3.Y,
+    ),
+    cascade_shadow_config: new CascadeShadowConfigBuilder({
+      first_cascade_far_bound: 4.0,
+      maximum_distance: 10.0,
+    }).build(),
+  }),
+);
+```
+
+- color `Color`
+- illuminance `number` Illuminance in lux
+- shadows_enabled `boolean`
+
 ### Point Light
 
 ### Spot Light

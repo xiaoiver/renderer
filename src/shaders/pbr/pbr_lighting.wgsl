@@ -3,7 +3,7 @@
 #import pbr::{
     utils::PI,
     mesh_view_types::POINT_LIGHT_FLAGS_SPOT_LIGHT_Y_NEGATIVE,
-    // mesh_view_bindings as view_bindings,
+    mesh_view_bindings as view_bindings,
 }
 
 // From the Filament design doc
@@ -270,19 +270,19 @@ fn perceptualRoughnessToRoughness(perceptualRoughness: f32) -> f32 {
 //     return point_light * spot_attenuation;
 // }
 
-// fn directional_light(light_id: u32, roughness: f32, NdotV: f32, normal: vec3<f32>, view: vec3<f32>, R: vec3<f32>, F0: vec3<f32>, f_ab: vec2<f32>, diffuseColor: vec3<f32>) -> vec3<f32> {
-//     let light = &view_bindings::lights.directional_lights[light_id];
+fn directional_light(light_id: u32, roughness: f32, NdotV: f32, normal: vec3<f32>, view: vec3<f32>, R: vec3<f32>, F0: vec3<f32>, f_ab: vec2<f32>, diffuseColor: vec3<f32>) -> vec3<f32> {
+    let light = &view_bindings::lights.directional_lights[light_id];
 
-//     let incident_light = (*light).direction_to_light.xyz;
+    let incident_light = (*light).direction_to_light.xyz;
 
-//     let half_vector = normalize(incident_light + view);
-//     let NoL = saturate(dot(normal, incident_light));
-//     let NoH = saturate(dot(normal, half_vector));
-//     let LoH = saturate(dot(incident_light, half_vector));
+    let half_vector = normalize(incident_light + view);
+    let NoL = saturate(dot(normal, incident_light));
+    let NoH = saturate(dot(normal, half_vector));
+    let LoH = saturate(dot(incident_light, half_vector));
 
-//     let diffuse = diffuseColor * Fd_Burley(roughness, NdotV, NoL, LoH);
-//     let specularIntensity = 1.0;
-//     let specular_light = specular(F0, roughness, half_vector, NdotV, NoL, NoH, LoH, specularIntensity, f_ab);
+    let diffuse = diffuseColor * Fd_Burley(roughness, NdotV, NoL, LoH);
+    let specularIntensity = 1.0;
+    let specular_light = specular(F0, roughness, half_vector, NdotV, NoL, NoH, LoH, specularIntensity, f_ab);
 
-//     return (specular_light + diffuse) * (*light).color.rgb * NoL;
-// }
+    return (specular_light + diffuse) * (*light).color.rgb * NoL;
+}
