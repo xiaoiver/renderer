@@ -1,7 +1,7 @@
 import { Box } from './Box';
 import { Mesh, ToMesh } from './Mesh';
 
-export class Cube implements ToMesh {
+export class RegularPolygon implements ToMesh {
   constructor(public size: number = 1) {}
 
   toMesh(): Mesh {

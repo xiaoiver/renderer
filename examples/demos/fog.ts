@@ -82,10 +82,10 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
             edge_threshold_min: Sensitivity.High,
           }),
           new FogSettings({
-            color: Color.BLUE,
+            color: Color.rgb(206 / 255, 206 / 255, 238 / 255),
             falloff: new FogFalloff.Linear({
-              start: 0.0,
-              end: 6,
+              start: 1.89,
+              end: 3.12,
             }),
           }),
         )
@@ -117,10 +117,10 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
 
   const fogFolder = gui.addFolder('fog');
   const fogConfig = {
-    color: '#0000ff',
+    color: '#ceceee',
     falloff: 'Linear',
-    start: 0,
-    end: 6,
+    start: 1.89,
+    end: 3.12,
     density: 0,
   };
   fogFolder.addColor(fogConfig, 'color').onChange((color) => {

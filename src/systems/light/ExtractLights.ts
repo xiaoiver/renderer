@@ -12,7 +12,7 @@ import {
  */
 export class ExtractLights extends System {
   directional_lights = this.query(
-    (q) => q.addedOrChanged.with(DirectionalLight).trackWrites,
+    (q) => q.addedOrChanged.with(DirectionalLight, GlobalTransform).trackWrites,
   );
 
   constructor() {
@@ -37,6 +37,8 @@ export class ExtractLights extends System {
       const transform = entity.read(GlobalTransform);
       const cascade_shadow_config = entity.read(CascadeShadowConfig);
       const cascades = entity.read(Cascades);
+
+      console.log('transform changed...');
 
       if (!entity.has(ExtractedDirectionalLight)) {
         entity.add(ExtractedDirectionalLight, {

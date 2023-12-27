@@ -45,5 +45,6 @@ async function render() {
 function onChange() {
   const { value } = select;
   history.pushState({ value }, '', `?name=${value}`);
+  location.reload();
   render();
 }

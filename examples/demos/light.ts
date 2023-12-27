@@ -165,14 +165,36 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
 
   const directionalFolder = gui.addFolder('directional');
   const directionalConfig = {
-    color: '#FF4400',
-    brightness: 0.05,
+    color: '#faf2d1',
+    illuminance: 100000,
+    dx: -1,
+    dy: -1,
+    dz: -1,
   };
   directionalFolder
     .addColor(directionalConfig, 'color')
     .onChange((color: string) => {
       const directional_light = directional.write(DirectionalLight);
       directional_light.color = Color.hex(color);
+    });
+  directionalFolder
+    .add(directionalConfig, 'illuminance', 0, 100000)
+    .onChange((illuminance: number) => {
+      const directional_light = directional.write(DirectionalLight);
+      directional_light.illuminance = illuminance;
+    });
+  directionalFolder
+    .add(directionalConfig, 'dx', -1, 1)
+    .onChange((dx: number) => {
+      const directional_light = directional.write(Transform);
+
+      const transform = Transform.from_xyz(0.0, 0.0, 0.0).look_at(
+        new Vec3(dx, directionalConfig.dy, directionalConfig.dz),
+        Vec3.Y,
+      );
+      directional_light.translation = transform.translation;
+      directional_light.rotation = transform.rotation;
+      directional_light.scale = transform.scale;
     });
 
   return async () => {
