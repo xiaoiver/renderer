@@ -17,8 +17,6 @@ export class Camera3dBundle extends Bundle {
 
   transform: Transform;
 
-  global_transform: GlobalTransform;
-
   tonemapping: Tonemapping;
 
   dither: DebandDither;
@@ -46,7 +44,6 @@ export class Camera3dBundle extends Bundle {
       camera = new Camera(),
       computed = new ComputedCameraValues(),
       transform,
-      global_transform = new GlobalTransform(),
       projection = new Perspective(),
       tonemapping = new Tonemapping(),
       color_grading = new ColorGrading(),
@@ -57,7 +54,6 @@ export class Camera3dBundle extends Bundle {
     this.camera = camera;
     this.computed = computed;
     this.transform = transform;
-    this.global_transform = global_transform;
     this.projection = projection;
     this.tonemapping = tonemapping;
     this.color_grading = color_grading;

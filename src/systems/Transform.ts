@@ -6,21 +6,22 @@ import { Children, GlobalTransform, Parent, Transform } from '../components';
  * Third party plugins should ensure that this is used in concert with [`propagate_transforms`].
  */
 export class SyncSimpleTransforms extends System {
-  sked = this.schedule((s) => s.afterWritersOf(Transform, GlobalTransform));
-  entities = this.query((q) => q.using(Transform, GlobalTransform).write);
+  queries = this.query((q) => q.addedOrChanged.with(Transform).trackWrites);
 
-  queries = this.query(
-    (q) =>
-      q.addedOrChanged
-        .with(Transform, GlobalTransform)
-        .without(Parent)
-        .without(Children).trackWrites,
-  );
+  constructor() {
+    super();
+    this.query((q) => q.using(GlobalTransform).write);
+  }
 
   execute(): void {
     // Update changed entities.
     this.queries.addedOrChanged.forEach((entity) => {
       const transform = entity.read(Transform);
+
+      if (!entity.has(GlobalTransform)) {
+        entity.add(GlobalTransform, {});
+      }
+
       const globalTransform = entity.write(GlobalTransform);
       globalTransform.from(transform);
     });

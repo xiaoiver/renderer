@@ -11,6 +11,13 @@ import { Transform } from './Transform';
  * * You may use the [`TransformBundle`](crate::TransformBundle) to guarantee this.
  */
 export class GlobalTransform extends Affine3 {
+  static copy(rhs: GlobalTransform) {
+    return new GlobalTransform(
+      Mat3.copy(rhs.affine()),
+      Vec3.copy(rhs.translation),
+    );
+  }
+
   static from_translation(translation: Vec3) {
     return new GlobalTransform(Mat3.IDENTITY, translation);
   }

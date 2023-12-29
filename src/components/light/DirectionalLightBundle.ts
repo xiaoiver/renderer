@@ -1,6 +1,6 @@
 import { Bundle } from '../Bundle';
 import { CascadesFrusta } from '../primitive';
-import { GlobalTransform, Transform } from '../transform';
+import { Transform } from '../transform';
 import { CascadeShadowConfig } from './CascadeShadowConfig';
 import { Cascades } from './Cascades';
 import { DirectionalLight } from './DirectionalLight';
@@ -12,7 +12,6 @@ export class DirectionalLightBundle extends Bundle {
   cascade_shadow_config: CascadeShadowConfig;
   // pub visible_entities: CascadesVisibleEntities,
   transform: Transform;
-  global_transform: GlobalTransform;
   // /// Enables or disables the light
   // pub visibility: Visibility,
   // /// Inherited visibility of an entity.
@@ -28,7 +27,6 @@ export class DirectionalLightBundle extends Bundle {
       cascade_shadow_config: CascadeShadowConfig;
       // visible_entities: CascadesVisibleEntities,
       transform: Transform;
-      global_transform: GlobalTransform;
       // visibility: Visibility,
       // inherited_visibility: InheritedVisibility,
       // view_visibility: ViewVisibility,
@@ -43,7 +41,6 @@ export class DirectionalLightBundle extends Bundle {
       cascade_shadow_config = new CascadeShadowConfig(),
       // visible_entities = new CascadesVisibleEntities(),
       transform,
-      global_transform = new GlobalTransform(),
       // visibility = new Visibility(),
       // inherited_visibility = new InheritedVisibility(),
       // view_visibility = new ViewVisibility(),
@@ -55,7 +52,6 @@ export class DirectionalLightBundle extends Bundle {
     this.cascade_shadow_config = cascade_shadow_config;
     // this.visible_entities = visible_entities;
     this.transform = transform;
-    this.global_transform = global_transform;
     // this.visibility = visibility;
     // this.inherited_visibility = inherited_visibility;
     // this.view_visibility = view_visibility;

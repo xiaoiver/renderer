@@ -227,6 +227,10 @@ export class Vec3 {
     return new BVec3(this.x !== this.x, this.y !== rhs.y, this.z !== rhs.z);
   }
 
+  ceil() {
+    return new Vec3(Math.ceil(this.x), Math.ceil(this.y), Math.ceil(this.z));
+  }
+
   /**
    * Creates a 2D vector from the `x` and `y` elements of `self`, discarding `z`.
    */

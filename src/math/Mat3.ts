@@ -27,6 +27,11 @@ export class Mat3 {
    */
   static IDENTITY = Mat3.from_cols(Vec3.X, Vec3.Y, Vec3.Z);
 
+  static copy(m: Mat3) {
+    const { m00, m01, m02, m10, m11, m12, m20, m21, m22 } = m;
+    return new Mat3(m00, m01, m02, m10, m11, m12, m20, m21, m22);
+  }
+
   /**
    * Creates a 3x3 matrix from three column vectors.
    */
@@ -307,9 +312,11 @@ export class Mat3 {
    * This method assumes that `self` contains a valid affine transform.
    */
   transform_point2(rhs: Vec2) {
-    return (Mat2.from_cols(this.x_axis, this.y_axis).mul(rhs) as Vec2).add(
-      this.z_axis,
-    );
+    return (
+      Mat2.from_cols(this.x_axis.truncate(), this.y_axis.truncate()).mul(
+        rhs,
+      ) as Vec2
+    ).add(this.z_axis.truncate());
   }
 
   /**

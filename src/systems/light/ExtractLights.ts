@@ -38,8 +38,6 @@ export class ExtractLights extends System {
       const cascade_shadow_config = entity.read(CascadeShadowConfig);
       const cascades = entity.read(Cascades);
 
-      console.log('transform changed...');
-
       if (!entity.has(ExtractedDirectionalLight)) {
         entity.add(ExtractedDirectionalLight, {
           color,

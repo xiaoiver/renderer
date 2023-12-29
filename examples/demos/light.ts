@@ -7,7 +7,6 @@ import {
   Camera3dBundle,
   DefaultPlugins,
   Transform,
-  GlobalTransform,
   Camera,
   ComputedCameraValues,
   Fxaa,
@@ -32,6 +31,7 @@ import {
   CascadeShadowConfig,
   AmbientLight,
   CascadeShadowConfigBuilder,
+  Plane,
 } from '../../src';
 import { loadImage } from '../utils/image';
 // @ts-ignore
@@ -58,7 +58,6 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           Mesh,
           Material,
           Transform,
-          GlobalTransform,
           Camera,
           ComputedCameraValues,
           Perspective,
@@ -135,6 +134,19 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
         }),
       );
 
+      // const mesh2 = Mesh.from(Plane.from_size(10));
+      // const material2 = new Material({
+      //   base_color: Color.WHITE,
+      //   perceptual_roughness: 1.0,
+      // });
+      // this.commands.spawn(
+      //   new PbrBundle({
+      //     mesh: mesh2,
+      //     material: material2,
+      //     transform: Transform.from_xyz(0, 0, 0),
+      //   }),
+      // );
+
       this.commands.execute();
     }
   }
@@ -186,15 +198,47 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
   directionalFolder
     .add(directionalConfig, 'dx', -1, 1)
     .onChange((dx: number) => {
-      const directional_light = directional.write(Transform);
+      const transform = directional.write(Transform);
 
-      const transform = Transform.from_xyz(0.0, 0.0, 0.0).look_at(
-        new Vec3(dx, directionalConfig.dy, directionalConfig.dz),
-        Vec3.Y,
-      );
-      directional_light.translation = transform.translation;
-      directional_light.rotation = transform.rotation;
-      directional_light.scale = transform.scale;
+      const { translation, rotation, scale } = Transform.from_xyz(
+        dx,
+        directionalConfig.dy,
+        directionalConfig.dz,
+      ).look_at(Vec3.ZERO, Vec3.Y);
+
+      transform.translation = translation;
+      transform.rotation = rotation;
+      transform.scale = scale;
+    });
+  directionalFolder
+    .add(directionalConfig, 'dy', -1, 1)
+    .onChange((dy: number) => {
+      const transform = directional.write(Transform);
+
+      const { translation, rotation, scale } = Transform.from_xyz(
+        directionalConfig.dx,
+        dy,
+        directionalConfig.dz,
+      ).look_at(Vec3.ZERO, Vec3.Y);
+
+      transform.translation = translation;
+      transform.rotation = rotation;
+      transform.scale = scale;
+    });
+  directionalFolder
+    .add(directionalConfig, 'dz', -1, 1)
+    .onChange((dz: number) => {
+      const transform = directional.write(Transform);
+
+      const { translation, rotation, scale } = Transform.from_xyz(
+        directionalConfig.dx,
+        directionalConfig.dy,
+        dz,
+      ).look_at(Vec3.ZERO, Vec3.Y);
+
+      transform.translation = translation;
+      transform.rotation = rotation;
+      transform.scale = scale;
     });
 
   return async () => {

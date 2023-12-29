@@ -2,8 +2,7 @@ import { Buffer, BufferUsage, Device } from '@antv/g-device-api';
 import { System } from '@lastolivegames/becsy';
 import { RenderResource } from './RenderResource';
 import { Mesh } from '../meshes';
-import { Transform } from '../components';
-import { Affine3 } from '../math';
+import { GlobalTransform } from '../components';
 
 /**
  * Since we can only use `@group(0)` in device api for now,
@@ -24,7 +23,7 @@ export class ExtractMeshes extends System {
   private device: Device;
 
   private renderables = this.query(
-    (q) => q.addedOrChanged.with(Mesh, Transform).trackWrites,
+    (q) => q.addedOrChanged.with(Mesh, GlobalTransform).trackWrites,
   );
 
   async prepare() {
@@ -42,12 +41,7 @@ export class ExtractMeshes extends System {
     const meshStorageBufferData = [];
     let previous_transform: number[] = new Array(12).fill(0);
     for (const renderable of this.renderables.addedOrChanged) {
-      const { translation, scale, rotation } = renderable.read(Transform);
-      const affine = Affine3.from_scale_rotation_translation(
-        scale,
-        rotation,
-        translation,
-      );
+      const affine = GlobalTransform.copy(renderable.read(GlobalTransform));
       const transform = affine
         .to_transpose()
         .map((v) => v.to_array())
