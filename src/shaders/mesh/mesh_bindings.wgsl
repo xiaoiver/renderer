@@ -15,7 +15,7 @@
 // #ifdef PER_OBJECT_BUFFER_BATCH_SIZE
 // @group(2) @binding(0) var<uniform> mesh: array<Mesh, #{PER_OBJECT_BUFFER_BATCH_SIZE}u>;
 // #else
-@group(0) @binding(30) var<storage> mesh: array<Mesh>;
+@group(2) @binding(0) var<storage> mesh: array<Mesh>;
 // #endif // PER_OBJECT_BUFFER_BATCH_SIZE
 
 // #endif // MESH_BINDGROUP_1

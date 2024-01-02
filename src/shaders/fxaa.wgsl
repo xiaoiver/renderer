@@ -8,9 +8,8 @@
 
 #import fullscreen_vertex_shader::FullscreenVertexOutput
 
-@group(0) @binding(0) var screenTexture: texture_2d<f32>;
-@group(0) @binding(1) var samp: sampler;
-
+@group(1) @binding(0) var screenTexture: texture_2d<f32>;
+@group(1) @binding(1) var samp: sampler;
 
 // Trims the algorithm from processing darks.
 #ifdef EDGE_THRESH_MIN_LOW

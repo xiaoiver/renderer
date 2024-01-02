@@ -134,18 +134,18 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
         }),
       );
 
-      // const mesh2 = Mesh.from(Plane.from_size(10));
-      // const material2 = new Material({
-      //   base_color: Color.WHITE,
-      //   perceptual_roughness: 1.0,
-      // });
-      // this.commands.spawn(
-      //   new PbrBundle({
-      //     mesh: mesh2,
-      //     material: material2,
-      //     transform: Transform.from_xyz(0, 0, 0),
-      //   }),
-      // );
+      const mesh2 = Mesh.from(Plane.from_size(10));
+      const material2 = new Material({
+        base_color: Color.WHITE,
+        perceptual_roughness: 1.0,
+      });
+      this.commands.spawn(
+        new PbrBundle({
+          mesh: mesh2,
+          material: material2,
+          transform: Transform.from_xyz(0, 0, 0),
+        }),
+      );
 
       this.commands.execute();
     }

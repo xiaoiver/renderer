@@ -5,10 +5,9 @@ import { Mesh } from '../meshes';
 import { GlobalTransform } from '../components';
 
 /**
- * Since we can only use `@group(0)` in device api for now,
- * just use no.`30` binding.
+ * We use `@group(2)` in device api for now.
  */
-export const MESH_BINDING = 30;
+export const MESH_BINDING = 0;
 
 /**
  * Extract meshes and generate a storage buffer.
@@ -32,7 +31,7 @@ export class ExtractMeshes extends System {
 
   initialize(): void {
     this.meshStorageBuffer = this.device.createBuffer({
-      viewOrSize: new Float32Array(100),
+      viewOrSize: new Float32Array(1000),
       usage: BufferUsage.STORAGE,
     });
   }
@@ -70,10 +69,12 @@ export class ExtractMeshes extends System {
       // flags: mesh_transforms.flags,
     }
 
-    // Set mesh storage buffer
-    this.meshStorageBuffer.setSubData(
-      0,
-      new Uint8Array(new Float32Array(meshStorageBufferData).buffer),
-    );
+    if (this.renderables.addedOrChanged.length) {
+      // Set mesh storage buffer
+      this.meshStorageBuffer.setSubData(
+        0,
+        new Uint8Array(new Float32Array(meshStorageBufferData).buffer),
+      );
+    }
   }
 }

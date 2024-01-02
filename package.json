@@ -45,7 +45,7 @@
   },
   "homepage": "https://github.com/xiaoiver/renderer#readme",
   "dependencies": {
-    "@antv/g-device-api": "^1.4.8",
+    "@antv/g-device-api": "^1.4.14",
     "@lastolivegames/becsy": "^0.15.9",
     "gl-matrix": "^3.4.3",
     "hammerjs": "^2.0.8",

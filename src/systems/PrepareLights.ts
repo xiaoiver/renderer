@@ -27,20 +27,17 @@ export class PrepareLights extends System {
   private pipeline = this.attach(MeshPipeline);
 
   private ambient_lights = this.query(
-    (q) =>
-      q.addedOrChanged.with(AmbientLight).trackWrites.and.with(AmbientLight)
-        .current,
+    (q) => q.addedOrChanged.with(AmbientLight).trackWrites,
+  );
+  private ambient_lights_query = this.query(
+    (q) => q.current.with(AmbientLight).read,
   );
   private directional_lights = this.query(
-    (q) =>
-      q.addedOrChanged
-        .with(ExtractedDirectionalLight)
-        .trackWrites.and.with(ExtractedDirectionalLight).current,
+    (q) => q.addedOrChanged.with(ExtractedDirectionalLight).trackWrites,
   );
-  // private ambient_lights = this.query((q) => q.current.with(AmbientLight).read);
-  // private directional_lights = this.query(
-  //   (q) => q.current.with(ExtractedDirectionalLight).read,
-  // );
+  private directional_lights_query = this.query((q) =>
+    q.current.with(ExtractedDirectionalLight),
+  );
 
   async prepare() {
     this.prepareUniforms = (template, binding) => {
@@ -61,7 +58,7 @@ export class PrepareLights extends System {
 
     if (updated) {
       let ambient_color = Vec4.ZERO;
-      this.ambient_lights.addedOrChanged.forEach((entity) => {
+      this.ambient_lights_query.current.forEach((entity) => {
         this.pipeline.passesChanged = true;
         const ambient_light = entity.read(AmbientLight);
         ambient_color = new Vec4(
@@ -93,7 +90,7 @@ export class PrepareLights extends System {
         .map(() => new Array(96).fill(0));
       let num_directional_cascades_enabled = 0;
 
-      this.directional_lights.addedOrChanged.forEach((entity, index) => {
+      this.directional_lights_query.current.forEach((entity, index) => {
         const light = entity.read(ExtractedDirectionalLight);
         this.pipeline.passesChanged = true;
 
