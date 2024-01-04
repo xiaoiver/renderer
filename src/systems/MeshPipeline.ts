@@ -1,6 +1,6 @@
 import { Entity, System } from '@lastolivegames/becsy';
 import { Device, SwapChain, OpaqueWhite } from '@antv/g-device-api';
-import { AppConfig, Material, Transform } from '../components';
+import { AppConfig, GlobalTransform, Material, Transform } from '../components';
 import {
   AntialiasingMode,
   RGAttachmentSlot,
@@ -14,7 +14,6 @@ import {
 import { Mesh } from '../meshes';
 import { PrepareViewUniforms } from './PrepareViewUniforms';
 import { PrepareFog } from './PrepareFog';
-import { PrepareMaterial } from './PrepareMaterial';
 import { RenderResource } from './RenderResource';
 import { ExtractMeshes } from './ExtractMeshes';
 import { OpaqueNode } from './nodes/Opaque';
@@ -25,7 +24,7 @@ export class MeshPipeline extends System {
   private appConfig = this.singleton.read(AppConfig);
 
   private rendererResource = this.attach(RenderResource);
-  extractMeshes = this.attach(ExtractMeshes);
+  // extractMeshes = this.attach(ExtractMeshes);
 
   device: Device;
   swapChain: SwapChain;
@@ -37,6 +36,7 @@ export class MeshPipeline extends System {
       renderHelper: RenderHelper,
       renderInput: RenderInput,
       mainColorTargetID: number,
+      mainDepthTargetID?: number,
     ) => void
   > = {};
   passesChanged = true;
@@ -49,13 +49,12 @@ export class MeshPipeline extends System {
   private viewUniforms = this.attach(PrepareViewUniforms);
   private lightsUniforms = this.attach(PrepareLights);
   private fogUniforms = this.attach(PrepareFog);
-  private materialUniforms = this.attach(PrepareMaterial);
 
   private meshes_query = this.query((q) =>
-    q.current.with(Mesh, Material, Transform),
+    q.current.with(Mesh, Material, Transform, GlobalTransform),
   );
   private renderables = this.query(
-    (q) => q.addedOrChanged.with(Mesh, Transform).trackWrites,
+    (q) => q.addedOrChanged.with(Mesh, Material, Transform).trackWrites,
   );
 
   async prepare() {
@@ -70,7 +69,6 @@ export class MeshPipeline extends System {
     opaque.viewUniforms = this.viewUniforms;
     opaque.lightsUniforms = this.lightsUniforms;
     opaque.fogUniforms = this.fogUniforms;
-    opaque.materialUniforms = this.materialUniforms;
     this.nodes.push(opaque);
   }
 
@@ -124,7 +122,13 @@ export class MeshPipeline extends System {
     // Post-processing passes
     Object.keys(this.passes).forEach((name) => {
       const func = this.passes[name];
-      func(builder, this.renderHelper, renderInput, mainColorTargetID);
+      func(
+        builder,
+        this.renderHelper,
+        renderInput,
+        mainColorTargetID,
+        mainDepthTargetID,
+      );
     });
 
     // Output to screen
@@ -167,6 +171,7 @@ export class MeshPipeline extends System {
       renderHelper: RenderHelper,
       renderInput: RenderInput,
       mainColorTargetID: number,
+      mainDepthTargetID?: number,
     ) => void,
   ) {
     this.passes[key] = func;

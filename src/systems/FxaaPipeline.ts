@@ -84,6 +84,7 @@ export class FxaaPipeline extends System {
     renderHelper: RenderHelper,
     renderInput: RenderInput,
     mainColorTargetID: number,
+    mainDepthTargetID?: number,
   ) => {
     const device = renderHelper.getDevice();
 
@@ -108,6 +109,10 @@ export class FxaaPipeline extends System {
     builder.pushPass((pass) => {
       pass.setDebugName('FXAA');
       pass.attachRenderTargetID(RGAttachmentSlot.Color0, mainColorTargetID);
+      // pass.attachRenderTargetID(
+      //   RGAttachmentSlot.DepthStencil,
+      //   mainDepthTargetID,
+      // );
 
       const mainColorResolveTextureID =
         builder.resolveRenderTarget(mainColorTargetID);
@@ -122,6 +127,7 @@ export class FxaaPipeline extends System {
           numUniformBuffers: 0,
           numSamplers: 1,
           numStorageBuffers: 0,
+          numStorageTextures: 0,
         });
         renderInst.drawPrimitives(3);
 

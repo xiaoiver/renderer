@@ -91,6 +91,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
             directional_light: new DirectionalLight({
               color: Color.rgb(0.98, 0.95, 0.82),
               shadows_enabled: true,
+              illuminance: 10000,
             }),
             transform: Transform.from_xyz(0.0, 0.0, 0.0).look_at(
               new Vec3(-1, -1, -1),
@@ -109,7 +110,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           new Camera3dBundle({
             camera: new Camera(),
             projection: new Perspective(),
-            transform: Transform.from_xyz(-2.5, 1.5, 2.0).look_at(
+            transform: Transform.from_xyz(2.0, 2.0, 2.0).look_at(
               Vec3.ZERO,
               Vec3.Y,
             ),
@@ -122,20 +123,23 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
         )
         .entity.hold();
 
-      const mesh = Mesh.from(new Cube(1));
+      // const mesh = Mesh.from(new Cube(1));
+      const mesh = Mesh.from(Plane.from_size(10));
       const material = new Material({
-        base_color_texture: baseColorImage,
+        base_color: Color.WHITE,
+        perceptual_roughness: 1.0,
       });
       this.commands.spawn(
         new PbrBundle({
           mesh,
           material,
-          transform: Transform.from_xyz(0, 0, 0),
+          transform: Transform.from_xyz(0, -0.5, 0),
         }),
       );
 
-      const mesh2 = Mesh.from(Plane.from_size(10));
+      const mesh2 = Mesh.from(new Cube(1));
       const material2 = new Material({
+        base_color_texture: baseColorImage,
         base_color: Color.WHITE,
         perceptual_roughness: 1.0,
       });
@@ -178,10 +182,10 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
   const directionalFolder = gui.addFolder('directional');
   const directionalConfig = {
     color: '#faf2d1',
-    illuminance: 100000,
-    dx: -1,
-    dy: -1,
-    dz: -1,
+    illuminance: 10000,
+    dx: -2.5,
+    dy: 1.5,
+    dz: 2.0,
   };
   directionalFolder
     .addColor(directionalConfig, 'color')
@@ -196,7 +200,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
       directional_light.illuminance = illuminance;
     });
   directionalFolder
-    .add(directionalConfig, 'dx', -1, 1)
+    .add(directionalConfig, 'dx', -5, 5)
     .onChange((dx: number) => {
       const transform = directional.write(Transform);
 
@@ -211,7 +215,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
       transform.scale = scale;
     });
   directionalFolder
-    .add(directionalConfig, 'dy', -1, 1)
+    .add(directionalConfig, 'dy', -5, 5)
     .onChange((dy: number) => {
       const transform = directional.write(Transform);
 
@@ -226,7 +230,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
       transform.scale = scale;
     });
   directionalFolder
-    .add(directionalConfig, 'dz', -1, 1)
+    .add(directionalConfig, 'dz', -5, 5)
     .onChange((dz: number) => {
       const transform = directional.write(Transform);
 

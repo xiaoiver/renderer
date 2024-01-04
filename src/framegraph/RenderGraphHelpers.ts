@@ -5,7 +5,6 @@ import {
   OpaqueBlack,
   OpaqueWhite,
 } from '@antv/g-device-api';
-// import { reverseDepthForClearValue } from '../platform/utils';
 import { RGAttachmentSlot } from './interfaces';
 import { RGRenderTargetDescription } from './RenderTargetDescription';
 
@@ -14,8 +13,7 @@ export function makeAttachmentClearDescriptor(
 ): GfxrAttachmentClearDescriptor {
   return {
     colorClearColor: clearColor,
-    // depthClearValue: reverseDepthForClearValue(1.0),
-    depthClearValue: 1,
+    depthClearValue: 0.0,
     stencilClearValue: 0.0,
   };
 }

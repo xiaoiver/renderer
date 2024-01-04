@@ -119,6 +119,7 @@ export class TonemappingPipeline extends System {
           numUniformBuffers: 1,
           numSamplers: 1,
           numStorageBuffers: 0,
+          numStorageTextures: 0,
         });
         renderInst.drawPrimitives(3);
         renderInst.setProgram(this.program);

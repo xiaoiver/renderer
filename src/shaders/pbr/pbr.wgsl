@@ -36,6 +36,7 @@ fn fragment(
     var out: FragmentOutput;
     if (u32(pbr_input.material.flags) & STANDARD_MATERIAL_FLAGS_UNLIT_BIT) == 0u {
         out.color = apply_pbr_lighting(pbr_input);
+        // out.color = vec4(vec3(in.position.z * 20.0), 1.0);
     } else {
         out.color = pbr_input.material.base_color;
     }

@@ -63,6 +63,7 @@ export class RenderInst {
     samplerBindings: [],
     uniformBufferBindings: [],
     storageBufferBindings: [],
+    storageTextureBindings: [],
   }));
   private dynamicUniformBufferByteOffsets: number[] = nArray(10, () => 0);
 
@@ -102,6 +103,7 @@ export class RenderInst {
       samplerBindings: [],
       uniformBufferBindings: [],
       storageBufferBindings: [],
+      storageTextureBindings: [],
     }));
   }
 
@@ -151,6 +153,7 @@ export class RenderInst {
       numSamplers: obd.samplerBindings?.length,
       numUniformBuffers: obd.uniformBufferBindings?.length,
       numStorageBuffers: obd.storageBufferBindings?.length,
+      numStorageTextures: obd.storageTextureBindings?.length,
     });
 
     for (
@@ -165,6 +168,17 @@ export class RenderInst {
       tbd.uniformBufferBindings[i].size =
         o.bindingDescriptors[0].uniformBufferBindings[i].size;
     this.setSamplerBindingsFromTextureMappings(obd.samplerBindings);
+    for (
+      let i = 0;
+      i <
+      Math.min(
+        tbd.storageBufferBindings.length,
+        obd.storageBufferBindings.length,
+      );
+      i++
+    )
+      tbd.storageBufferBindings[i].size =
+        o.bindingDescriptors[0].storageBufferBindings[i].size;
     for (let i = 0; i < o.dynamicUniformBufferByteOffsets.length; i++)
       this.dynamicUniformBufferByteOffsets[i] =
         o.dynamicUniformBufferByteOffsets[i];
@@ -228,6 +242,7 @@ export class RenderInst {
     numUniformBuffers: number;
     numSamplers: number;
     numStorageBuffers: number;
+    numStorageTextures: number;
   }): void {
     assert(
       bindingLayout.numUniformBuffers <
@@ -255,12 +270,21 @@ export class RenderInst {
       });
     for (
       let i = this.bindingDescriptors[0].storageBufferBindings.length;
-      i < bindingLayout.numStorageBuffers;
+      i < bindingLayout.numStorageBuffers || 0;
       i++
     )
       this.bindingDescriptors[0].storageBufferBindings.push({
         binding: i,
         buffer: null,
+      });
+    for (
+      let i = this.bindingDescriptors[0].storageTextureBindings.length;
+      i < bindingLayout.numStorageTextures || 0;
+      i++
+    )
+      this.bindingDescriptors[0].storageTextureBindings.push({
+        binding: i,
+        texture: null,
       });
   }
 
@@ -273,7 +297,7 @@ export class RenderInst {
 
   drawIndexesInstanced(
     indexCount: number,
-    instanceCount: number,
+    instanceCount?: number,
     indexStart = 0,
   ): void {
     this.flags = setBitFlagEnabled(this.flags, RenderInstFlags.Indexed, true);

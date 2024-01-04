@@ -99,6 +99,20 @@ export class Mat4 {
     );
   }
 
+  static perspective_infinite_rh(
+    fov_y_radians: number,
+    aspect_ratio: number,
+    z_near: number,
+  ) {
+    const f = 1.0 / Math.tan(0.5 * fov_y_radians);
+    return Mat4.from_cols(
+      new Vec4(f / aspect_ratio, 0.0, 0.0, 0.0),
+      new Vec4(0.0, f, 0.0, 0.0),
+      new Vec4(0.0, 0.0, -1.0, -1.0),
+      new Vec4(0.0, 0.0, -z_near, 0.0),
+    );
+  }
+
   /**
    * Creates an infinite reverse right-handed perspective projection matrix
    * with `[0,1]` depth range.

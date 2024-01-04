@@ -138,6 +138,22 @@ function bindingsDescriptorHash(a: BindingsDescriptor): number {
       hash = hashCodeNumberUpdate(hash, binding.size);
     }
   }
+  for (let i = 0; i < a.storageBufferBindings.length; i++) {
+    const binding = a.storageBufferBindings[i];
+    if (binding !== null && binding.buffer !== null) {
+      hash = hashCodeNumberUpdate(hash, binding.buffer.id);
+      hash = hashCodeNumberUpdate(hash, binding.binding);
+      hash = hashCodeNumberUpdate(hash, binding.offset);
+      hash = hashCodeNumberUpdate(hash, binding.size);
+    }
+  }
+  for (let i = 0; i < a.storageTextureBindings.length; i++) {
+    const binding = a.storageTextureBindings[i];
+    if (binding !== null && binding.texture !== null) {
+      hash = hashCodeNumberUpdate(hash, binding.texture.id);
+      hash = hashCodeNumberUpdate(hash, binding.binding);
+    }
+  }
   return hashCodeNumberFinish(hash);
 }
 
