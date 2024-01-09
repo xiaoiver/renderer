@@ -18,8 +18,8 @@ import {
 import { createProgram } from './utils';
 import { MeshPipeline } from './MeshPipeline';
 import { PrepareViewUniforms } from './PrepareViewUniforms';
-import vert from '../shaders/fullscreen.wgsl?raw';
-import frag from '../shaders/tonemapping/tonemapping.wgsl?raw';
+import vert from '../shaders/fullscreen';
+import frag from '../shaders/tonemapping/tonemapping';
 
 export class TonemappingPipeline extends System {
   tonemapping = this.query(

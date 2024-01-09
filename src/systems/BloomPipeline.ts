@@ -10,8 +10,8 @@ import {
   fillVec4,
 } from '../framegraph';
 import { createProgram } from './utils';
-import vert from '../shaders/fullscreen.wgsl?raw';
-import frag from '../shaders/bloom.wgsl?raw';
+import vert from '../shaders/fullscreen';
+import frag from '../shaders/bloom';
 import { MeshPipeline } from './MeshPipeline';
 
 export class BloomPipeline extends System {
@@ -137,6 +137,7 @@ export class BloomPipeline extends System {
         numUniformBuffers: 1,
         numSamplers: 1,
         numStorageBuffers: 0,
+        numStorageTextures: 0,
       });
       renderInst.drawPrimitives(3);
 

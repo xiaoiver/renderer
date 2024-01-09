@@ -13,7 +13,7 @@ import { createProgram } from '../utils';
 import { PipelineNode } from './PipelineNode';
 import { TextureMapping } from '../../framegraph';
 import { PrepareViewUniforms } from '../PrepareViewUniforms';
-import vert from '../../shaders/skybox.wgsl?raw';
+import vert from '../../shaders/skybox';
 
 export class SkyboxNode extends PipelineNode {
   cubemap: Texture;

@@ -34,7 +34,7 @@ export class Vec4 {
   /**
    * A unit vector pointing along the positive W axis.
    */
-  static W = new Vec4(0, 0, 1, 0);
+  static W = new Vec4(0, 0, 0, 1);
 
   static splat(v: number) {
     return new Vec4(v, v, v, v);
@@ -168,6 +168,10 @@ export class Vec4 {
    */
   _length() {
     return Math.sqrt(this.dot(this));
+  }
+
+  neg() {
+    return this.mul(-1);
   }
 
   /**

@@ -3,10 +3,9 @@ import {
   TransformPlugin,
   RendererPlugin,
   HierarchyPlugin,
-  CameraPlugin,
   CorePipeline,
   InputPlugin,
-  VisibilityPlugin,
+  RenderPlugin,
 } from './plugins';
 
 export {
@@ -26,12 +25,19 @@ export * from './math';
 export * from './plugins';
 export { Commands } from './commands/Commands';
 
+/**
+ * This plugin group will add all the default plugins for an application:
+ * * `TransformPlugin`
+ * * `HierarchyPlugin`
+ * * `RenderPlugin`
+ * * `CorePipelinePlugin`
+ * * `PbrPlugin`
+ */
 export const DefaultPlugins: PluginType[] = [
   TransformPlugin,
   HierarchyPlugin,
-  CameraPlugin,
+  RenderPlugin,
   CorePipeline,
   RendererPlugin,
   InputPlugin,
-  VisibilityPlugin,
 ];

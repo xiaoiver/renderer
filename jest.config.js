@@ -22,5 +22,8 @@ module.exports = {
       },
     ],
   },
-  // transformIgnorePatterns: ['<rootDir>/node_modules/(?!lodash-es)'],
+  // @see https://stackoverflow.com/questions/42260218/jest-setup-syntaxerror-unexpected-token-export
+  moduleNameMapper: {
+    '^lodash-es$': 'lodash',
+  },
 };

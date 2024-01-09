@@ -16,8 +16,8 @@ import {
   TextureMapping,
   hashCodeNumberUpdate,
 } from '../framegraph';
-import vert from '../shaders/fullscreen.wgsl?raw';
-import frag from '../shaders/fxaa.wgsl?raw';
+import vert from '../shaders/fullscreen';
+import frag from '../shaders/fxaa';
 import { createProgram } from './utils';
 import { MeshPipeline } from './MeshPipeline';
 

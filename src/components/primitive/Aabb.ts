@@ -55,8 +55,8 @@ export class Aabb {
    * ```
    */
   static enclosing(positions: [number, number, number][]) {
-    let min = Vec3.MIN;
-    let max = Vec3.MAX;
+    let min = Vec3.MAX;
+    let max = Vec3.MIN;
     positions.forEach((p) => {
       min = min.min(Vec3.from_array(p));
       max = max.max(Vec3.from_array(p));

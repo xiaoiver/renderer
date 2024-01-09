@@ -6,7 +6,7 @@ import {
   LookTransform,
   Transform,
 } from '../../components';
-import { FpsControlEvent } from '../../plugins/camera/FpsCamera';
+import { FpsControlEvent } from '../../plugins/render/FpsCamera';
 import { EventsReader } from '../../Events';
 import { Quat, Vec3 } from '../../math';
 

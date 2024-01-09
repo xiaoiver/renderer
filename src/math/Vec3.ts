@@ -224,7 +224,7 @@ export class Vec3 {
    * In other words this computes `[self.x != rhs.x, self.y != rhs.y, ..]` for all elements.
    */
   cmpne(rhs: Vec3) {
-    return new BVec3(this.x !== this.x, this.y !== rhs.y, this.z !== rhs.z);
+    return new BVec3(this.x !== rhs.x, this.y !== rhs.y, this.z !== rhs.z);
   }
 
   ceil() {

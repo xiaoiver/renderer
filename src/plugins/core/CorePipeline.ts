@@ -15,7 +15,6 @@ import {
 export class CorePipeline implements Plugin {
   async build(app: App) {
     component(ClearColor);
-    component(ColorGrading);
     component(DebandDither);
     component(PipelineDirty);
 

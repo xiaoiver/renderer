@@ -1,5 +1,6 @@
+import { Entity, field } from '@lastolivegames/becsy';
 import { Frustum } from './Frustum';
 
 export class CascadesFrusta {
-  frusta: Record<number, Frustum[]>;
+  @field.object declare frusta: Map<Entity, Frustum[]>;
 }

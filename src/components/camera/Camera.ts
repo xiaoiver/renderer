@@ -30,6 +30,12 @@ export class Camera {
    */
   @field.boolean declare hdr: boolean;
 
+  constructor() {
+    this.order = 0;
+    this.is_active = true;
+    this.hdr = false;
+  }
+
   /**
    * Converts a physical size in this `Camera` to a logical size.
    */

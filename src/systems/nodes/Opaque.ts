@@ -30,6 +30,7 @@ import { PrepareViewUniforms } from '../PrepareViewUniforms';
 import { PrepareFog } from '../PrepareFog';
 import { TextureMapping } from '../../framegraph';
 import { PrepareLights } from '../PrepareLights';
+import { MeshPipelineKey } from './MeshPipelineKey';
 
 /**
  * Render opaque meshes.
@@ -210,6 +211,8 @@ export class OpaqueNode extends PipelineNode {
     // flags: mesh_transforms.flags,
 
     const defines: Record<string, number | boolean> = {};
+    // Let the shader code know that it's running in a mesh pipeline.
+    defines['MESH_PIPELINE'] = 1;
     defines['VERTEX_OUTPUT_INSTANCE_INDEX'] = 1;
     if (mesh.contains_attribute(Mesh.ATTRIBUTE_POSITION)) {
       defines['VERTEX_POSITIONS'] = 1;
@@ -229,6 +232,15 @@ export class OpaqueNode extends PipelineNode {
     if (mesh.contains_attribute(Mesh.ATTRIBUTE_COLOR)) {
       defines['VERTEX_COLORS'] = 1;
     }
+
+    // const view_projection = key & MeshPipelineKey.VIEW_PROJECTION_RESERVED_BITS;
+    // if (view_projection == MeshPipelineKey.VIEW_PROJECTION_NONSTANDARD) {
+    //   defines["VIEW_PROJECTION_NONSTANDARD"] = 1;
+    // } else if (view_projection == MeshPipelineKey.VIEW_PROJECTION_PERSPECTIVE) {
+    //   defines["VIEW_PROJECTION_PERSPECTIVE"] = 1;
+    // } else if (view_projection == MeshPipelineKey.VIEW_PROJECTION_ORTHOGRAPHIC) {
+    //   defines["VIEW_PROJECTION_ORTHOGRAPHIC"] = 1;
+    // }
 
     const renderInst = this.renderInstManager.newRenderInst();
     renderInst.setAllowSkippingIfPipelineNotReady(false);

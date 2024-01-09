@@ -1,5 +1,6 @@
 import { field } from '@lastolivegames/becsy';
 import { Color } from '../render';
+import { Resource } from '../../Resource';
 
 /// A Directional light.
 ///
@@ -87,4 +88,11 @@ export class DirectionalLight {
     this.shadow_depth_bias = shadow_depth_bias;
     this.shadow_normal_bias = shadow_normal_bias;
   }
+}
+
+/**
+ * Controls the resolution of [`DirectionalLight`] shadow maps.
+ */
+export class DirectionalLightShadowMap implements Resource {
+  constructor(public size: number = 2048) {}
 }

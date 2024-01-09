@@ -2,7 +2,7 @@ import { System } from '@lastolivegames/becsy';
 import { AppConfig, OrbitCameraController } from '../../components';
 import { EventsReader } from '../../Events';
 import { Vec2 } from '../../math';
-import { OrbitControlEvent } from '../../plugins/camera/OrbitCamera';
+import { OrbitControlEvent } from '../../plugins/render/OrbitCamera';
 import { MouseMotion, MouseWheel } from '../../plugins/Input';
 import { InputKeyCode, InputMouseButton, KeyCode, MouseButton } from '../input';
 import { Input } from '../../resources/Input';

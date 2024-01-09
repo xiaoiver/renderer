@@ -7,7 +7,7 @@ import {
   Transform,
 } from '../../components';
 import { Vec3 } from '../../math';
-import { OrbitControlEvent } from '../../plugins/camera/OrbitCamera';
+import { OrbitControlEvent } from '../../plugins/render/OrbitCamera';
 import { EventsReader } from '../../Events';
 
 /**

@@ -127,5 +127,7 @@ function calculate_cascade_bounds(
     shadow_maximum_distance / nearest_bound,
     1.0 / (num_cascades - 1),
   );
-  return new Array(num_cascades).map((i) => nearest_bound * Math.pow(base, i));
+  return new Array(num_cascades)
+    .fill(undefined)
+    .map((_, i) => nearest_bound * Math.pow(base, i));
 }

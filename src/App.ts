@@ -19,6 +19,7 @@ import {
 } from './systems';
 import { EventCtor, Events, EventsReader } from './Events';
 import { Resource } from './Resource';
+import { caf, raf } from './utils';
 
 /**
  * @see https://bevy-cheatbook.github.io/programming/app-builder.html
@@ -119,9 +120,13 @@ export class App {
   /**
    * Initialize a [`Resource`] with standard starting values by adding it to the [`World`].
    */
-  init_resource<K, R extends Resource>(key: K, resouce: R) {
-    this.resources.set(key, resouce);
+  init_resource<K, R extends Resource>(key: K, resource: R) {
+    this.resources.set(key, resource);
     return this;
+  }
+
+  get_resource<K, R extends Resource>(key: K): R {
+    return this.resources.get(key) as R;
   }
 
   /**
@@ -166,7 +171,7 @@ export class App {
       // @see https://github.com/LastOliveGames/becsy/blob/main/tests/query.test.ts#L22C3-L22C58
       // @ts-ignore
       // if (import.meta.env.PROD) {
-      Object.defineProperty(s, 'name', { value: `_System${i}` });
+      // Object.defineProperty(s, 'name', { value: `_System${i}` });
       // }
       system(group)(s);
     });
@@ -178,6 +183,7 @@ export class App {
       threads: 1,
     });
 
+    const requestAnimationFrame = raf;
     const tick = async () => {
       await this.world.execute();
       this.rafId = requestAnimationFrame(tick);
@@ -192,6 +198,7 @@ export class App {
    * @see https://bevy-cheatbook.github.io/programming/app-builder.html#quitting-the-app
    */
   async exit() {
+    const cancelAnimationFrame = caf;
     cancelAnimationFrame(this.rafId);
     await this.world.terminate();
   }

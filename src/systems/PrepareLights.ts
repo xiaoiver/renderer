@@ -35,8 +35,8 @@ export class PrepareLights extends System {
   private directional_lights = this.query(
     (q) => q.addedOrChanged.with(ExtractedDirectionalLight).trackWrites,
   );
-  private directional_lights_query = this.query((q) =>
-    q.current.with(ExtractedDirectionalLight),
+  private directional_lights_query = this.query(
+    (q) => q.current.with(ExtractedDirectionalLight).read,
   );
 
   async prepare() {

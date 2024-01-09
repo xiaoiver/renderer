@@ -1,6 +1,5 @@
 export { ExtractMeshes } from './ExtractMeshes';
 export { MeshPipeline } from './MeshPipeline';
-export { SyncSimpleTransforms, PropagateTransforms } from './Transform';
 export { SkyboxPipeline } from './SkyboxPipeline';
 export { TonemappingPipeline } from './TonemappingPipeline';
 export { BloomPipeline } from './BloomPipeline';
@@ -9,7 +8,8 @@ export { PrepareViewUniforms } from './PrepareViewUniforms';
 export { PrepareFog } from './PrepareFog';
 export { PrepareLights } from './PrepareLights';
 export { RenderResource } from './RenderResource';
-export { UpdateFrusta } from './UpdateFrusta';
+export * from './transform';
+export * from './render';
 export * from './camera';
 export * from './input';
 export * from './light';

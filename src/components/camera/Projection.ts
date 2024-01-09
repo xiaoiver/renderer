@@ -60,10 +60,10 @@ export class Perspective {
   }
 
   get_frustum_corners(z_near: number, z_far: number) {
-    let tan_half_fov = Math.tan(this.fov / 2);
-    let a = Math.abs(z_near) * tan_half_fov;
-    let b = Math.abs(z_far) * tan_half_fov;
-    let aspect_ratio = this.aspect_ratio;
+    const tan_half_fov = Math.tan(this.fov / 2);
+    const a = Math.abs(z_near) * tan_half_fov;
+    const b = Math.abs(z_far) * tan_half_fov;
+    const aspect_ratio = this.aspect_ratio;
     return [
       new Vec3(a * aspect_ratio, -a, z_near), // bottom right
       new Vec3(a * aspect_ratio, a, z_near), // top right
@@ -161,5 +161,19 @@ export class Orthographic {
       this.scale * (projection_width - origin_x),
       this.scale * (projection_height - origin_y),
     );
+  }
+
+  get_frustum_corners(z_near: number, z_far: number) {
+    const area = this.area;
+    return [
+      new Vec3(area.max.x, area.min.y, z_near), // bottom right
+      new Vec3(area.max.x, area.max.y, z_near), // top right
+      new Vec3(area.min.x, area.max.y, z_near), // top left
+      new Vec3(area.min.x, area.min.y, z_near), // bottom left
+      new Vec3(area.max.x, area.min.y, z_far), // bottom right
+      new Vec3(area.max.x, area.max.y, z_far), // top right
+      new Vec3(area.min.x, area.max.y, z_far), // top left
+      new Vec3(area.min.x, area.min.y, z_far), // bottom left
+    ] as const;
   }
 }

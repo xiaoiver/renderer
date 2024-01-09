@@ -1,7 +1,7 @@
 import { Vec3 } from '../../src/math/Vec3';
 
-describe('Math', () => {
-  it('Vec3', () => {
+describe('Vec3', () => {
+  it('Create', () => {
     const v1 = Vec3.ZERO;
     expect(v1.x).toBe(0);
     expect(v1.y).toBe(0);

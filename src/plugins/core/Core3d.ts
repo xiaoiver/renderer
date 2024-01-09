@@ -1,4 +1,4 @@
-import { component } from '@lastolivegames/becsy';
+import { component, system } from '@lastolivegames/becsy';
 import { App } from '../../App';
 import { Plugin } from '../../Plugin';
 import { FogPlugin } from '../Fog';
@@ -14,6 +14,7 @@ import {
   ClusterConfig,
   Clusters,
   CascadesFrusta,
+  DirectionalLightShadowMap,
 } from '../../components';
 import {
   ExtractLights,
@@ -24,6 +25,8 @@ import {
   AssignLightsToClusters,
   ClearDirectionalLightCascades,
   BuildDirectionalLightCascades,
+  Update,
+  UpdateDirectionalLightFrusta,
 } from '../../systems';
 
 /**
@@ -46,12 +49,16 @@ export class Core3dPlugin implements Plugin {
     component(Clusters);
     component(Cascade);
     component(Cascades);
-    component(CascadesFrusta);
     component(CascadeShadowConfig);
     component(AmbientLight);
     component(PointLight);
     component(DirectionalLight);
     component(ExtractedDirectionalLight);
+
+    app.init_resource(
+      DirectionalLightShadowMap,
+      new DirectionalLightShadowMap(),
+    );
 
     await new FogPlugin().build(app);
     await new SkyboxPlugin().build(app);
@@ -62,5 +69,7 @@ export class Core3dPlugin implements Plugin {
     app.add_systems(PostUpdate, AssignLightsToClusters);
     app.add_systems(PostUpdate, ClearDirectionalLightCascades);
     app.add_systems(PostUpdate, BuildDirectionalLightCascades);
+    system((s) => s.afterWritersOf(Cascades))(BuildDirectionalLightCascades);
+    app.add_systems(PostUpdate, UpdateDirectionalLightFrusta);
   }
 }

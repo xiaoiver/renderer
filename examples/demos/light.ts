@@ -76,6 +76,10 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
     );
 
     initialize(): void {
+      // this.commands.insert_resource(new AmbientLight({
+      //   color: Color.ORANGE_RED,
+      //   brightness: 0.02,
+      // }));
       ambient = this.commands
         .spawn(
           new AmbientLight({

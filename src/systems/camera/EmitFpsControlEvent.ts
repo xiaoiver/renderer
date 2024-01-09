@@ -2,7 +2,7 @@ import { System } from '@lastolivegames/becsy';
 import { AppConfig, FpsCameraController } from '../../components';
 import { EventsReader } from '../../Events';
 import { Vec2, Vec3 } from '../../math';
-import { FpsControlEvent } from '../../plugins/camera/FpsCamera';
+import { FpsControlEvent } from '../../plugins/render/FpsCamera';
 import { MouseMotion } from '../../plugins/Input';
 import { InputKeyCode, KeyCode } from '../input';
 import { Input } from '../../resources/Input';

@@ -99,6 +99,92 @@ export class Mat4 {
     );
   }
 
+  /**
+   * Creates an affine transformation matrix from the given 3D `translation`.
+   * The resulting matrix can be used to transform 3D points and vectors.
+   */
+  static from_translation(translation: Vec3) {
+    return Mat4.from_cols(
+      Vec4.X,
+      Vec4.Y,
+      Vec4.Z,
+      new Vec4(translation.x, translation.y, translation.z, 1.0),
+    );
+  }
+
+  /**
+   * Creates an affine transformation matrix from the given `rotation` quaternion.
+   */
+  static from_quat(rotation: Quat) {
+    let [x_axis, y_axis, z_axis] = Mat4.quat_to_axes(rotation);
+    return Mat4.from_cols(x_axis, y_axis, z_axis, Vec4.W);
+  }
+
+  /**
+   * Creates an affine transformation matrix containing a 3D rotation around the x axis of `angle` (in radians).
+   */
+  static from_rotation_x(angle: number) {
+    const sina = Math.sin(angle);
+    const cosa = Math.cos(angle);
+    return Mat4.from_cols(
+      Vec4.X,
+      new Vec4(0.0, cosa, sina, 0.0),
+      new Vec4(0.0, -sina, cosa, 0.0),
+      Vec4.W,
+    );
+  }
+
+  /**
+   * Creates an affine transformation matrix containing a 3D rotation around the y axis of `angle` (in radians).
+   */
+  static from_rotation_y(angle: number) {
+    const sina = Math.sin(angle);
+    const cosa = Math.cos(angle);
+    return Mat4.from_cols(
+      new Vec4(cosa, 0.0, -sina, 0.0),
+      Vec4.Y,
+      new Vec4(sina, 0.0, cosa, 0.0),
+      Vec4.W,
+    );
+  }
+
+  /**
+   * Creates an affine transformation matrix containing a 3D rotation around the z axis of `angle` (in radians).
+   */
+  static from_rotation_z(angle: number) {
+    const sina = Math.sin(angle);
+    const cosa = Math.cos(angle);
+    return Mat4.from_cols(
+      new Vec4(cosa, sina, 0.0, 0.0),
+      new Vec4(-sina, cosa, 0.0, 0.0),
+      Vec4.Z,
+      Vec4.W,
+    );
+  }
+
+  static quat_to_axes(rotation: Quat): [Vec4, Vec4, Vec4] {
+    // glam_assert!(rotation.is_normalized());
+
+    let { x, y, z, w } = rotation;
+    let x2 = x + x;
+    let y2 = y + y;
+    let z2 = z + z;
+    let xx = x * x2;
+    let xy = x * y2;
+    let xz = x * z2;
+    let yy = y * y2;
+    let yz = y * z2;
+    let zz = z * z2;
+    let wx = w * x2;
+    let wy = w * y2;
+    let wz = w * z2;
+
+    let x_axis = new Vec4(1.0 - (yy + zz), xy + wz, xz - wy, 0.0);
+    let y_axis = new Vec4(xy - wz, 1.0 - (xx + zz), yz + wx, 0.0);
+    let z_axis = new Vec4(xz + wy, yz - wx, 1.0 - (xx + yy), 0.0);
+    return [x_axis, y_axis, z_axis];
+  }
+
   static perspective_infinite_rh(
     fov_y_radians: number,
     aspect_ratio: number,
@@ -304,88 +390,92 @@ export class Mat4 {
    * If the matrix is not invertible the returned matrix will be invalid.
    */
   inverse(): Mat4 {
-    let { x: m00, y: m01, z: m02, w: m03 } = this.x_axis;
-    let { x: m10, y: m11, z: m12, w: m13 } = this.y_axis;
-    let { x: m20, y: m21, z: m22, w: m23 } = this.z_axis;
-    let { x: m30, y: m31, z: m32, w: m33 } = this.w_axis;
+    const { x: m00, y: m01, z: m02, w: m03 } = this.x_axis;
+    const { x: m10, y: m11, z: m12, w: m13 } = this.y_axis;
+    const { x: m20, y: m21, z: m22, w: m23 } = this.z_axis;
+    const { x: m30, y: m31, z: m32, w: m33 } = this.w_axis;
 
-    let coef00 = m22 * m33 - m32 * m23;
-    let coef02 = m12 * m33 - m32 * m13;
-    let coef03 = m12 * m23 - m22 * m13;
+    const coef00 = m22 * m33 - m32 * m23;
+    const coef02 = m12 * m33 - m32 * m13;
+    const coef03 = m12 * m23 - m22 * m13;
 
-    let coef04 = m21 * m33 - m31 * m23;
-    let coef06 = m11 * m33 - m31 * m13;
-    let coef07 = m11 * m23 - m21 * m13;
+    const coef04 = m21 * m33 - m31 * m23;
+    const coef06 = m11 * m33 - m31 * m13;
+    const coef07 = m11 * m23 - m21 * m13;
 
-    let coef08 = m21 * m32 - m31 * m22;
-    let coef10 = m11 * m32 - m31 * m12;
-    let coef11 = m11 * m22 - m21 * m12;
+    const coef08 = m21 * m32 - m31 * m22;
+    const coef10 = m11 * m32 - m31 * m12;
+    const coef11 = m11 * m22 - m21 * m12;
 
-    let coef12 = m20 * m33 - m30 * m23;
-    let coef14 = m10 * m33 - m30 * m13;
-    let coef15 = m10 * m23 - m20 * m13;
+    const coef12 = m20 * m33 - m30 * m23;
+    const coef14 = m10 * m33 - m30 * m13;
+    const coef15 = m10 * m23 - m20 * m13;
 
-    let coef16 = m20 * m32 - m30 * m22;
-    let coef18 = m10 * m32 - m30 * m12;
-    let coef19 = m10 * m22 - m20 * m12;
+    const coef16 = m20 * m32 - m30 * m22;
+    const coef18 = m10 * m32 - m30 * m12;
+    const coef19 = m10 * m22 - m20 * m12;
 
-    let coef20 = m20 * m31 - m30 * m21;
-    let coef22 = m10 * m31 - m30 * m11;
-    let coef23 = m10 * m21 - m20 * m11;
+    const coef20 = m20 * m31 - m30 * m21;
+    const coef22 = m10 * m31 - m30 * m11;
+    const coef23 = m10 * m21 - m20 * m11;
 
-    let fac0 = new Vec4(coef00, coef00, coef02, coef03);
-    let fac1 = new Vec4(coef04, coef04, coef06, coef07);
-    let fac2 = new Vec4(coef08, coef08, coef10, coef11);
-    let fac3 = new Vec4(coef12, coef12, coef14, coef15);
-    let fac4 = new Vec4(coef16, coef16, coef18, coef19);
-    let fac5 = new Vec4(coef20, coef20, coef22, coef23);
+    const fac0 = new Vec4(coef00, coef00, coef02, coef03);
+    const fac1 = new Vec4(coef04, coef04, coef06, coef07);
+    const fac2 = new Vec4(coef08, coef08, coef10, coef11);
+    const fac3 = new Vec4(coef12, coef12, coef14, coef15);
+    const fac4 = new Vec4(coef16, coef16, coef18, coef19);
+    const fac5 = new Vec4(coef20, coef20, coef22, coef23);
 
-    let vec0 = new Vec4(m10, m00, m00, m00);
-    let vec1 = new Vec4(m11, m01, m01, m01);
-    let vec2 = new Vec4(m12, m02, m02, m02);
-    let vec3 = new Vec4(m13, m03, m03, m03);
+    const vec0 = new Vec4(m10, m00, m00, m00);
+    const vec1 = new Vec4(m11, m01, m01, m01);
+    const vec2 = new Vec4(m12, m02, m02, m02);
+    const vec3 = new Vec4(m13, m03, m03, m03);
 
-    let inv0 = vec1.mul(fac0).sub(vec2.mul(fac1)).add(vec3.mul(fac2));
-    let inv1 = vec0.mul(fac0).sub(vec2.mul(fac3)).add(vec3.mul(fac4));
-    let inv2 = vec0.mul(fac1).sub(vec1.mul(fac3)).add(vec3.mul(fac5));
-    let inv3 = vec0.mul(fac2).sub(vec1.mul(fac4)).add(vec2.mul(fac5));
+    const inv0 = vec1.mul(fac0).sub(vec2.mul(fac1)).add(vec3.mul(fac2));
+    const inv1 = vec0.mul(fac0).sub(vec2.mul(fac3)).add(vec3.mul(fac4));
+    const inv2 = vec0.mul(fac1).sub(vec1.mul(fac3)).add(vec3.mul(fac5));
+    const inv3 = vec0.mul(fac2).sub(vec1.mul(fac4)).add(vec2.mul(fac5));
 
-    let sign_a = new Vec4(1.0, -1.0, 1.0, -1.0);
-    let sign_b = new Vec4(-1.0, 1.0, -1.0, 1.0);
+    const sign_a = new Vec4(1.0, -1.0, 1.0, -1.0);
+    const sign_b = new Vec4(-1.0, 1.0, -1.0, 1.0);
 
-    let inverse = Mat4.from_cols(
+    const inverse = Mat4.from_cols(
       inv0.mul(sign_a),
       inv1.mul(sign_b),
       inv2.mul(sign_a),
       inv3.mul(sign_b),
     );
 
-    let col0 = new Vec4(
+    const col0 = new Vec4(
       inverse.x_axis.x,
       inverse.y_axis.x,
       inverse.z_axis.x,
       inverse.w_axis.x,
     );
 
-    let dot0 = this.x_axis.mul(col0);
-    let dot1 = dot0.x + dot0.y + dot0.z + dot0.w;
+    const dot0 = this.x_axis.mul(col0);
+    const dot1 = dot0.x + dot0.y + dot0.z + dot0.w;
 
-    let rcp_det = 1.0 / dot1;
+    if (dot1 === 0.0) {
+      throw new Error('The determinant is 0.');
+    }
+
+    const rcp_det = 1.0 / dot1;
     return inverse.mul(rcp_det) as Mat4;
   }
 
   determinant() {
-    let { x: m00, y: m01, z: m02, w: m03 } = this.x_axis;
-    let { x: m10, y: m11, z: m12, w: m13 } = this.y_axis;
-    let { x: m20, y: m21, z: m22, w: m23 } = this.z_axis;
-    let { x: m30, y: m31, z: m32, w: m33 } = this.w_axis;
+    const { x: m00, y: m01, z: m02, w: m03 } = this.x_axis;
+    const { x: m10, y: m11, z: m12, w: m13 } = this.y_axis;
+    const { x: m20, y: m21, z: m22, w: m23 } = this.z_axis;
+    const { x: m30, y: m31, z: m32, w: m33 } = this.w_axis;
 
-    let a2323 = m22 * m33 - m23 * m32;
-    let a1323 = m21 * m33 - m23 * m31;
-    let a1223 = m21 * m32 - m22 * m31;
-    let a0323 = m20 * m33 - m23 * m30;
-    let a0223 = m20 * m32 - m22 * m30;
-    let a0123 = m20 * m31 - m21 * m30;
+    const a2323 = m22 * m33 - m23 * m32;
+    const a1323 = m21 * m33 - m23 * m31;
+    const a1223 = m21 * m32 - m22 * m31;
+    const a0323 = m20 * m33 - m23 * m30;
+    const a0223 = m20 * m32 - m22 * m30;
+    const a0123 = m20 * m31 - m21 * m30;
 
     return (
       m00 * (m11 * a2323 - m12 * a1323 + m13 * a1223) -
@@ -400,10 +490,13 @@ export class Mat4 {
    * The input matrix is expected to be a 3D affine transformation matrix otherwise the output will be invalid.
    */
   to_scale_rotation_translation() {
-    let det = this.determinant();
-    // glam_assert!(det != 0.0);
+    const det = this.determinant();
 
-    let scale = new Vec3(
+    if (det === 0.0) {
+      throw new Error('The determinant is 0.');
+    }
+
+    const scale = new Vec3(
       this.x_axis._length() * Math.sign(det),
       this.y_axis._length(),
       this.z_axis._length(),
@@ -411,15 +504,15 @@ export class Mat4 {
 
     // glam_assert!(scale.cmpne(Vec3::ZERO).all());
 
-    let inv_scale = Vec3.ONE.div(scale);
+    const inv_scale = Vec3.ONE.div(scale);
 
-    let rotation = Quat.from_rotation_axes(
+    const rotation = Quat.from_rotation_axes(
       this.x_axis.mul(inv_scale.x).xyz(),
       this.y_axis.mul(inv_scale.y).xyz(),
       this.z_axis.mul(inv_scale.z).xyz(),
     );
 
-    let translation = this.w_axis.xyz();
+    const translation = this.w_axis.xyz();
 
     return {
       scale,
@@ -444,6 +537,29 @@ export class Mat4 {
     res = self.w_axis.add(res);
     res = res.mul(res.wwww().recip());
     return res.xyz();
+  }
+
+  /**
+   * Transforms the given 3D vector as a point.
+   *
+   * This is the equivalent of multiplying the 3D vector as a 4D vector where `w` is `1.0`.
+   */
+  transform_point3(rhs: Vec3) {
+    const self = this;
+    let res = self.x_axis.mul(rhs.x);
+    res = self.y_axis.mul(rhs.y).add(res);
+    res = self.z_axis.mul(rhs.z).add(res);
+    res = self.w_axis.add(res);
+    return res.xyz();
+  }
+
+  transpose() {
+    return Mat4.from_cols(
+      new Vec4(this.x_axis.x, this.y_axis.x, this.z_axis.x, this.w_axis.x),
+      new Vec4(this.x_axis.y, this.y_axis.y, this.z_axis.y, this.w_axis.y),
+      new Vec4(this.x_axis.z, this.y_axis.z, this.z_axis.z, this.w_axis.z),
+      new Vec4(this.x_axis.w, this.y_axis.w, this.z_axis.w, this.w_axis.w),
+    );
   }
 }
 

@@ -1,7 +1,7 @@
 import { field } from '@lastolivegames/becsy';
 import { CullMode } from '@antv/g-device-api';
-import mesh_shader from '../../shaders/mesh/mesh.wgsl?raw';
-import mesh_pbr_shader from '../../shaders/pbr/pbr.wgsl?raw';
+import mesh_shader from '../../shaders/mesh/mesh';
+import mesh_pbr_shader from '../../shaders/pbr/pbr';
 import { Color } from '../render';
 import { AlphaMode } from './Alpha';
 import { count_ones } from '../render/utils';
