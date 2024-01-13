@@ -47,6 +47,8 @@
   "dependencies": {
     "@antv/g-device-api": "^1.4.15",
     "@lastolivegames/becsy": "^0.15.9",
+    "@loaders.gl/core": "^4.0.4",
+    "@loaders.gl/ply": "^4.0.4",
     "gl-matrix": "^3.4.3",
     "hammerjs": "^2.0.8",
     "lodash-es": "^4.17.21",

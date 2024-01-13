@@ -7,3 +7,4 @@ export { HierarchyPlugin } from './Hierarchy';
 export { InputPlugin } from './Input';
 export * from './core';
 export * from './render';
+export * from './gaussian-splatting';

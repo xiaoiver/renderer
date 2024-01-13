@@ -430,8 +430,12 @@ Now we support the following pairs which support different interaction with keyb
 
 ### 3D Gaussian Splatting
 
+Using [@loaders.gl](https://loaders.gl/docs) loading [PLY](https://loaders.gl/docs/modules/ply/formats/ply).
+
 - https://huggingface.co/blog/gaussian-splatting
 - https://github.com/dylanebert/gsplat.js
+- https://github.com/cvlab-epfl/gaussian-splatting-web
+- https://github.com/mosure/bevy_gaussian_splatting
 
 ### Marching cubes
 
@@ -442,3 +446,7 @@ Now we support the following pairs which support different interaction with keyb
 ### Raytracing
 
 - https://github.com/Patryk27/strolle
+
+### GUI
+
+- https://github.com/jakobhellermann/bevy-inspector-egui

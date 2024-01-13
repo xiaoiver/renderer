@@ -1,6 +1,5 @@
 export { Bundle } from './Bundle';
-export { AppConfig } from './AppConfig';
-export type { IAppConfig } from './AppConfig';
+export * from './AppConfig';
 export * from './transform';
 export * from './hierarchy';
 export * from './camera';
@@ -9,3 +8,4 @@ export * from './pbr';
 export * from './render';
 export * from './light';
 export * from './primitive';
+export * from './gaussian-splatting';

@@ -7,6 +7,12 @@ dependencies:
   '@lastolivegames/becsy':
     specifier: ^0.15.9
     version: 0.15.9
+  '@loaders.gl/core':
+    specifier: ^4.0.4
+    version: 4.0.4
+  '@loaders.gl/ply':
+    specifier: ^4.0.4
+    version: 4.0.4
   gl-matrix:
     specifier: ^3.4.3
     version: 3.4.3
@@ -458,7 +464,6 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.14.0
-    dev: true
 
   /@babel/template@7.22.15:
     resolution: {integrity: sha512-QPErUVm4uyJa60rkI73qneDacvdvzxshT3kksGqlGWYdOTIUOwJ7RDUL8sGqslY1uXWSL6xMFKEXDS3ox2uF0w==}
@@ -1347,6 +1352,43 @@ packages:
     engines: {node: '>=12'}
     dev: false
 
+  /@loaders.gl/core@4.0.4:
+    resolution: {integrity: sha512-oZXa0cFLclHooqskTAqavnT4c474kRp+AxZRzS6gVgFC8zDd1ZlLZ7wH9glToh+cx33+XMDEtHvKxwkJozsSfw==}
+    dependencies:
+      '@babel/runtime': 7.23.6
+      '@loaders.gl/loader-utils': 4.0.4
+      '@loaders.gl/worker-utils': 4.0.4
+      '@probe.gl/log': 4.0.4
+    dev: false
+
+  /@loaders.gl/loader-utils@4.0.4:
+    resolution: {integrity: sha512-oQl4xPqzp2SRnTFYPutD+HPJgeHQviERRkO9loQJw8oIx54xEY6piyGrxFXMSBHKWMNUTJYFFBFN0tVOQwdhtw==}
+    dependencies:
+      '@babel/runtime': 7.23.6
+      '@loaders.gl/worker-utils': 4.0.4
+      '@probe.gl/stats': 4.0.4
+    dev: false
+
+  /@loaders.gl/ply@4.0.4:
+    resolution: {integrity: sha512-gDm7fNTFdRdmNbWASm7f6BdRlV+LyxhnBq5yzJ0B9g+eNDNI7QP/NY1pcyD9TQwX4Mpw42AMw9lEqt98/nReYg==}
+    dependencies:
+      '@babel/runtime': 7.23.6
+      '@loaders.gl/loader-utils': 4.0.4
+      '@loaders.gl/schema': 4.0.4
+    dev: false
+
+  /@loaders.gl/schema@4.0.4:
+    resolution: {integrity: sha512-d94+qDW6FxD9yi0VhHORXTXdgwUZBYNcaIUiw+NikOot/ai/FmcX+Vs0JHWILcNut0acEkb1S6t1Yyk8rPU9BA==}
+    dependencies:
+      '@types/geojson': 7946.0.13
+    dev: false
+
+  /@loaders.gl/worker-utils@4.0.4:
+    resolution: {integrity: sha512-0LTCimHwbRxDB2TRIFkKWOyl1GclhgW2YvS63yzpFoqOhT2qwzOaNIwoduJVCUljE3voyndPtpQOUyffY/fmNA==}
+    dependencies:
+      '@babel/runtime': 7.23.6
+    dev: false
+
   /@manypkg/find-root@1.1.0:
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
     dependencies:
@@ -1403,6 +1445,25 @@ packages:
     dependencies:
       playwright: 1.40.1
     dev: true
+
+  /@probe.gl/env@4.0.4:
+    resolution: {integrity: sha512-sYNGqesDfWD6dFP5oNZtTeFA4Z6ak5T4a8BNPdNhoqy7PK9w70JHrb6mv+RKWqKXq33KiwCDWL7fYxx2HuEH2w==}
+    dependencies:
+      '@babel/runtime': 7.23.6
+    dev: false
+
+  /@probe.gl/log@4.0.4:
+    resolution: {integrity: sha512-WpmXl6njlBMwrm8HBh/b4kSp/xnY1VVmeT4PWUKF+RkVbFuKQbsU11dA1IxoMd7gSY+5DGIwxGfAv1H5OMzA4A==}
+    dependencies:
+      '@babel/runtime': 7.23.6
+      '@probe.gl/env': 4.0.4
+    dev: false
+
+  /@probe.gl/stats@4.0.4:
+    resolution: {integrity: sha512-SDuSY/D4yDL6LQDa69l/GCcnZLRiGYdyvYkxWb0CgnzTPdPrcdrzGkzkvpC3zsA4fEFw2smlDje370QGHwlisg==}
+    dependencies:
+      '@babel/runtime': 7.23.6
+    dev: false
 
   /@rollup/plugin-babel@6.0.4(@babel/core@7.23.6)(rollup@3.29.4):
     resolution: {integrity: sha512-YF7Y52kFdFT/xVSuVdjkV5ZdX/3YtmX0QulG+x0taQOtJdHYzVU61aSSkAgVJ7NOv6qPkIYiJSgSWWN/DM5sGw==}
@@ -1572,6 +1633,10 @@ packages:
   /@types/estree@1.0.5:
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
     dev: true
+
+  /@types/geojson@7946.0.13:
+    resolution: {integrity: sha512-bmrNrgKMOhM3WsafmbGmC+6dsF2Z308vLFsQ3a/bT8X8Sv5clVYpPars/UPq+sAaJP+5OoLAYgwbkS5QEJdLUQ==}
+    dev: false
 
   /@types/graceful-fs@4.1.9:
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
@@ -5289,7 +5354,6 @@ packages:
 
   /regenerator-runtime@0.14.0:
     resolution: {integrity: sha512-srw17NI0TUWHuGa5CFGGmhfNIeja30WMBfbslPNhf6JrqQlLN5gcrvig1oqPxiVaXb0oW0XRKtH6Nngs5lKCIA==}
-    dev: true
 
   /regexp.prototype.flags@1.5.1:
     resolution: {integrity: sha512-sy6TXMN+hnP/wMy+ISxg3krXx7BAtWVO4UouuCN/ziM9UEne0euamVNafDfvC83bRNr95y0V5iijeDQFUNpvrg==}

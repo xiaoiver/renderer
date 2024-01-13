@@ -6,3 +6,4 @@ export { render as FXAA } from './fxaa';
 export { render as ToneMapping } from './tonemapping';
 export { render as MultiViews } from './multi-views';
 export { render as Light } from './light';
+export { render as GaussianSplatting } from './gaussian-splatting';

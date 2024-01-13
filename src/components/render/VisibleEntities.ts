@@ -10,6 +10,6 @@ import { Entity, field } from '@lastolivegames/becsy';
  * This component is intended to be attached to the same entity as the [`Camera`] and
  * the [`Frustum`] defining the view.
  */
-export class VisibleEnities {
+export class VisibleEntities {
   @field.object declare entities: Entity[];
 }

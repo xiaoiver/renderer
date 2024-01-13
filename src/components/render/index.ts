@@ -5,3 +5,4 @@ export * from './ExtractedView';
 export * from './VisibleEntities';
 export * from './Visibility';
 export * from './NoFrustumCulling';
+export * from './RenderLayers';
