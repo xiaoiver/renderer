@@ -40,9 +40,9 @@ export class PbrBundle extends Bundle {
       mesh,
       material,
       transform,
-      visibility,
-      inherited_visibility,
-      view_visibility,
+      visibility = new Visibility(),
+      inherited_visibility = new InheritedVisibility(),
+      view_visibility = new ViewVisibility(),
     } = options || {};
     this.mesh = mesh;
     this.material = material;

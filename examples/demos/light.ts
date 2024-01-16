@@ -32,6 +32,11 @@ import {
   AmbientLight,
   CascadeShadowConfigBuilder,
   Plane,
+  CascadesVisibleEntities,
+  Visibility,
+  VisibleEntities,
+  InheritedVisibility,
+  ViewVisibility,
 } from '../../src';
 import { loadImage } from '../utils/image';
 // @ts-ignore
@@ -72,6 +77,11 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           CascadesFrusta,
           Cascades,
           CascadeShadowConfig,
+          CascadesVisibleEntities,
+          Visibility,
+          InheritedVisibility,
+          ViewVisibility,
+          VisibleEntities,
         ).write,
     );
 

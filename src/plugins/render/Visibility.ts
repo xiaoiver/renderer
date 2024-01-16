@@ -10,7 +10,7 @@ import {
   UpdateFrusta,
   VisibilityPropagate,
 } from '../../systems';
-import { TransformSystems } from '../Transform';
+import { TransformSystem } from '../Transform';
 
 export namespace VisibilitySystems {
   /// Label for the [`calculate_bounds`] and `calculate_bounds_2d` systems,

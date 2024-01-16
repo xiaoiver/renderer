@@ -1,9 +1,6 @@
 import { System } from '@lastolivegames/becsy';
 import { Camera, ClusterConfig, Clusters } from '../../components';
 
-/**
- * Update Frustum
- */
 export class AddClusters extends System {
   configs = this.query(
     (q) => q.with(Camera).addedOrChanged.with(ClusterConfig).trackWrites,

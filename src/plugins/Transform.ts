@@ -9,17 +9,21 @@ import {
   PreUpdate,
   PostStartup,
   PostUpdate,
+  Last,
 } from '../systems';
 
 /**
  * Set enum for the systems relating to transform propagation
  */
-export namespace TransformSystems {
+export namespace TransformSystem {
   /**
    * Propagates changes in transform to children's [`GlobalTransform`]
    */
   export const TransformPropagate = System.group();
 }
+TransformSystem.TransformPropagate.schedule((s) =>
+  s.after(PostUpdate).before(Last),
+);
 
 export class TransformPlugin implements Plugin {
   async build(app: App) {
@@ -29,7 +33,11 @@ export class TransformPlugin implements Plugin {
 
     app.add_systems(PostStartup, ValidParentCheck);
     // add transform systems to startup so the first update is "correct"
-    app.add_systems(PreUpdate, SyncSimpleTransforms, PropagateTransforms);
+    app.add_systems(
+      TransformSystem.TransformPropagate,
+      SyncSimpleTransforms,
+      PropagateTransforms,
+    );
     // app.add_systems(PostStartup, SyncSimpleTransforms, PropagateTransforms);
     // app.add_systems(PostUpdate, SyncSimpleTransforms, PropagateTransforms);
   }

@@ -15,7 +15,6 @@ import { Mesh } from '../meshes';
 import { PrepareViewUniforms } from './PrepareViewUniforms';
 import { PrepareFog } from './PrepareFog';
 import { RenderResource } from './RenderResource';
-import { ExtractMeshes } from './ExtractMeshes';
 import { OpaqueNode } from './nodes/Opaque';
 import { PipelineNode } from './nodes/PipelineNode';
 import { PrepareLights } from './PrepareLights';

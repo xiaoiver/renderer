@@ -22,12 +22,26 @@ import {
   TonemappingMethod,
   DebandDither,
   GaussianSplattingPlugin,
+  Gaussian,
+  SphericalHarmonicCoefficients,
+  GaussianCloud,
+  VisibleEntities,
+  Visibility,
+  InheritedVisibility,
+  ViewVisibility,
 } from '../../src';
 import { loadImage } from '../utils/image';
 // @ts-ignore
 import glsl_wgsl_compiler_bg from '../public/glsl_wgsl_compiler_bg.wasm?url';
 import { parse } from '@loaders.gl/core';
 import { PLYLoader } from '@loaders.gl/ply';
+import {
+  PositionVisibility,
+  Rotation,
+  ScaleOpacity,
+} from '../../src/components/gaussian-splatting/f32';
+
+const MAX_SIZE_VARIANCE = 5.0;
 
 /**
  * @see https://bevyengine.org/learn/book/getting-started/ecs/
@@ -35,8 +49,7 @@ import { PLYLoader } from '@loaders.gl/ply';
 export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
   let camera: Entity;
 
-  const data = await parse(fetch('/icecream.ply'), PLYLoader);
-  console.log(data);
+  const { header, attributes } = await parse(fetch('/icecream.ply'), PLYLoader);
 
   class StartUpSystem extends System {
     commands = new Commands(this);
@@ -54,6 +67,10 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           ColorGrading,
           Tonemapping,
           DebandDither,
+          VisibleEntities,
+          Visibility,
+          InheritedVisibility,
+          ViewVisibility,
         ).write,
     );
 
@@ -71,6 +88,69 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           }),
         )
         .entity.hold();
+
+      const gaussians: Gaussian[] = [];
+      for (let i = 0; i < (header?.vertexCount || 0); i++) {
+        const x = attributes.POSITION.value[i * 3 + 0];
+        const y = attributes.POSITION.value[i * 3 + 1];
+        const z = attributes.POSITION.value[i * 3 + 2];
+        const f_dc_0 = attributes.f_dc_0.value[i];
+        const f_dc_1 = attributes.f_dc_1.value[i];
+        const f_dc_2 = attributes.f_dc_2.value[i];
+        const scale_0 = attributes.scale_0.value[i];
+        const scale_1 = attributes.scale_1.value[i];
+        const scale_2 = attributes.scale_2.value[i];
+        const opacity = attributes.opacity.value[i];
+        const rot_0 = attributes.rot_0.value[i];
+        const rot_1 = attributes.rot_1.value[i];
+        const rot_2 = attributes.rot_2.value[i];
+        const rot_3 = attributes.rot_3.value[i];
+
+        const gaussian = new Gaussian({
+          rotation: new Rotation({ rotation: [rot_0, rot_1, rot_2, rot_3] }),
+          position_visibility: new PositionVisibility({
+            position: [x, y, z],
+          }),
+          scale_opacity: new ScaleOpacity({
+            scale: [scale_0, scale_1, scale_2],
+            opacity,
+          }),
+          spherical_harmonic: new SphericalHarmonicCoefficients({
+            coefficients: [f_dc_0, f_dc_1, f_dc_2],
+          }),
+        });
+        gaussians.push(gaussian);
+
+        gaussian.position_visibility.visibility = 1.0;
+        let mean_scale =
+          (gaussian.scale_opacity.scale[0] +
+            gaussian.scale_opacity.scale[1] +
+            gaussian.scale_opacity.scale[2]) /
+          3.0;
+        for (let i = 0; i < 3; i++) {
+          gaussian.scale_opacity.scale[i] = Math.exp(
+            Math.min(
+              Math.max(
+                gaussian.scale_opacity.scale[i],
+                mean_scale - MAX_SIZE_VARIANCE,
+              ),
+              mean_scale + MAX_SIZE_VARIANCE,
+            ),
+          );
+        }
+
+        const norm = Math.sqrt(
+          new Array(4)
+            .map((i) => Math.pow(gaussian.rotation.rotation[i], 2.0))
+            .reduce((prev, cur) => prev + cur, 0),
+        );
+        for (let i = 0; i < 4; i++) {
+          gaussian.rotation.rotation[i] /= norm;
+        }
+      }
+
+      const cloud = GaussianCloud.from_gaussians(gaussians);
+      console.log(cloud);
 
       // const mesh = Mesh.from(new Cube(1));
       // const material = new Material({

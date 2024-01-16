@@ -3,4 +3,8 @@ import { Frustum } from './Frustum';
 
 export class CascadesFrusta {
   @field.object declare frusta: Map<Entity, Frustum[]>;
+
+  constructor() {
+    this.frusta = new Map();
+  }
 }

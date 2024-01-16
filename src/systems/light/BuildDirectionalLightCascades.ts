@@ -1,4 +1,4 @@
-import { Entity, System } from '@lastolivegames/becsy';
+import { system, Entity, System } from '@lastolivegames/becsy';
 import {
   AppConfig,
   Camera,
@@ -12,10 +12,12 @@ import {
   Perspective,
 } from '../../components';
 import { Mat4, Vec3, Vec4 } from '../../math';
+import { ClearDirectionalLightCascades } from './ClearDirectionalLightCascades';
 
 /**
  * build_directional_light_cascades
  */
+@system((s) => s.after(ClearDirectionalLightCascades))
 export class BuildDirectionalLightCascades extends System {
   private appConfig = this.singleton.read(AppConfig);
 
@@ -30,7 +32,7 @@ export class BuildDirectionalLightCascades extends System {
   constructor() {
     super();
     this.query((q) => q.using(Perspective, Orthographic).read);
-    this.query((q) => q.using(Cascades).write);
+    this.query((q) => q.using(Cascades).read);
   }
 
   execute(): void {
@@ -95,7 +97,7 @@ export class BuildDirectionalLightCascades extends System {
           );
         });
 
-        const cascades = entity.write(Cascades);
+        const cascades = entity.read(Cascades);
         cascades.cascades.set(view_entity, view_cascades);
       });
     });

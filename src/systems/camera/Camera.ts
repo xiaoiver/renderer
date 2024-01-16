@@ -8,27 +8,6 @@ import {
 } from '../../components';
 import { Vec2 } from '../../math';
 
-// export class ExtractCameras extends System {
-//   private cameras = this.query(
-//     (q) => q.added.with(Camera).trackWrites,
-//   );
-
-//   execute(): void {
-//     const { canvas } = this.appConfig;
-//     const { width, height } = canvas;
-//     this.cameras.added.forEach((entity) => {
-//       const camera = entity.read(Camera);
-//       if (!camera.is_active) {
-//         return;
-//       }
-
-//       entity.add(ExtractedCamera, {})
-
-//       camera.physical_viewport_rect()
-//     });
-//   }
-// }
-
 /**
  * System in charge of updating a [`Camera`] when its window or projection changes.
  *

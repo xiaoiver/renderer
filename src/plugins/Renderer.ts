@@ -11,6 +11,8 @@ import {
   PreUpdate,
   PreStartUp,
   RenderResource,
+  PostUpdate,
+  Last,
 } from '../systems';
 import { Mesh } from '../meshes';
 import { Material } from '../components';
@@ -23,6 +25,6 @@ export class RendererPlugin implements Plugin {
     app.add_systems(PreStartUp, RenderResource);
     app.add_systems(PreUpdate, PrepareViewUniforms);
     // app.add_systems(Update, ExtractMeshes);
-    app.add_systems(Update, MeshPipeline);
+    app.add_systems(Last, MeshPipeline);
   }
 }

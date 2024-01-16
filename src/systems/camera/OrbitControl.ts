@@ -42,6 +42,7 @@ export class OrbitControl extends System {
         for (const event of reader.read()) {
           if (event instanceof OrbitControlEvent.Orbit) {
             const delta = event.value;
+            console.log(dt, delta);
             look_angles.add_yaw(dt * -delta.x);
             look_angles.add_pitch(dt * delta.y);
           } else if (event instanceof OrbitControlEvent.TranslateTarget) {

@@ -7,4 +7,5 @@ export * from './DirectionalLightBundle';
 export * from './Clusters';
 export * from './ClusterConfig';
 export * from './CascadeShadowConfig';
+export * from './CascadesVisibleEntities';
 export * from './Cascades';

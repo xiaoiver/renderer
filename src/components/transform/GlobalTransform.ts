@@ -13,7 +13,7 @@ import { Transform } from './Transform';
 export class GlobalTransform extends Affine3 {
   static copy(rhs: GlobalTransform) {
     return new GlobalTransform(
-      Mat3.copy(rhs.affine()),
+      Mat3.copy(rhs.matrix3),
       Vec3.copy(rhs.translation),
     );
   }
@@ -43,12 +43,16 @@ export class GlobalTransform extends Affine3 {
    * Returns the 3d affine transformation matrix as an [`Affine3A`].
    */
   affine() {
-    return this.matrix3;
+    return this;
   }
 
   from(transform: Transform) {
     const { matrix3, translation } = transform.compute_affine();
     this.matrix3 = matrix3;
     this.translation = translation;
+  }
+
+  radius_vec3(extents: Vec3) {
+    return this.matrix3.mul_vec3(extents)._length();
   }
 }

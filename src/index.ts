@@ -6,6 +6,7 @@ import {
   CorePipeline,
   InputPlugin,
   RenderPlugin,
+  PbrPlugin,
 } from './plugins';
 
 export {
@@ -38,6 +39,7 @@ export const DefaultPlugins: PluginType[] = [
   HierarchyPlugin,
   RenderPlugin,
   CorePipeline,
+  PbrPlugin,
   RendererPlugin,
   InputPlugin,
 ];

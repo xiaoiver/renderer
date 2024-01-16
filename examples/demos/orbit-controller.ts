@@ -30,6 +30,10 @@ import {
   OrbitCameraBundle,
   OrbitCameraController,
   OrbitCameraPlugin,
+  VisibleEntities,
+  Visibility,
+  InheritedVisibility,
+  ViewVisibility,
 } from '../../src';
 import { loadImage } from '../utils/image';
 // @ts-ignore
@@ -65,6 +69,10 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           LookTransform,
           OrbitCameraController,
           Smoother,
+          Visibility,
+          VisibleEntities,
+          InheritedVisibility,
+          ViewVisibility,
         ).write,
     );
 

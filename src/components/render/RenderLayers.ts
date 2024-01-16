@@ -1,3 +1,5 @@
+import { field } from '@lastolivegames/becsy';
+
 /// An identifier for a rendering layer.
 export type Layer = number;
 
@@ -45,7 +47,11 @@ export class RenderLayers {
   //   layers.iter().copied().collect()
   // }
 
-  constructor(private layer = 0) {}
+  @field.uint8 declare layer: number;
+
+  constructor(layer = 0) {
+    this.layer = layer;
+  }
 
   /**
    * Add the given layer.

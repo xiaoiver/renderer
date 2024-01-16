@@ -6,30 +6,25 @@ import { Bundle } from '../Bundle';
 import { ComputedCameraValues } from './ComputedCameraValues';
 import { Frustum } from '../primitive/Frustum';
 import { Tonemapping } from '../pipeline';
-import { ColorGrading, DebandDither } from '../render';
+import { ColorGrading, DebandDither, VisibleEntities } from '../render';
 
 export class Camera3dBundle extends Bundle {
   camera: Camera;
-
   computed: ComputedCameraValues;
-
   projection: Perspective | Orthographic;
-
-  transform: Transform;
-
-  tonemapping: Tonemapping;
-
-  dither: DebandDither;
-
-  color_grading: ColorGrading;
-
+  visible_entities: VisibleEntities;
   frustum: Frustum;
+  transform: Transform;
+  tonemapping: Tonemapping;
+  dither: DebandDither;
+  color_grading: ColorGrading;
 
   constructor(
     options?: Partial<{
       camera: Camera;
       computed: ComputedCameraValues;
       projection: Perspective | Orthographic;
+      visible_entities: VisibleEntities;
       transform: Transform;
       global_transform: GlobalTransform;
       tonemapping: Tonemapping;
@@ -45,6 +40,7 @@ export class Camera3dBundle extends Bundle {
       computed = new ComputedCameraValues(),
       transform,
       projection = new Perspective(),
+      visible_entities = new VisibleEntities(),
       tonemapping = new Tonemapping(),
       color_grading = new ColorGrading(),
       dither = new DebandDither(),
@@ -55,6 +51,7 @@ export class Camera3dBundle extends Bundle {
     this.computed = computed;
     this.transform = transform;
     this.projection = projection;
+    this.visible_entities = visible_entities;
     this.tonemapping = tonemapping;
     this.color_grading = color_grading;
     this.dither = dither;

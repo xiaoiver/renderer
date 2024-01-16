@@ -11,6 +11,7 @@ import {
 
 /**
  * Provides a core render pipeline.
+ * @see bevy_core_pipeline
  */
 export class CorePipeline implements Plugin {
   async build(app: App) {

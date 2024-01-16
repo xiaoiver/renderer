@@ -25,6 +25,10 @@ import {
   FpsCameraBundle,
   FpsCameraController,
   FpsCameraPlugin,
+  VisibleEntities,
+  Visibility,
+  InheritedVisibility,
+  ViewVisibility,
 } from '../../src';
 import { loadImage } from '../utils/image';
 // @ts-ignore
@@ -58,6 +62,10 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           LookTransform,
           FpsCameraController,
           Smoother,
+          VisibleEntities,
+          Visibility,
+          InheritedVisibility,
+          ViewVisibility,
         ).write,
     );
 

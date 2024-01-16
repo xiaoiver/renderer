@@ -5,9 +5,12 @@ import { Cascades, DirectionalLight } from '../../components';
  * clear_directional_light_cascades
  */
 export class ClearDirectionalLightCascades extends System {
-  lights = this.query(
-    (q) => q.current.with(DirectionalLight).and.with(Cascades).write,
-  );
+  lights = this.query((q) => q.current.with(DirectionalLight));
+
+  constructor() {
+    super();
+    this.query((q) => q.using(Cascades).read);
+  }
 
   execute(): void {
     this.lights.current.forEach((entity) => {
@@ -16,7 +19,7 @@ export class ClearDirectionalLightCascades extends System {
         return;
       }
 
-      const cascades = entity.write(Cascades);
+      const cascades = entity.read(Cascades);
       cascades.cascades.clear();
     });
   }
