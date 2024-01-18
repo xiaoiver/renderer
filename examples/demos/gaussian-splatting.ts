@@ -10,9 +10,7 @@ import {
   Camera,
   ComputedCameraValues,
   Frustum,
-  PbrBundle,
   Mesh,
-  Cube,
   Material,
   Perspective,
   Commands,
@@ -29,8 +27,11 @@ import {
   Visibility,
   InheritedVisibility,
   ViewVisibility,
+  GaussianSplattingBundle,
+  GaussianCloudSettings,
+  Cube,
+  PbrBundle,
 } from '../../src';
-import { loadImage } from '../utils/image';
 // @ts-ignore
 import glsl_wgsl_compiler_bg from '../public/glsl_wgsl_compiler_bg.wasm?url';
 import { parse } from '@loaders.gl/core';
@@ -49,7 +50,8 @@ const MAX_SIZE_VARIANCE = 5.0;
 export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
   let camera: Entity;
 
-  const { header, attributes } = await parse(fetch('/icecream.ply'), PLYLoader);
+  const result = await parse(fetch('/icecream.ply'), PLYLoader);
+  const { header, attributes } = result;
 
   class StartUpSystem extends System {
     commands = new Commands(this);
@@ -71,6 +73,8 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
           Visibility,
           InheritedVisibility,
           ViewVisibility,
+          GaussianCloud,
+          GaussianCloudSettings,
         ).write,
     );
 
@@ -100,7 +104,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
         const scale_0 = attributes.scale_0.value[i];
         const scale_1 = attributes.scale_1.value[i];
         const scale_2 = attributes.scale_2.value[i];
-        const opacity = attributes.opacity.value[i];
+        const opacity = 1.0 / (1.0 + Math.exp(-attributes.opacity.value[i]));
         const rot_0 = attributes.rot_0.value[i];
         const rot_1 = attributes.rot_1.value[i];
         const rot_2 = attributes.rot_2.value[i];
@@ -127,6 +131,7 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
             gaussian.scale_opacity.scale[1] +
             gaussian.scale_opacity.scale[2]) /
           3.0;
+
         for (let i = 0; i < 3; i++) {
           gaussian.scale_opacity.scale[i] = Math.exp(
             Math.min(
@@ -141,7 +146,8 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
 
         const norm = Math.sqrt(
           new Array(4)
-            .map((i) => Math.pow(gaussian.rotation.rotation[i], 2.0))
+            .fill(undefined)
+            .map((_, i) => Math.pow(gaussian.rotation.rotation[i], 2.0))
             .reduce((prev, cur) => prev + cur, 0),
         );
         for (let i = 0; i < 4; i++) {
@@ -149,20 +155,22 @@ export async function render($canvas: HTMLCanvasElement, gui: lil.GUI) {
         }
       }
 
-      const cloud = GaussianCloud.from_gaussians(gaussians);
-      console.log(cloud);
+      const mesh = Mesh.from(new Cube(0));
+      const material = new Material();
+      this.commands.spawn(
+        new PbrBundle({
+          mesh,
+          material,
+          transform: Transform.from_xyz(0, 0, 0),
+        }),
+      );
 
-      // const mesh = Mesh.from(new Cube(1));
-      // const material = new Material({
-      //   base_color_texture: baseColorImage,
-      // });
-      // this.commands.spawn(
-      //   new PbrBundle({
-      //     mesh,
-      //     material,
-      //     transform: Transform.from_xyz(0, 0, 0),
-      //   }),
-      // );
+      const cloud = GaussianCloud.from_gaussians(gaussians);
+      this.commands.spawn(
+        new GaussianSplattingBundle({
+          cloud,
+        }),
+      );
 
       this.commands.execute();
     }

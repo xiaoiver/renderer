@@ -67,6 +67,7 @@ export class SkyboxNode extends PipelineNode {
       numUniformBuffers: 1,
       numSamplers: 1,
       numStorageBuffers: 0,
+      numStorageTextures: 0,
     });
     renderInst.setUniformBuffer(this.pipeline.renderHelper.uniformBuffer);
 

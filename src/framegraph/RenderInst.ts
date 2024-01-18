@@ -204,6 +204,10 @@ export class RenderInst {
     this.renderPipelineDescriptor.program = program;
   }
 
+  setTopology(topology: PrimitiveTopology) {
+    this.renderPipelineDescriptor.topology = topology;
+  }
+
   /**
    * Set the {@see MegaStateDescriptor} that this render inst will render with. This is part of the automatic
    * pipeline building facilities. At render time, a pipeline will be automatically and constructed from
@@ -311,6 +315,17 @@ export class RenderInst {
     this.drawCount = primitiveCount;
     this.drawStart = primitiveStart;
     this.drawInstanceCount = 1;
+  }
+
+  drawPrimitivesInstanced(
+    primitiveCount: number,
+    instanceCount = 0,
+    primitiveStart = 0,
+  ) {
+    this.flags = setBitFlagEnabled(this.flags, RenderInstFlags.Indexed, false);
+    this.drawCount = primitiveCount;
+    this.drawStart = primitiveStart;
+    this.drawInstanceCount = instanceCount;
   }
 
   /**

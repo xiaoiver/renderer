@@ -40,7 +40,7 @@ export class GaussianCloudSettings {
       global_transform = new GlobalTransform(),
       visualize_bounding_box = false,
       visualize_depth = false,
-      sort_mode = SortMode.None,
+      sort_mode = SortMode.Std,
       draw_mode = GaussianCloudDrawMode.All,
     } = options || {};
 

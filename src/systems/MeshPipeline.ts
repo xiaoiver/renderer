@@ -19,6 +19,10 @@ import { OpaqueNode } from './nodes/Opaque';
 import { PipelineNode } from './nodes/PipelineNode';
 import { PrepareLights } from './PrepareLights';
 
+/**
+ * VisibleEntities
+ * @see queue_material_meshes
+ */
 export class MeshPipeline extends System {
   private appConfig = this.singleton.read(AppConfig);
 

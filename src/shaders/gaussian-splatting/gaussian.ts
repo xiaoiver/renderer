@@ -1,14 +1,33 @@
 export default /* wgsl */ `
 #import gaussian_splatting::bindings::{
     view,
-    globals,
     gaussian_uniforms,
-    sorting_pass_index,
-    sorting,
-    draw_indirect,
-    input_entries,
-    output_entries,
     Entry,
+}
+#import gaussian_splatting::planar::{
+    get_position,
+    get_color,
+    get_visibility,
+    get_opacity,
+    get_rotation,
+    get_scale,
+}
+
+#import gaussian_splatting::depth::{
+    depth_to_rgb,
+}
+
+#import gaussian_splatting::transform::{
+    world_to_clip,
+    in_frustum,
+}
+
+#define USE_OBB
+
+@group(2) @binding(4) var<storage, read> sorted_entries: array<Entry>;
+
+fn get_entry(index: u32) -> Entry {
+    return sorted_entries[index];
 }
 
 struct GaussianVertexOutput {
@@ -192,11 +211,11 @@ fn vs_points(
     var output: GaussianVertexOutput;
 
     let entry = get_entry(instance_index);
-    let splat_index = entry.value;
+    let splat_index = u32(entry.value);
 
     var discard_quad = false;
 
-    discard_quad |= entry.key == 0xFFFFFFFFu; // || splat_index == 0u;
+    discard_quad |= u32(entry.key) == 0xFFFFFFFFu; // || splat_index == 0u;
 
     let position = vec4<f32>(get_position(splat_index), 1.0);
 
@@ -230,8 +249,8 @@ fn vs_points(
     var rgb = vec3<f32>(0.0);
 
 #ifdef VISUALIZE_DEPTH
-    let first_position = vec4<f32>(get_position(get_entry(1u).value), 1.0);
-    let last_position = vec4<f32>(get_position(get_entry(gaussian_uniforms.count - 1u).value), 1.0);
+    let first_position = vec4<f32>(get_position(u32(get_entry(1u).value)), 1.0);
+    let last_position = vec4<f32>(get_position(u32(get_entry(u32(gaussian_uniforms.count) - 1u).value)), 1.0);
 
     let min_position = (gaussian_uniforms.global_transform * first_position).xyz;
     let max_position = (gaussian_uniforms.global_transform * last_position).xyz;
@@ -242,6 +261,7 @@ fn vs_points(
     let max_distance = length(max_position - camera_position);
 
     let depth = length(transformed_position - camera_position);
+    // rgb = get_color(splat_index, ray_direction);
     rgb = depth_to_rgb(
         depth,
         min_distance,

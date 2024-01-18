@@ -37,6 +37,7 @@ import mesh_functions from '../shaders/mesh/mesh_functions';
 import tonemapping_shared from '../shaders/tonemapping/tonemapping_shared';
 import gtao_utils from '../shaders/ssao/gtao_utils';
 import pbr_fragment from '../shaders/pbr/pbr_fragment';
+import { defineStr } from './utils';
 
 export class RenderResource extends System {
   /**
@@ -125,8 +126,19 @@ export class RenderResource extends System {
    * Use naga-oil to combine and manipulate shaders.
    * The order is important.
    */
-  registerShaderModule(shader: string): string {
+  registerShaderModule(
+    shader: string,
+    defines: Record<string, any> = {},
+  ): string {
+    // Prepend defines.
+    const prefix =
+      Object.keys(defines)
+        .map((key) => {
+          return defineStr(key, defines[key] || '');
+        })
+        .join('\n') + '\n';
+
     const compiler = this.device['WGSLComposer'];
-    return compiler.wgsl_compile(shader);
+    return compiler.wgsl_compile(prefix + shader);
   }
 }

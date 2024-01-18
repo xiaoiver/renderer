@@ -23,42 +23,42 @@ export class RotationScaleOpacityPacked128 {
     this.scale_opacity = scale_opacity;
   }
 
-  static fromU32(rotation_scale_opacity: [u32, u32, u32, u32]) {
-    return new RotationScaleOpacityPacked128({
-      rotation: [rotation_scale_opacity[0], rotation_scale_opacity[1]],
-      scale_opacity: [rotation_scale_opacity[2], rotation_scale_opacity[3]],
-    });
-  }
+  // static fromU32(rotation_scale_opacity: [u32, u32, u32, u32]) {
+  //   return new RotationScaleOpacityPacked128({
+  //     rotation: [rotation_scale_opacity[0], rotation_scale_opacity[1]],
+  //     scale_opacity: [rotation_scale_opacity[2], rotation_scale_opacity[3]],
+  //   });
+  // }
 
-  static fromF32(
-    rotation_scale_opacity: [f32, f32, f32, f32, f32, f32, f32, f32],
-  ) {
-    return new RotationScaleOpacityPacked128({
-      rotation: [
-        pack_f32s_to_u32(rotation_scale_opacity[0], rotation_scale_opacity[1]),
-        pack_f32s_to_u32(rotation_scale_opacity[2], rotation_scale_opacity[3]),
-      ],
-      scale_opacity: [
-        pack_f32s_to_u32(rotation_scale_opacity[4], rotation_scale_opacity[5]),
-        pack_f32s_to_u32(rotation_scale_opacity[6], rotation_scale_opacity[7]),
-      ],
-    });
-  }
+  // static fromF32(
+  //   rotation_scale_opacity: [f32, f32, f32, f32, f32, f32, f32, f32],
+  // ) {
+  //   return new RotationScaleOpacityPacked128({
+  //     rotation: [
+  //       pack_f32s_to_u32(rotation_scale_opacity[0], rotation_scale_opacity[1]),
+  //       pack_f32s_to_u32(rotation_scale_opacity[2], rotation_scale_opacity[3]),
+  //     ],
+  //     scale_opacity: [
+  //       pack_f32s_to_u32(rotation_scale_opacity[4], rotation_scale_opacity[5]),
+  //       pack_f32s_to_u32(rotation_scale_opacity[6], rotation_scale_opacity[7]),
+  //     ],
+  //   });
+  // }
 
-  static fromF16(
-    rotation_scale_opacity: [f16, f16, f16, f16, f16, f16, f16, f16],
-  ) {
-    return new RotationScaleOpacityPacked128({
-      rotation: [
-        pack_f16s_to_u32(rotation_scale_opacity[0], rotation_scale_opacity[1]),
-        pack_f16s_to_u32(rotation_scale_opacity[2], rotation_scale_opacity[3]),
-      ],
-      scale_opacity: [
-        pack_f16s_to_u32(rotation_scale_opacity[4], rotation_scale_opacity[5]),
-        pack_f16s_to_u32(rotation_scale_opacity[6], rotation_scale_opacity[7]),
-      ],
-    });
-  }
+  // static fromF16(
+  //   rotation_scale_opacity: [f16, f16, f16, f16, f16, f16, f16, f16],
+  // ) {
+  //   return new RotationScaleOpacityPacked128({
+  //     rotation: [
+  //       pack_f16s_to_u32(rotation_scale_opacity[0], rotation_scale_opacity[1]),
+  //       pack_f16s_to_u32(rotation_scale_opacity[2], rotation_scale_opacity[3]),
+  //     ],
+  //     scale_opacity: [
+  //       pack_f16s_to_u32(rotation_scale_opacity[4], rotation_scale_opacity[5]),
+  //       pack_f16s_to_u32(rotation_scale_opacity[6], rotation_scale_opacity[7]),
+  //     ],
+  //   });
+  // }
 
   from_gaussian(gaussian: Gaussian) {
     return new RotationScaleOpacityPacked128({

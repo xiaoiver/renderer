@@ -19,7 +19,6 @@ export class AddClusters extends System {
       }
 
       const config = entity.read(ClusterConfig);
-      console.log(config);
 
       const { tile_size, dimensions, near, far } = new Clusters();
       if (!entity.has(Clusters)) {
